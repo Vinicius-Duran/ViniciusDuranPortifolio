@@ -22,36 +22,44 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="header-logo">
-          <a href="#" className="logo-link" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); closeMenu(); }}>
+          <Link to="/" className="logo-link" onClick={closeMenu}>
             <span className="logo-text">Vinícius Duran</span>
-          </a>
+          </Link>
         </div>
 
         <nav className={`header-nav ${isMenuOpen ? 'nav-open' : ''}`}>
           <ul className="nav-list">
             <li className="nav-item">
-              <a
-                href="#"
+              <Link
+                to="/"
                 className={`nav-link ${isActive('/') ? 'active' : ''}`}
-                onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); closeMenu(); }}
+                onClick={closeMenu}
               >
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a
-                href="#about"
-                className="nav-link"
-                onClick={(e) => { e.preventDefault(); document.querySelector('#about').scrollIntoView({ behavior: 'smooth' }); closeMenu(); }}
+              <Link
+                to="/about"
+                className={`nav-link ${isActive('/about') ? 'active' : ''}`}
+                onClick={closeMenu}
               >
                 Sobre
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
               <a
                 href="#projects"
                 className="nav-link"
-                onClick={(e) => { e.preventDefault(); document.querySelector('#projects').scrollIntoView({ behavior: 'smooth' }); closeMenu(); }}
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  if (location.pathname === '/') {
+                    document.querySelector('#projects').scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    window.location.href = '/#projects';
+                  }
+                  closeMenu(); 
+                }}
               >
                 Projetos
               </a>
@@ -60,7 +68,15 @@ const Header = () => {
               <a
                 href="#contact"
                 className="nav-link"
-                onClick={(e) => { e.preventDefault(); document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' }); closeMenu(); }}
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  if (location.pathname === '/') {
+                    document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    window.location.href = '/#contact';
+                  }
+                  closeMenu(); 
+                }}
               >
                 Contato
               </a>
