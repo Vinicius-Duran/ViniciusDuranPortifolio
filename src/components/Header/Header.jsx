@@ -1,100 +1,135 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [time, setTime] = useState('');
   const location = useLocation();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const formatted = now.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Sao_Paulo',
+      });
+      setTime(`${formatted} BRT`);
+    };
+    tick();
+    const id = setInterval(tick, 30000);
+    return () => clearInterval(id);
+  }, []);
 
-  const isActive = (path) => {
-    return location.pathname === path;
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const isActive = (path) => location.pathname === path;
+
+  const handleAnchor = (e, target) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      const node = document.querySelector(target);
+      if (node) node.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = `/${target.startsWith('#') ? target : `#${target}`}`;
+    }
+    closeMenu();
   };
 
   return (
-    <header className="header">
-      <div className="header-container">
-        <div className="header-logo">
-          <Link to="/" className="logo-link" onClick={closeMenu}>
-            <span className="logo-text">Vinícius Duran</span>
-          </Link>
-        </div>
+    <header className={`site-header ${scrolled ? 'is-scrolled' : ''}`}>
+      <div className="site-header-inner">
+        <Link to="/" className="brand magnetic" onClick={closeMenu}>
+          <span className="brand-mark" aria-hidden="true">
+            <span className="brand-dot" />
+          </span>
+          <span className="brand-text">
+            <span className="brand-name">Vinícius Duran</span>
+            <span className="brand-role">Developer · Portfolio · 2026</span>
+          </span>
+        </Link>
 
-        <nav className={`header-nav ${isMenuOpen ? 'nav-open' : ''}`}>
+        <nav className={`site-nav ${isMenuOpen ? 'is-open' : ''}`} aria-label="Principal">
           <ul className="nav-list">
-            <li className="nav-item">
+            <li>
               <Link
                 to="/"
-                className={`nav-link ${isActive('/') ? 'active' : ''}`}
+                className={`nav-link ${isActive('/') ? 'is-active' : ''}`}
                 onClick={closeMenu}
               >
-                Home
+                <span className="nav-link-index">01</span>
+                <span className="nav-link-label">Home</span>
               </Link>
             </li>
-            <li className="nav-item">
-              <Link
-                to="/about"
-                className={`nav-link ${isActive('/about') ? 'active' : ''}`}
-                onClick={closeMenu}
+            <li>
+              <a
+                href="#about"
+                className="nav-link"
+                onClick={(e) => handleAnchor(e, '#about')}
               >
-                Sobre
-              </Link>
+                <span className="nav-link-index">02</span>
+                <span className="nav-link-label">Sobre</span>
+              </a>
             </li>
-            <li className="nav-item">
+            <li>
               <a
                 href="#projects"
                 className="nav-link"
-                onClick={(e) => { 
-                  e.preventDefault(); 
-                  if (location.pathname === '/') {
-                    document.querySelector('#projects').scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    window.location.href = '/#projects';
-                  }
-                  closeMenu(); 
-                }}
+                onClick={(e) => handleAnchor(e, '#projects')}
               >
-                Projetos
+                <span className="nav-link-index">03</span>
+                <span className="nav-link-label">Projetos</span>
               </a>
             </li>
-            <li className="nav-item">
+            <li>
+              <Link
+                to="/about"
+                className={`nav-link ${isActive('/about') ? 'is-active' : ''}`}
+                onClick={closeMenu}
+              >
+                <span className="nav-link-index">04</span>
+                <span className="nav-link-label">Trajetória</span>
+              </Link>
+            </li>
+            <li>
               <a
                 href="#contact"
                 className="nav-link"
-                onClick={(e) => { 
-                  e.preventDefault(); 
-                  if (location.pathname === '/') {
-                    document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    window.location.href = '/#contact';
-                  }
-                  closeMenu(); 
-                }}
+                onClick={(e) => handleAnchor(e, '#contact')}
               >
-                Contato
+                <span className="nav-link-index">05</span>
+                <span className="nav-link-label">Contato</span>
               </a>
             </li>
           </ul>
         </nav>
 
-        <div className="header-actions">
-          <button
-            className={`mobile-menu-btn ${isMenuOpen ? 'open' : ''}`}
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-          </button>
+        <div className="header-meta">
+          <span className="meta-dot" aria-hidden="true" />
+          <span className="meta-status">Disponível</span>
+          <span className="meta-sep" aria-hidden="true">/</span>
+          <span className="meta-time">{time}</span>
         </div>
+
+        <button
+          className={`menu-toggle ${isMenuOpen ? 'is-open' : ''}`}
+          onClick={toggleMenu}
+          aria-label="Abrir menu"
+          aria-expanded={isMenuOpen}
+        >
+          <span />
+          <span />
+        </button>
       </div>
     </header>
   );
