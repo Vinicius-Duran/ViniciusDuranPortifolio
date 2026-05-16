@@ -8,15 +8,15 @@ import './Home.css';
 const skills = [
   {
     label: 'Frontend',
-    items: ['React / React Native', 'TypeScript', 'JavaScript', 'CSS · Tailwind'],
+    items: ['React / React Native', 'TypeScript', 'JavaScript', 'CSS · SCSS'],
   },
   {
     label: 'Backend',
-    items: ['C# · .NET', 'Node.js', 'Python', 'REST · GraphQL'],
+    items: ['C# · .NET', 'Node.js', 'Python', 'REST · GraphQL', 'DDD', 'DAO/BLL'],
   },
   {
     label: 'Plataforma',
-    items: ['SQL Server', 'Azure', 'Docker', 'Git · CI/CD'],
+    items: ['SQL Server', 'Azure', 'Docker', 'Git · CI/CD', 'CosmosBD', 'MySql', 'PostgreSQL'],
   },
 ];
 
@@ -88,7 +88,7 @@ const Home = () => {
       <section className="hero" ref={heroRef}>
         <div className="shell hero-shell">
           <div className="hero-meta reveal">
-            <span className="eyebrow">Portfolio · 2026 — VOL. 01</span>
+            <span className="eyebrow">Portfolio · 2026</span>
             <span className="hero-coords mono">
               <span>BR · 27.6° S</span>
               <span className="dot" aria-hidden="true">·</span>
@@ -99,7 +99,7 @@ const Home = () => {
           <div className="hero-grid">
             <div className="hero-left">
               <h1 className="hero-title display reveal delay-1" ref={heroTitleRef}>
-                <span className="hero-line">Vinícius</span>
+                <span className="hero-line">Vinicius</span>
                 <span className="hero-line hero-line--accent">
                   <span className="hero-line-text">Duran</span>
                   <span className="hero-line-bar" aria-hidden="true" />
@@ -223,7 +223,6 @@ const Home = () => {
             <span className="section-index mono">#01 — sobre</span>
             <h2 className="section-title display">
               Construo na <em>interseção</em> entre código,
-              <br />
               design e <span className="text-accent">narrativa visual</span>.
             </h2>
           </div>
