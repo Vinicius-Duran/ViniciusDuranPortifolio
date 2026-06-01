@@ -74,6 +74,65 @@ const Header = () => {
           </span>
         </Link>
 
+        <nav
+          id="site-nav"
+          className={`site-nav ${isMenuOpen ? 'is-open' : ''}`}
+          aria-label="Principal"
+        >
+          <ul className="nav-list">
+            <li>
+              <Link
+                to="/"
+                className={`nav-link ${isActive('/') ? 'is-active' : ''}`}
+                onClick={closeMenu}
+              >
+                <span className="nav-link-index">01</span>
+                <span className="nav-link-label">Home</span>
+              </Link>
+            </li>
+            <li>
+              <a
+                href="#about"
+                className="nav-link"
+                onClick={(e) => handleAnchor(e, '#about')}
+              >
+                <span className="nav-link-index">02</span>
+                <span className="nav-link-label">Sobre</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#projects"
+                className="nav-link"
+                onClick={(e) => handleAnchor(e, '#projects')}
+              >
+                <span className="nav-link-index">03</span>
+                <span className="nav-link-label">Projetos</span>
+              </a>
+            </li>
+            <li>
+              <Link
+                to="/about"
+                className={`nav-link ${isActive('/about') ? 'is-active' : ''}`}
+                onClick={closeMenu}
+              >
+                <span className="nav-link-index">04</span>
+                <span className="nav-link-label">Trajetória</span>
+              </Link>
+            </li>
+            <li>
+              <a
+                href="#contact"
+                className="nav-link"
+                onClick={(e) => handleAnchor(e, '#contact')}
+              >
+                <span className="nav-link-index">05</span>
+                <span className="nav-link-label">Contato</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
         <div className="header-meta">
           <span className="meta-dot" aria-hidden="true" />
           <span className="meta-status">Disponível</span>
@@ -93,65 +152,6 @@ const Header = () => {
           <span />
         </button>
       </div>
-
-      <nav
-        id="site-nav"
-        className={`site-nav ${isMenuOpen ? 'is-open' : ''}`}
-        aria-label="Principal"
-      >
-        <ul className="nav-list">
-          <li>
-            <Link
-              to="/"
-              className={`nav-link ${isActive('/') ? 'is-active' : ''}`}
-              onClick={closeMenu}
-            >
-              <span className="nav-link-index">01</span>
-              <span className="nav-link-label">Home</span>
-            </Link>
-          </li>
-          <li>
-            <a
-              href="#about"
-              className="nav-link"
-              onClick={(e) => handleAnchor(e, '#about')}
-            >
-              <span className="nav-link-index">02</span>
-              <span className="nav-link-label">Sobre</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="#projects"
-              className="nav-link"
-              onClick={(e) => handleAnchor(e, '#projects')}
-            >
-              <span className="nav-link-index">03</span>
-              <span className="nav-link-label">Projetos</span>
-            </a>
-          </li>
-          <li>
-            <Link
-              to="/about"
-              className={`nav-link ${isActive('/about') ? 'is-active' : ''}`}
-              onClick={closeMenu}
-            >
-              <span className="nav-link-index">04</span>
-              <span className="nav-link-label">Trajetória</span>
-            </Link>
-          </li>
-          <li>
-            <a
-              href="#contact"
-              className="nav-link"
-              onClick={(e) => handleAnchor(e, '#contact')}
-            >
-              <span className="nav-link-index">05</span>
-              <span className="nav-link-label">Contato</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
     </header>
   );
 };
