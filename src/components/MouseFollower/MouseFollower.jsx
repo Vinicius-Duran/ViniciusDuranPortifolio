@@ -13,11 +13,14 @@ const MouseFollower = () => {
     const ring = ringRef.current;
     if (!dot || !ring) return undefined;
 
+    const HOVER_SELECTOR = 'a, button, .magnetic, .hover-target, [data-hover]';
+
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let ringX = mouseX;
     let ringY = mouseY;
     let frame = 0;
+    let isActive = false;
 
     const update = () => {
       ringX += (mouseX - ringX) * 0.18;
@@ -27,37 +30,33 @@ const MouseFollower = () => {
       frame = requestAnimationFrame(update);
     };
 
-    const onMove = (event) => {
-      mouseX = event.clientX;
-      mouseY = event.clientY;
-    };
-
-    const isHoverTarget = (node) => {
-      if (!node || node.nodeType !== 1) return false;
-      const el = node;
-      return (
-        el.matches('a, button, .magnetic, .hover-target, [data-hover]') ||
-        el.closest('a, button, .magnetic, .hover-target, [data-hover]') !== null
-      );
-    };
-
-    const onOver = (event) => {
-      if (isHoverTarget(event.target)) {
+    const setActive = (next) => {
+      if (next === isActive) return;
+      isActive = next;
+      if (next) {
         ring.classList.add('is-active');
         dot.classList.add('is-active');
+      } else {
+        ring.classList.remove('is-active');
+        dot.classList.remove('is-active');
       }
     };
 
-    const onOut = (event) => {
-      if (isHoverTarget(event.target)) {
-        ring.classList.remove('is-active');
-        dot.classList.remove('is-active');
+    const onMove = (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+      const target = event.target;
+      if (target && target.nodeType === 1) {
+        setActive(target.closest(HOVER_SELECTOR) !== null);
+      } else {
+        setActive(false);
       }
     };
 
     const onLeave = () => {
       ring.style.opacity = '0';
       dot.style.opacity = '0';
+      setActive(false);
     };
 
     const onEnter = () => {
@@ -66,16 +65,12 @@ const MouseFollower = () => {
     };
 
     document.addEventListener('mousemove', onMove, { passive: true });
-    document.addEventListener('mouseover', onOver);
-    document.addEventListener('mouseout', onOut);
     document.addEventListener('mouseleave', onLeave);
     document.addEventListener('mouseenter', onEnter);
     frame = requestAnimationFrame(update);
 
     return () => {
       document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseover', onOver);
-      document.removeEventListener('mouseout', onOut);
       document.removeEventListener('mouseleave', onLeave);
       document.removeEventListener('mouseenter', onEnter);
       cancelAnimationFrame(frame);
