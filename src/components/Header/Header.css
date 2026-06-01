@@ -261,10 +261,28 @@
     z-index: 102;
   }
 
+  .brand {
+    position: relative;
+    z-index: 200;
+  }
+
   .menu-toggle {
     display: inline-flex;
     justify-self: end;
-    z-index: 1;
+    z-index: 200;
+    position: relative;
+  }
+
+  .menu-toggle.is-open {
+    background: rgba(245, 241, 255, 0.08);
+    border-color: rgba(245, 241, 255, 0.25);
+    box-shadow: 0 6px 24px rgba(6, 3, 12, 0.4);
+  }
+
+  .menu-toggle.is-open span {
+    background: var(--white);
+    width: 22px;
+    height: 2px;
   }
 
   .site-nav {
@@ -278,9 +296,9 @@
     background:
       radial-gradient(900px 500px at 20% 0%, rgba(138, 82, 255, 0.22), transparent 55%),
       radial-gradient(700px 400px at 90% 100%, rgba(104, 178, 248, 0.15), transparent 50%),
-      rgba(6, 3, 12, 0.97);
+      var(--bg-deep);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
     opacity: 0;
     visibility: hidden;
@@ -307,7 +325,10 @@
     max-width: 100%;
     background: none;
     border: none;
+    border-radius: 0;
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
     padding: 0;
   }
 
