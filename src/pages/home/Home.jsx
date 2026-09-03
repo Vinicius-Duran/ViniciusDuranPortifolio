@@ -338,8 +338,19 @@ const Home = () => {
                       className="project-thumb-inner"
                       style={{ background: project.accent }}
                     >
-                      <span className="project-thumb-grid" />
-                      <span className="project-thumb-noise" />
+                      {project.cover ? (
+                        <img
+                          className="project-thumb-img"
+                          src={project.cover}
+                          alt=""
+                          loading="lazy"
+                        />
+                      ) : (
+                        <>
+                          <span className="project-thumb-grid" />
+                          <span className="project-thumb-noise" />
+                        </>
+                      )}
                       <span className="project-thumb-label mono">{project.id}</span>
                     </span>
                   </span>

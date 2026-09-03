@@ -14,7 +14,7 @@ export const projects = [
     description:
       'Sistema de gestão financeira com CRUD de usuários, centros de custo, receitas, contas bancárias e lançamentos.',
     longDescription:
-      'Aplicação dividida em dois repositórios: uma API REST em Node.js e um cliente React. Cobre cinco entidades de negócio — usuários, centros de custo, receitas, contas bancárias e lançamentos — com autenticação por token, validação de entrada no servidor e cenários de teste escritos em Gherkin. É o projeto onde a separação entre camada de dados, regra de negócio e interface aparece de forma mais completa.',
+      'Aplicação dividida em dois repositórios: uma API REST em Node.js e um cliente React, com a interface batizada de CashFlow. Cobre cinco entidades de negócio — usuários, centros de custo, receitas, contas bancárias e lançamentos — com autenticação por token, validação de entrada no servidor e cenários de teste escritos em Gherkin. É o projeto onde a separação entre camada de dados, regra de negócio e interface aparece de forma mais completa.',
     challenge:
       'Construir um sistema financeiro que não fosse apenas um CRUD de tela: era preciso autenticar usuários com segurança, garantir que dados monetários e relacionamentos entre entidades não fossem corrompidos por entrada inválida, e manter o cliente desacoplado do servidor.',
     solution:
