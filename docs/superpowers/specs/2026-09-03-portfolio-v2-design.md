@@ -186,7 +186,7 @@ Preservar: paleta roxo/azul/ciano, `Space Grotesk`, `JetBrains Mono`, reveals po
 | Página de case study | layout mais fraco, dominado por placeholders | reconstruir com conteúdo real |
 | Hierarquia tipográfica | escalas e espaçamentos ad-hoc | tokens de escala consistentes |
 | Carrossel de certificados | `cardWidth = 492` fixo em px (`About.jsx`) | medida responsiva |
-| Acessibilidade | sem `prefers-reduced-motion`, foco pouco visível | suporte a movimento reduzido, foco visível, contraste |
+| Acessibilidade | `prefers-reduced-motion` **já existe** em `index.css:252`; o que falta é `:focus-visible` | acrescentar foco visível e verificar em runtime que o movimento reduzido de fato suprime as animações sem deixar conteúdo invisível |
 
 **Escopo de CSS:** 3.417 linhas em 10 arquivos. O refino altera tokens e os blocos de
 projeto/case study; não é reescrita.
@@ -239,7 +239,7 @@ Ferramentas confirmadas: Node v24.17.0, npm 11.13.0, Python 3.12.10.
 6. `README.md` descreve este projeto
 7. `npm run build` e `npm run lint` passam
 8. O site é navegável em 375 px, 768 px e 1440 px
-9. `prefers-reduced-motion` suprime as animações
+9. `prefers-reduced-motion` suprime as animações **sem deixar conteúdo invisível** (medido em runtime, não por presença da regra)
 10. Toda afirmação factual do site é rastreável a um repositório, site ou documento real
 
 ---

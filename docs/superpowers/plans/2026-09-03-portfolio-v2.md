@@ -1562,7 +1562,7 @@ Substitua `const cardWidth = 492;` por uma medida tirada do DOM, com fallback:
   }, []);
 ```
 
-Nas quatro funções que usavam `cardWidth` — `scrollToSlide`, `updateCurrentSlide` e as duas de arraste — troque a constante por `const cardWidth = getCardWidth();` na primeira linha de cada uma. Acrescente `getCardWidth` ao array de dependências de `updateCurrentSlide`.
+Nas **duas** funções que usam `cardWidth` — `scrollToSlide` e `updateCurrentSlide` — troque a constante por `const cardWidth = getCardWidth();` na primeira linha de cada uma. (Medido: os dois handlers de arraste **não** usam `cardWidth`; eles aplicam um multiplicador de delta do ponteiro e não precisam mudar.) Acrescente `getCardWidth` ao array de dependências de `updateCurrentSlide`.
 
 - [ ] **Step 5: Rodar e confirmar que passa**
 
