@@ -53,6 +53,8 @@ const Home = () => {
   const aboutRef = useReveal();
   const processRef = useReveal();
   const projectsHeaderRef = useReveal();
+  const projectsSecondaryRef = useReveal();
+  const projectsFootRef = useReveal();
   const contactRef = useReveal();
   const setSkillRef = useRevealMany(skills.length);
   const setProcessRef = useRevealMany(processSteps.length);
@@ -361,7 +363,7 @@ const Home = () => {
             ))}
           </ul>
 
-          <div className="projects-secondary reveal delay-1">
+          <div className="projects-secondary reveal delay-1" ref={projectsSecondaryRef}>
             <span className="projects-secondary-label mono">Outros repositórios</span>
             <ul className="projects-secondary-list">
               {secondaryProjects.map((project) => (
@@ -383,7 +385,7 @@ const Home = () => {
             </ul>
           </div>
 
-          <div className="projects-foot reveal delay-2">
+          <div className="projects-foot reveal delay-2" ref={projectsFootRef}>
             <span className="mono">
               {String(featuredProjects.length).padStart(2, '0')} projetos em destaque ·{' '}
               {String(secondaryProjects.length).padStart(2, '0')} outros
