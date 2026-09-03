@@ -19,6 +19,10 @@ export const skillGroups = [
     label: 'Hardware',
     items: ['Impressão 3D', 'Corte a laser', 'Arduino', 'Robótica', 'Manutenção'],
   },
+  {
+    label: 'Soft Skills',
+    items: ['Trabalho em equipe', 'Comunicação', 'Gestão de tempo', 'Resolução de problemas', 'Pair programming', 'Metodologias ágeis'],
+  },
 ];
 
 export const homeSkillGroups = skillGroups.slice(0, 3);
