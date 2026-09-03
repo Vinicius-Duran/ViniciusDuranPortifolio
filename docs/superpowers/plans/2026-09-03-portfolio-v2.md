@@ -711,10 +711,35 @@ Na `<ul className="project-list">`, troque `projects.map(` por `featuredProjects
 - [ ] **Step 5: Acrescentar a faixa secundária e corrigir o rodapé da seção**
 
 O rodapé diz hoje `{projects.length} projects · mais em breve` — "em breve" é texto de
-rascunho, proibido pelas restrições globais. Substitua o bloco `projects-foot` inteiro por:
+rascunho, proibido pelas restrições globais.
+
+**Atenção — armadilha medida em runtime.** `src/index.css:155-156` revela um `.reveal`
+apenas quando o próprio nó ou um ancestral recebe `is-visible`:
+
+```css
+.reveal.is-visible,
+.is-visible .reveal {
+```
+
+Na seção de projetos, só `.section-header` e cada `.project-row` têm ref de
+`IntersectionObserver`; a `<section id="projects">` não tem. Um `.reveal` novo sem ref
+próprio fica em `opacity: 0` **para sempre** — foi assim que o `projects-foot` original
+ficou invisível sem ninguém notar. Por isso os dois blocos abaixo levam ref.
+
+Declare os dois refs junto aos existentes (perto de `projectsHeaderRef`):
 
 ```jsx
-          <div className="projects-secondary reveal delay-1">
+  const projectsSecondaryRef = useReveal();
+  const projectsFootRef = useReveal();
+```
+
+Não ponha o ref na `<section id="projects">`: isso faria as seis linhas de projeto
+aparecerem de uma vez e destruiria a entrada escalonada.
+
+Substitua o bloco `projects-foot` inteiro por:
+
+```jsx
+          <div className="projects-secondary reveal delay-1" ref={projectsSecondaryRef}>
             <span className="projects-secondary-label mono">Outros repositórios</span>
             <ul className="projects-secondary-list">
               {secondaryProjects.map((project) => (
@@ -736,7 +761,7 @@ rascunho, proibido pelas restrições globais. Substitua o bloco `projects-foot`
             </ul>
           </div>
 
-          <div className="projects-foot reveal delay-2">
+          <div className="projects-foot reveal delay-2" ref={projectsFootRef}>
             <span className="mono">
               {String(featuredProjects.length).padStart(2, '0')} projetos em destaque ·{' '}
               {String(secondaryProjects.length).padStart(2, '0')} outros
@@ -822,8 +847,29 @@ Expected: PASS — 8 testes.
 
 - [ ] **Step 8: Conferir a home no navegador**
 
-Suba `npm run dev`. A seção de projetos deve listar **seis** destaques e, abaixo da
-divisória, **três** repositórios secundários. Nenhuma ocorrência de "em breve".
+**O MCP `chrome-devtools` NÃO funciona neste ambiente** (medido: o Chrome não expõe a
+porta de depuração; `list_pages` falha com `Could not find DevToolsActivePort`). Use
+Playwright, já instalado no scratchpad da sessão em `shotter/`.
+
+Suba o preview e meça o DOM, não só a imagem:
+
+```
+& ".\node_modules\.bin\vite.cmd" build
+& ".\node_modules\.bin\vite.cmd" preview --port 4181 --strictPort
+```
+
+Carregue `http://localhost:4181/`, role até o fim, espere ~2,5 s e leia de volta:
+
+- `document.querySelectorAll('.project-row').length` → **6**
+- `document.querySelectorAll('.projects-secondary-link').length` → **3**
+- `getComputedStyle(document.querySelector('.projects-secondary')).opacity` → **"1"**
+- `getComputedStyle(document.querySelector('.projects-foot')).opacity` → **"1"**
+- `document.body.innerText.toLowerCase().includes('em breve')` → **false**
+- erros de console → **nenhum**
+
+As duas medições de `opacity` são obrigatórias: um grep no bundle prova que a string
+chegou ao cliente, e **não** que o usuário a enxerga. Foi exatamente essa diferença que
+deixou a faixa secundária invisível na primeira tentativa desta tarefa.
 
 - [ ] **Step 9: Verificar lint e build**
 
@@ -1357,7 +1403,18 @@ cd "<SCRATCHPAD>/shots/Taki" && python -m http.server 4175
 
 Para o próprio portfólio, rode `npm run dev` na raiz do repositório.
 
-Capture cada um com as ferramentas do Chrome DevTools: `navigate_page` para a URL local, `resize_page` para 1440x900, depois `take_screenshot`. Salve em `public/projects/<slug>.png`.
+**Não use o MCP `chrome-devtools` — ele não conecta neste ambiente** (medido: `list_pages`
+falha com `Could not find DevToolsActivePort`, e subir o Chrome com
+`--remote-debugging-port` não abre a porta). Use o Playwright já instalado no scratchpad
+da sessão, em `shotter/`, com o script `shot.mjs` que já está lá:
+
+```
+node shot.mjs <url> <caminho-de-saida.png> 1440 900 3000
+```
+
+Ele imprime `status`, `title`, `bodyTextLength` e os erros de console junto com a
+captura — confira os quatro antes de aceitar a imagem. Salve em
+`public/projects/<slug>.png`.
 
 **Regra:** capture a tela inicial real do projeto. Se um projeto subir com erro ou tela vazia, **não maquie** — registre o ocorrido e deixe o `cover` como `null`, ajustando a lista `CAPTURABLE` do teste.
 
