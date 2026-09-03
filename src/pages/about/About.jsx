@@ -1,182 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
+import { certificates } from '../../data/certificates';
 import './About.css';
-
-const certificates = [
-  {
-    id: 1,
-    name: 'Curso Técnico em Desenvolvimento de Sistemas',
-    institution: 'SENAI/SC',
-    period: 'Jan 2024 - Jul 2025',
-    pdf: '/diploma-tecnico-vinicius.pdf',
-    description:
-      'Formação com foco em análise, desenvolvimento e manutenção de sistemas e aplicações, com base em práticas atuais do mercado. A grade abrange desde fundamentos da lógica de programação até o desenvolvimento completo de aplicações web e mobile.',
-    skills: ['JavaScript', 'HTML', 'CSS', 'React', 'React Native', 'C++', 'Node.js', 'SQL', 'JSON', 'POO', 'Full Stack', 'APIs', 'Testes de Software', 'Git'],
-  },
-  {
-    id: 2,
-    name: 'Fundamentos de TypeScript',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de TypeScript.pdf',
-    description: 'Curso focado nos fundamentos da linguagem TypeScript, incluindo tipagem estática, interfaces, classes e integração com JavaScript.',
-    skills: ['TypeScript', 'Tipagem Estática', 'Interfaces', 'Classes'],
-  },
-  {
-    id: 3,
-    name: 'Fundamentos de React',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de React.pdf',
-    description: 'Aprendizado dos conceitos fundamentais do React, incluindo componentes, props, state, hooks e ciclo de vida.',
-    skills: ['React', 'Componentes', 'Props', 'State', 'Hooks'],
-  },
-  {
-    id: 4,
-    name: 'Fundamentos de APIs REST',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de APIs Rest.pdf',
-    description: 'Conceitos fundamentais sobre APIs REST, incluindo métodos HTTP, status codes, autenticação e documentação.',
-    skills: ['APIs REST', 'HTTP', 'JSON', 'Autenticação'],
-  },
-  {
-    id: 5,
-    name: 'C#: Formação Básica',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_C Formacao Basica.pdf',
-    description: 'Formação básica em C#, cobrindo sintaxe, orientação a objetos, coleções e desenvolvimento de aplicações.',
-    skills: ['C#', 'POO', 'Sintaxe', 'Coleções'],
-  },
-  {
-    id: 6,
-    name: 'Aprendendo Programação SQL',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Aprendendo Programacao SQL.pdf',
-    description: 'Fundamentos de SQL para manipulação de bancos de dados, incluindo consultas, joins, subconsultas e otimização.',
-    skills: ['SQL', 'Banco de Dados', 'Consultas', 'Joins', 'Subconsultas'],
-  },
-  {
-    id: 7,
-    name: 'Fundamentos da Programação',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos da Programacao.pdf',
-    description: 'Conceitos fundamentais de programação, incluindo algoritmos, estruturas de dados, lógica de programação e boas práticas.',
-    skills: ['Algoritmos', 'Estruturas de Dados', 'Lógica', 'Boas Práticas'],
-  },
-  {
-    id: 8,
-    name: 'Boas Práticas em CSS',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos das Boas Praticas em CSS.pdf',
-    description: 'Melhores práticas para desenvolvimento CSS, incluindo organização, manutenibilidade, responsividade e performance.',
-    skills: ['CSS', 'Responsividade', 'Performance', 'Manutenibilidade'],
-  },
-  {
-    id: 9,
-    name: 'Fundamentos de ASP.NET Core',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de ASP.NET Core.pdf',
-    description: 'Desenvolvimento de aplicações web com ASP.NET Core, incluindo MVC, APIs, autenticação e deploy.',
-    skills: ['ASP.NET Core', 'MVC', 'APIs', 'Autenticação', 'Deploy'],
-  },
-  {
-    id: 10,
-    name: 'Fundamentos de HTTP para Desenvolvedores',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de HTTP para Desenvolvedores.pdf',
-    description: 'Compreensão profunda do protocolo HTTP, incluindo métodos, headers, status codes e segurança.',
-    skills: ['HTTP', 'Protocolos', 'Headers', 'Status Codes', 'Segurança'],
-  },
-  {
-    id: 11,
-    name: 'APIs e Serviços da Web',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de Programacao APIs e Servicos da Web.pdf',
-    description: 'Desenvolvimento de APIs e serviços web, incluindo REST, SOAP, autenticação e documentação.',
-    skills: ['APIs', 'Serviços Web', 'REST', 'SOAP', 'Documentação'],
-  },
-  {
-    id: 12,
-    name: 'Estruturas de Dados',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Fundamentos de Programacao Estruturas de Dados.pdf',
-    description: 'Estruturas de dados fundamentais, incluindo arrays, listas, pilhas, filas, árvores e grafos.',
-    skills: ['Estruturas de Dados', 'Arrays', 'Listas', 'Pilhas', 'Filas', 'Árvores'],
-  },
-  {
-    id: 13,
-    name: 'Git e GitHub: Formação Básica',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Git e GitHub Formacao Basica.pdf',
-    description: 'Controle de versão com Git e GitHub, incluindo branches, merges, pull requests e colaboração.',
-    skills: ['Git', 'GitHub', 'Controle de Versão', 'Branches', 'Pull Requests'],
-  },
-  {
-    id: 14,
-    name: 'GitHub Actions: Formação Básica',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_GitHub Actions Formacao Basica.pdf',
-    description: 'Automação de workflows com GitHub Actions, incluindo CI/CD, testes automatizados e deploy.',
-    skills: ['GitHub Actions', 'CI/CD', 'Automação', 'Deploy', 'Testes'],
-  },
-  {
-    id: 15,
-    name: 'Competências Essenciais para Desenvolvimento',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Introducao as Competencias Essenciais para a Carreira de Desenvolvimento de Software.pdf',
-    description: 'Competências essenciais para carreira em desenvolvimento de software, incluindo soft skills e metodologias.',
-    skills: ['Soft Skills', 'Metodologias', 'Carreira', 'Desenvolvimento'],
-  },
-  {
-    id: 16,
-    name: 'HTML5 e CSS3',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Primeiros Passos na Criacao de Sites com HTML5 e CSS3.pdf',
-    description: 'Fundamentos de desenvolvimento web com HTML5 e CSS3, incluindo semântica, responsividade e acessibilidade.',
-    skills: ['HTML5', 'CSS3', 'Semântica', 'Responsividade', 'Acessibilidade'],
-  },
-  {
-    id: 17,
-    name: 'Trabalho Remoto: Colaboração e Produtividade',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Trabalho Remoto Colaboracao foco e produtividade.pdf',
-    description: 'Desenvolvimento de habilidades para trabalho remoto, incluindo colaboração virtual, gestão de tempo e produtividade.',
-    skills: ['Trabalho Remoto', 'Colaboração', 'Gestão de Tempo', 'Produtividade'],
-  },
-  {
-    id: 18,
-    name: 'Gestão de Tempo e Produtividade',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Como melhorar a Gestao de Tempo e aumentar a Produtividade.pdf',
-    description: 'Técnicas e ferramentas para melhorar a gestão de tempo e aumentar a produtividade no trabalho.',
-    skills: ['Gestão de Tempo', 'Produtividade', 'Organização', 'Foco'],
-  },
-  {
-    id: 19,
-    name: 'Programação em Pares e em Grupo',
-    institution: 'LinkedIn Learning',
-    period: '2025',
-    pdf: '/CertificadoDeConclusao_Desenvolvimento Agil de Software Programacao em Pares e em Grupo.pdf',
-    description: 'Metodologias ágeis e técnicas de programação colaborativa, incluindo pair programming e trabalho em equipe.',
-    skills: ['Metodologias Ágeis', 'Pair Programming', 'Trabalho em Equipe', 'Colaboração'],
-  },
-];
 
 const skillGroups = [
   {
@@ -219,12 +45,8 @@ const About = () => {
 
     const isMobile = window.innerWidth <= 768;
 
-    const pdfViewer = cert.pdf
-      ? `<div style="width:100%;height:400px;border-radius:12px;overflow:hidden;border:1px solid rgba(245,241,255,0.1)">
+    const pdfViewer = `<div style="width:100%;height:400px;border-radius:12px;overflow:hidden;border:1px solid rgba(245,241,255,0.1)">
           <iframe src="${cert.pdf}" width="100%" height="100%" style="border:none;border-radius:12px;${cert.id === 1 ? 'transform:rotate(90deg) scale(1.0,1.0);transform-origin:center;height:450px;' : ''}"></iframe>
-        </div>`
-      : `<div style="width:100%;height:400px;background:linear-gradient(135deg,#68b2f8,#8a52ff);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;">
-          <div style="text-align:center;"><span style="font-size:3rem;display:block;margin-bottom:1rem;">📄</span><p>PDF do Certificado</p><small style="opacity:0.7">Em breve</small></div>
         </div>`;
 
     const modalHtml = isMobile
@@ -503,15 +325,7 @@ const About = () => {
               {certificates.map((cert, index) => (
                 <div key={cert.id} className="certificate-card">
                   <div className="certificate-pdf">
-                    {cert.pdf ? (
-                      <iframe src={cert.pdf} title={cert.name} className="pdf-viewer" />
-                    ) : (
-                      <div className="pdf-placeholder">
-                        <span>📄</span>
-                        <p>PDF do Certificado</p>
-                        <small>Em breve</small>
-                      </div>
-                    )}
+                    <iframe src={cert.pdf} title={cert.name} className="pdf-viewer" />
                     <span className="certificate-pdf-glow" aria-hidden="true" />
                   </div>
 
