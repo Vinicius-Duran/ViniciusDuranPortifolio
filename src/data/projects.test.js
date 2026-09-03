@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { projects, getProjectBySlug, getAdjacentProjects } from './projects.js';
 
 const FICTIONAL = ['ecommerce-platform', 'task-management', 'ai-chat-assistant'];
@@ -54,5 +56,34 @@ describe('projetos', () => {
   it('resolve projeto por slug', () => {
     expect(getProjectBySlug(featured()[0].slug)).toBeDefined();
     expect(getProjectBySlug('inexistente')).toBeUndefined();
+  });
+});
+
+describe('capas dos projetos', () => {
+  const CAPTURABLE = [
+    'sistema-financeiro',
+    'todah-producoes',
+    'taki-rastreadores',
+    'meta-marketing',
+    'portfolio',
+  ];
+
+  it('define capa para todo destaque que roda localmente', () => {
+    for (const slug of CAPTURABLE) {
+      const project = projects.find((p) => p.slug === slug);
+      expect(project.cover, slug).toBeTruthy();
+    }
+  });
+
+  it('aponta cada capa para um arquivo existente', () => {
+    const missing = projects
+      .filter((p) => p.cover)
+      .filter((p) => !existsSync(resolve('public', p.cover.replace(/^\//, ''))))
+      .map((p) => p.slug);
+    expect(missing).toEqual([]);
+  });
+
+  it('mantém loja-csharp sem capa, por falta de runtime .NET', () => {
+    expect(projects.find((p) => p.slug === 'loja-csharp').cover).toBeNull();
   });
 });

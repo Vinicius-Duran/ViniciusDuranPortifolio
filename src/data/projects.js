@@ -34,7 +34,7 @@ export const projects = [
       { label: 'Código do back', href: 'https://github.com/Vinicius-Duran/Finance-back', kind: 'ghost' },
     ],
     accent: 'linear-gradient(135deg, #68b2f8, #506ee5, #7037cd)',
-    cover: null,
+    cover: '/projects/sistema-financeiro.png',
     gallery: [],
   },
   {
@@ -69,7 +69,7 @@ export const projects = [
       { label: 'Ver código', href: 'https://github.com/Vinicius-Duran/toda-produ-es', kind: 'primary' },
     ],
     accent: 'linear-gradient(135deg, #8a52ff, #ff3da8, #68b2f8)',
-    cover: null,
+    cover: '/projects/todah-producoes.png',
     gallery: [],
   },
   {
@@ -140,7 +140,7 @@ export const projects = [
       { label: 'Ver código', href: 'https://github.com/Vinicius-Duran/Taki', kind: 'primary' },
     ],
     accent: 'linear-gradient(135deg, #506ee5, #7df9ff, #68b2f8)',
-    cover: null,
+    cover: '/projects/taki-rastreadores.png',
     gallery: [],
   },
   {
@@ -175,7 +175,7 @@ export const projects = [
       { label: 'Ver código', href: 'https://github.com/Vinicius-Duran/landpage', kind: 'primary' },
     ],
     accent: 'linear-gradient(135deg, #ff3da8, #8a52ff, #506ee5)',
-    cover: null,
+    cover: '/projects/meta-marketing.png',
     gallery: [],
   },
   {
@@ -211,7 +211,7 @@ export const projects = [
       { label: 'Ver código', href: 'https://github.com/Vinicius-Duran/ViniciusDuranPortifolio', kind: 'primary' },
     ],
     accent: 'linear-gradient(135deg, #7037cd, #ff3da8, #7df9ff)',
-    cover: null,
+    cover: '/projects/portfolio.png',
     gallery: [],
   },
   {
