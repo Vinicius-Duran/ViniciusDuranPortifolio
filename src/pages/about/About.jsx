@@ -64,10 +64,18 @@ const About = () => {
     });
   };
 
-  const cardWidth = 492;
+  const getCardWidth = useCallback(() => {
+    const container = carouselRef.current;
+    if (!container) return 492;
+    const card = container.querySelector('.certificate-card');
+    if (!card) return 492;
+    const gap = parseFloat(getComputedStyle(container).columnGap || '0');
+    return card.getBoundingClientRect().width + gap;
+  }, []);
 
   const scrollToSlide = (slideIndex) => {
     if (carouselRef.current && !isDragging) {
+      const cardWidth = getCardWidth();
       const maxScroll = carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
       const target = Math.min(slideIndex * cardWidth, maxScroll);
       carouselRef.current.classList.add('smooth');
@@ -92,6 +100,7 @@ const About = () => {
 
   const updateCurrentSlide = useCallback(() => {
     if (carouselRef.current && !isDragging) {
+      const cardWidth = getCardWidth();
       const scrollLeft = carouselRef.current.scrollLeft;
       const threshold = cardWidth * 0.3;
       const candidate = Math.floor((scrollLeft + threshold) / cardWidth);
@@ -99,7 +108,7 @@ const About = () => {
       const clamped = Math.min(Math.max(candidate, 0), max);
       setCurrentSlide((prev) => (prev !== clamped ? clamped : prev));
     }
-  }, [isDragging]);
+  }, [isDragging, getCardWidth]);
 
   const debouncedUpdate = useCallback(() => {
     clearTimeout(debouncedUpdate.timeoutId);
