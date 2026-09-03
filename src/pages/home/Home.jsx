@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
-import { projects } from '../../data/projects';
+import { featuredProjects, secondaryProjects } from '../../data/projects';
 import { profile } from '../../data/profile';
 import './Home.css';
 
@@ -56,7 +56,7 @@ const Home = () => {
   const contactRef = useReveal();
   const setSkillRef = useRevealMany(skills.length);
   const setProcessRef = useRevealMany(processSteps.length);
-  const setProjectRef = useRevealMany(projects.length, { threshold: 0.12 });
+  const setProjectRef = useRevealMany(featuredProjects.length, { threshold: 0.12 });
 
   const [activeProject, setActiveProject] = useState(null);
   const [now, setNow] = useState('');
@@ -317,7 +317,7 @@ const Home = () => {
             className={`project-list ${activeProject ? 'is-hovering' : ''}`}
             onMouseLeave={() => setActiveProject(null)}
           >
-            {projects.map((project, index) => (
+            {featuredProjects.map((project, index) => (
               <li
                 key={project.id}
                 ref={setProjectRef(index)}
@@ -361,8 +361,33 @@ const Home = () => {
             ))}
           </ul>
 
-          <div className="projects-foot reveal delay-1">
-            <span className="mono">{String(projects.length).padStart(2, '0')} projects · mais em breve</span>
+          <div className="projects-secondary reveal delay-1">
+            <span className="projects-secondary-label mono">Outros repositórios</span>
+            <ul className="projects-secondary-list">
+              {secondaryProjects.map((project) => (
+                <li key={project.id}>
+                  <a
+                    href={project.repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="projects-secondary-link"
+                  >
+                    <span className="projects-secondary-name">{project.title}</span>
+                    <span className="projects-secondary-tech mono">
+                      {project.tech.join(' · ')}
+                    </span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="projects-foot reveal delay-2">
+            <span className="mono">
+              {String(featuredProjects.length).padStart(2, '0')} projetos em destaque ·{' '}
+              {String(secondaryProjects.length).padStart(2, '0')} outros
+            </span>
             <Link to="/about" className="link-ghost magnetic">
               <span>Ver trajetória</span>
               <span aria-hidden="true">→</span>
