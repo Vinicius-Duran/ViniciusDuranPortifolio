@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
 import { projects } from '../../data/projects';
+import { profile } from '../../data/profile';
 import './Home.css';
 
 const skills = [
@@ -383,40 +384,40 @@ const Home = () => {
 
           <div className="contact-grid">
             <a
-              href="mailto:metaemarketing2@gmail.com"
+              href={`mailto:${profile.email}`}
               className="contact-card reveal delay-1 magnetic"
             >
               <span className="contact-card-index mono">01</span>
               <span className="contact-card-label">Email</span>
-              <span className="contact-card-value">metaemarketing2@gmail.com</span>
+              <span className="contact-card-value">{profile.email}</span>
               <span className="contact-card-cta">
                 <span>Enviar mensagem</span>
                 <span aria-hidden="true">→</span>
               </span>
             </a>
             <a
-              href="https://linkedin.com/in/vinicius-duran"
+              href={profile.linkedin.url}
               target="_blank"
               rel="noopener noreferrer"
               className="contact-card reveal delay-2 magnetic"
             >
               <span className="contact-card-index mono">02</span>
               <span className="contact-card-label">LinkedIn</span>
-              <span className="contact-card-value">linkedin.com/in/vinicius-duran</span>
+              <span className="contact-card-value">{profile.linkedin.label}</span>
               <span className="contact-card-cta">
                 <span>Conectar</span>
                 <span aria-hidden="true">→</span>
               </span>
             </a>
             <a
-              href="https://github.com/vinicius-duran"
+              href={profile.github.url}
               target="_blank"
               rel="noopener noreferrer"
               className="contact-card reveal delay-3 magnetic"
             >
               <span className="contact-card-index mono">03</span>
               <span className="contact-card-label">GitHub</span>
-              <span className="contact-card-value">github.com/viniciusduran</span>
+              <span className="contact-card-value">{profile.github.label}</span>
               <span className="contact-card-cta">
                 <span>Ver código</span>
                 <span aria-hidden="true">→</span>
@@ -437,10 +438,16 @@ const Home = () => {
               </div>
             </div>
             <div className="footer-links">
-              <a href="https://github.com/vinicius-duran" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="https://linkedin.com/in/vinicius-duran" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-              <a href="mailto:metaemarketing2@gmail.com">Email</a>
-              <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+              <a href={profile.github.url} target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href={profile.linkedin.url} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href={`mailto:${profile.email}`}>Email</a>
+              <a
+                href="#top"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
                 Topo ↑
               </a>
             </div>
