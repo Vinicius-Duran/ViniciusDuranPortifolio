@@ -92,7 +92,7 @@ describe('profile', () => {
 - [ ] **Step 3: Rodar o teste e confirmar que falha**
 
 Run: `npx vitest run src/data/profile.test.js`
-Expected: FAIL — `Failed to resolve import "./profile.js"`.
+Expected: FAIL — `Error: Cannot find module './profile.js' imported from <caminho>/src/data/profile.test.js`, com o code frame apontando a linha do import. (Mensagem medida nesta base; **não** é `Failed to resolve import`. Cole a saída literal que você obtiver, mesmo divergindo desta.)
 
 - [ ] **Step 4: Criar `src/data/profile.js`**
 
@@ -1075,7 +1075,7 @@ describe('certificados', () => {
 - [ ] **Step 2: Rodar e confirmar que falha**
 
 Run: `npx vitest run src/data/certificates.test.js`
-Expected: FAIL — `Failed to resolve import "./certificates.js"`.
+Expected: FAIL — `Error: Cannot find module './certificates.js' imported from <caminho>/src/data/certificates.test.js`, com o code frame apontando a linha do import. (Mensagem medida nesta base; **não** é `Failed to resolve import`. Cole a saída literal que você obtiver, mesmo divergindo desta.)
 
 - [ ] **Step 3: Criar `src/data/certificates.js`**
 
@@ -1186,7 +1186,7 @@ describe('competências', () => {
 - [ ] **Step 2: Rodar e confirmar que falha**
 
 Run: `npx vitest run src/data/skills.test.js`
-Expected: FAIL — `Failed to resolve import "./skills.js"`.
+Expected: FAIL — `Error: Cannot find module './skills.js' imported from <caminho>/src/data/skills.test.js`, com o code frame apontando a linha do import. (Mensagem medida nesta base; **não** é `Failed to resolve import`. Cole a saída literal que você obtiver, mesmo divergindo desta.)
 
 - [ ] **Step 3: Criar `src/data/skills.js`**
 
@@ -1704,7 +1704,7 @@ describe('experiência profissional', () => {
 - [ ] **Step 3: Rodar e confirmar que falha**
 
 Run: `npx vitest run src/data/experience.test.js`
-Expected: FAIL — `Failed to resolve import "./experience.js"`.
+Expected: FAIL — `Error: Cannot find module './experience.js' imported from <caminho>/src/data/experience.test.js`, com o code frame apontando a linha do import. (Mensagem medida nesta base; **não** é `Failed to resolve import`. Cole a saída literal que você obtiver, mesmo divergindo desta.)
 
 - [ ] **Step 4: Criar `src/data/experience.js` já preenchido**
 
