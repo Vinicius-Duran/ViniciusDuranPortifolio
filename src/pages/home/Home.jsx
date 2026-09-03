@@ -4,22 +4,8 @@ import Marquee from '../../components/Marquee/Marquee';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
 import { featuredProjects, secondaryProjects } from '../../data/projects';
 import { profile } from '../../data/profile';
+import { homeSkillGroups } from '../../data/skills';
 import './Home.css';
-
-const skills = [
-  {
-    label: 'Frontend',
-    items: ['React / React Native', 'TypeScript', 'JavaScript', 'CSS · SCSS'],
-  },
-  {
-    label: 'Backend',
-    items: ['C# · .NET', 'Node.js', 'Python', 'REST · GraphQL', 'DDD', 'DAO/BLL'],
-  },
-  {
-    label: 'Plataforma',
-    items: ['SQL Server', 'Azure', 'Docker', 'Git · CI/CD', 'CosmosBD', 'MySql', 'PostgreSQL'],
-  },
-];
 
 const processSteps = [
   {
@@ -56,7 +42,7 @@ const Home = () => {
   const projectsSecondaryRef = useReveal();
   const projectsFootRef = useReveal();
   const contactRef = useReveal();
-  const setSkillRef = useRevealMany(skills.length);
+  const setSkillRef = useRevealMany(homeSkillGroups.length);
   const setProcessRef = useRevealMany(processSteps.length);
   const setProjectRef = useRevealMany(featuredProjects.length, { threshold: 0.12 });
 
@@ -251,7 +237,7 @@ const Home = () => {
             </div>
 
             <div className="skills-stack">
-              {skills.map((group, index) => (
+              {homeSkillGroups.map((group, index) => (
                 <div
                   key={group.label}
                   ref={setSkillRef(index)}

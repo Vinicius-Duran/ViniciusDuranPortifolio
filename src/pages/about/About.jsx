@@ -2,26 +2,8 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
 import { certificates } from '../../data/certificates';
+import { skillGroups } from '../../data/skills';
 import './About.css';
-
-const skillGroups = [
-  {
-    label: 'Software',
-    items: ['C#', '.NET', 'SQL', 'Node.js', 'React', 'React Native', 'JavaScript', 'TypeScript', 'HTML', 'CSS'],
-  },
-  {
-    label: 'Design & 3D',
-    items: ['Modelagem 3D', 'Análise CFD', 'Fusion 360', 'CAD/CAM', 'Design Gráfico'],
-  },
-  {
-    label: 'Hardware',
-    items: ['Impressão 3D', 'Corte a Laser', 'Arduino', 'Robótica', 'Manutenção'],
-  },
-  {
-    label: 'Soft Skills',
-    items: ['Trabalho em Equipe', 'Comunicação', 'Gestão de Tempo', 'Resolução de Problemas'],
-  },
-];
 
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
