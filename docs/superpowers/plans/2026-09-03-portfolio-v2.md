@@ -1238,6 +1238,14 @@ Expected: FAIL — `Error: Cannot find module './skills.js' imported from <camin
 
 Lista única, reconciliando as duas versões divergentes:
 
+**Procedência de cada item — conferida contra repositórios e certificados.** Mantidos
+por evidência: `Tailwind CSS` (repo Todah Produções), `ASP.NET Core` e `GitHub Actions`
+(certificados homônimos), `Express` (README do Finance-back), `POO` (dois certificados).
+Removidos da lista antiga por **ausência** de evidência em qualquer repositório ou
+certificado: `GraphQL`, `DDD`, `CosmosBD`, `DAO/BLL` — eram alegações não sustentadas,
+e removê-las é o objetivo deste trabalho. O grupo `Soft Skills` é sustentado por quatro
+certificados e por isso permanece.
+
 ```js
 export const skillGroups = [
   {
@@ -1259,6 +1267,10 @@ export const skillGroups = [
   {
     label: 'Hardware',
     items: ['Impressão 3D', 'Corte a laser', 'Arduino', 'Robótica', 'Manutenção'],
+  },
+  {
+    label: 'Soft Skills',
+    items: ['Trabalho em equipe', 'Comunicação', 'Gestão de tempo', 'Resolução de problemas', 'Pair programming', 'Metodologias ágeis'],
   },
 ];
 
