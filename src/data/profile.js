@@ -1,5 +1,5 @@
 export const profile = {
-  name: 'Vinicius Duran',
+  name: 'Vinícius Duran',
   role: 'Desenvolvedor Full-Stack',
   company: 'Zicard Digital Business Agency',
   location: 'Florianópolis, SC',

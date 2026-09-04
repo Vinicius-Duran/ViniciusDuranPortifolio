@@ -3,7 +3,7 @@ import { profile } from './profile.js';
 
 describe('profile', () => {
   it('expõe os campos de identidade exigidos pela spec', () => {
-    expect(profile.name).toBe('Vinicius Duran');
+    expect(profile.name).toBe('Vinícius Duran');
     expect(profile.company).toBe('Zicard Digital Business Agency');
     expect(profile.location).toBe('Florianópolis, SC');
     expect(profile.email).toBe('metaemarketing2@gmail.com');
