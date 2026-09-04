@@ -43,6 +43,10 @@ describe('rota de projeto secundário', () => {
       const project = getProjectBySlug(slug);
       expect(project, slug).toBeDefined();
       expect(project.featured, slug).toBe(false);
+      expect(project.longDescription, `${slug}.longDescription`).toBe('');
+      expect(project.challenge, `${slug}.challenge`).toBe('');
+      expect(project.solution, `${slug}.solution`).toBe('');
+      expect(project.outcome, `${slug}.outcome`).toBe('');
     }
   });
 

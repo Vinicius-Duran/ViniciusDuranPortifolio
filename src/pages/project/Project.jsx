@@ -9,10 +9,12 @@ const Project = () => {
   const project = getProjectBySlug(slug);
 
   const heroRef = useReveal({ threshold: 0.15 });
+  const coverRef = useReveal();
   const overviewRef = useReveal();
   const galleryRef = useReveal();
   const stackRef = useReveal();
   const storyRef = useReveal();
+  const ctaRef = useReveal();
   const nextRef = useReveal();
   const setGalleryRef = useRevealMany(project ? project.gallery.length : 0);
   const setStackRef = useRevealMany(project ? Object.keys(project.techDetailed).length : 0);
@@ -69,7 +71,7 @@ const Project = () => {
       </section>
 
       {project.cover && (
-        <section className="project-cover reveal-scale">
+        <section className="project-cover reveal-scale" ref={coverRef}>
           <div className="shell">
             <div className="project-cover-frame">
               <img src={project.cover} alt={`${project.title} — captura da interface`} />
@@ -183,7 +185,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="project-cta">
+      <section className="project-cta" ref={ctaRef}>
         <div className="shell">
           <div className="project-cta-card reveal-scale">
             <div>

@@ -85,21 +85,21 @@ export const projects = [
     featured: true,
     repo: 'https://github.com/Vinicius-Duran/Loja-CSharp',
     description:
-      'Aplicação de loja construída em C# sobre ASP.NET, com camadas separadas e interface web.',
+      'Solução de loja em C# com quatro projetos .NET separados por camada: domínio, infraestrutura, API e utilidades.',
     longDescription:
-      'Aplicação de loja escrita em C# — cerca de 80 KB de código — sobre ASP.NET, com as camadas de acesso a dados e de regra de negócio separadas da apresentação. É o projeto que sustenta a parte .NET da minha stack, junto com o repositório Financeiro, do mesmo período.',
+      'Solução .NET 6 dividida em quatro projetos — API, Domain, Infra e Utilidade — com o modelo de domínio e o acesso a dados isolados da camada de API. A parte web ainda é o scaffold padrão do ASP.NET gerado pelo template de Razor Pages, sem telas de loja implementadas. É o projeto que sustenta a parte .NET da minha stack, junto com o repositório Financeiro, do mesmo período.',
     challenge:
-      'Sair do paradigma de script e estruturar uma aplicação orientada a objetos de verdade, com responsabilidades separadas entre acesso a dados, regra de negócio e interface, em vez de concentrar tudo na camada de tela.',
+      'Sair do paradigma de script e estruturar uma solução .NET real em camadas, separando Domain e Infra da API em vez de concentrar tudo num único projeto.',
     solution:
-      'Organizei o código em camadas, mantendo as operações de dados isoladas das regras de negócio e ambas isoladas das views. A tipagem forte e as construções de orientação a objetos do C# guiaram a modelagem das entidades da loja.',
+      'Organizei a solução em quatro projetos .NET 6 — API, Domain, Infra e Utilidade — mantendo o modelo de domínio e o acesso a dados isolados da camada de API. A camada web permanece o scaffold padrão do ASP.NET gerado pelo template de Razor Pages, sem telas de loja implementadas.',
     outcome:
-      'Entregou a aplicação funcionando com a separação de camadas pretendida. É a base prática da competência em C# e .NET que declaro no perfil, e o ponto de partida para os fundamentos de ASP.NET Core que estudei depois.',
+      'Entregou a separação em camadas pretendida, com Domain e Infra isolados da API, mesmo sem a interface da loja construída. É a base prática da competência em C# e .NET que declaro no perfil, e o ponto de partida para os fundamentos de ASP.NET Core que estudei depois.',
     tech: ['C#', 'ASP.NET', 'POO'],
     techDetailed: {
       Linguagem: ['C#'],
       Plataforma: ['ASP.NET', '.NET'],
       Arquitetura: ['Orientação a objetos', 'Separação em camadas'],
-      Interface: ['HTML', 'CSS', 'JavaScript'],
+      Projetos: ['API', 'Domain', 'Infra', 'Utilidade'],
     },
     links: [
       { label: 'Ver código', href: 'https://github.com/Vinicius-Duran/Loja-CSharp', kind: 'primary' },

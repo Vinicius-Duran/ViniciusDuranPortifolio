@@ -50,6 +50,9 @@ const Home = () => {
   const [now, setNow] = useState('');
   const heroTitleRef = useRef(null);
 
+  const [firstName, ...restName] = profile.name.split(' ');
+  const lastName = restName.join(' ');
+
   useEffect(() => {
     const tick = () => {
       const date = new Date();
@@ -88,9 +91,9 @@ const Home = () => {
           <div className="hero-grid">
             <div className="hero-left">
               <h1 className="hero-title display reveal delay-1" ref={heroTitleRef}>
-                <span className="hero-line">Vinicius</span>
+                <span className="hero-line">{firstName}</span>
                 <span className="hero-line hero-line--accent">
-                  <span className="hero-line-text">Duran</span>
+                  <span className="hero-line-text">{lastName}</span>
                   <span className="hero-line-bar" aria-hidden="true" />
                 </span>
                 <span className="hero-line hero-line--soft">
@@ -109,7 +112,7 @@ const Home = () => {
               <div className="hero-panel-rows">
                 <div className="hero-panel-row">
                   <span className="hero-panel-key mono">LOCAL</span>
-                  <span className="hero-panel-value">Florianópolis · BR</span>
+                  <span className="hero-panel-value">{profile.location}</span>
                 </div>
                 <div className="hero-panel-row">
                   <span className="hero-panel-key mono">ROLE</span>
@@ -457,7 +460,7 @@ const Home = () => {
             <div className="footer-brand">
               <span className="footer-mark" aria-hidden="true" />
               <div>
-                <strong>Vinícius Duran</strong>
+                <strong>{profile.name}</strong>
                 <span className="footer-tag mono">© {new Date().getFullYear()} — All rights reserved</span>
               </div>
             </div>
