@@ -3,6 +3,7 @@ export const profile = {
   role: 'Desenvolvedor Full-Stack',
   company: 'Zicard Digital Business Agency',
   location: 'Florianópolis, SC',
+  careerStartYear: 2023,
   email: 'metaemarketing2@gmail.com',
   bio: 'Desenvolvedor full-stack com foco em interfaces vivas e sistemas robustos. Trabalho com React, C#, .NET e Node.js.',
   github: {
@@ -15,3 +16,8 @@ export const profile = {
     label: 'linkedin.com/in/vinicius-duran',
   },
 };
+
+// Anos de carreira, contados do ano de início até o ano corrente.
+// Fica calculado para o número nunca envelhecer sozinho no site.
+export const getYearsOfExperience = (now = new Date()) =>
+  Math.max(0, now.getFullYear() - profile.careerStartYear);

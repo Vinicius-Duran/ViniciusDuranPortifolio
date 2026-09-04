@@ -3,9 +3,11 @@ import Swal from 'sweetalert2';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
 import { certificates } from '../../data/certificates';
 import { skillGroups } from '../../data/skills';
+import { getYearsOfExperience } from '../../data/profile';
 import './About.css';
 
 const About = () => {
+  const anosDeExperiencia = getYearsOfExperience();
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -197,15 +199,16 @@ const About = () => {
           </h1>
 
           <p className="about-hero-description reveal delay-2">
-            Desenvolvedor júnior com 2 anos de experiência em desenvolvimento de APIs,
-            manutenção de projetos e construção de interfaces. Trabalho fluentemente com
+            Desenvolvedor júnior com {anosDeExperiencia} anos de experiência em
+            desenvolvimento de APIs, manutenção de projetos e construção de interfaces.
+            Trabalho fluentemente com
             C#, SQL, Node.js, .NET, React e CSS — sempre buscando a combinação certa
             entre engenharia robusta e design intencional.
           </p>
 
           <div className="about-hero-stats reveal delay-3">
             <div className="stat">
-              <span className="stat-value display">2+</span>
+              <span className="stat-value display">{anosDeExperiencia}</span>
               <span className="stat-label">Anos de experiência</span>
             </div>
             <div className="stat">
