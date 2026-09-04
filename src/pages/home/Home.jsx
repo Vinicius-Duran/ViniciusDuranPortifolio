@@ -2,23 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
 import { useReveal, useRevealMany } from '../../hooks/useReveal';
-import { projects } from '../../data/projects';
+import { featuredProjects, secondaryProjects } from '../../data/projects';
+import { profile } from '../../data/profile';
+import { homeSkillGroups } from '../../data/skills';
 import './Home.css';
-
-const skills = [
-  {
-    label: 'Frontend',
-    items: ['React / React Native', 'TypeScript', 'JavaScript', 'CSS · SCSS'],
-  },
-  {
-    label: 'Backend',
-    items: ['C# · .NET', 'Node.js', 'Python', 'REST · GraphQL', 'DDD', 'DAO/BLL'],
-  },
-  {
-    label: 'Plataforma',
-    items: ['SQL Server', 'Azure', 'Docker', 'Git · CI/CD', 'CosmosBD', 'MySql', 'PostgreSQL'],
-  },
-];
 
 const processSteps = [
   {
@@ -52,14 +39,19 @@ const Home = () => {
   const aboutRef = useReveal();
   const processRef = useReveal();
   const projectsHeaderRef = useReveal();
+  const projectsSecondaryRef = useReveal();
+  const projectsFootRef = useReveal();
   const contactRef = useReveal();
-  const setSkillRef = useRevealMany(skills.length);
+  const setSkillRef = useRevealMany(homeSkillGroups.length);
   const setProcessRef = useRevealMany(processSteps.length);
-  const setProjectRef = useRevealMany(projects.length, { threshold: 0.12 });
+  const setProjectRef = useRevealMany(featuredProjects.length, { threshold: 0.12 });
 
   const [activeProject, setActiveProject] = useState(null);
   const [now, setNow] = useState('');
   const heroTitleRef = useRef(null);
+
+  const [firstName, ...restName] = profile.name.split(' ');
+  const lastName = restName.join(' ');
 
   useEffect(() => {
     const tick = () => {
@@ -99,9 +91,9 @@ const Home = () => {
           <div className="hero-grid">
             <div className="hero-left">
               <h1 className="hero-title display reveal delay-1" ref={heroTitleRef}>
-                <span className="hero-line">Vinicius</span>
+                <span className="hero-line">{firstName}</span>
                 <span className="hero-line hero-line--accent">
-                  <span className="hero-line-text">Duran</span>
+                  <span className="hero-line-text">{lastName}</span>
                   <span className="hero-line-bar" aria-hidden="true" />
                 </span>
                 <span className="hero-line hero-line--soft">
@@ -120,7 +112,7 @@ const Home = () => {
               <div className="hero-panel-rows">
                 <div className="hero-panel-row">
                   <span className="hero-panel-key mono">LOCAL</span>
-                  <span className="hero-panel-value">Florianópolis · BR</span>
+                  <span className="hero-panel-value">{profile.location}</span>
                 </div>
                 <div className="hero-panel-row">
                   <span className="hero-panel-key mono">ROLE</span>
@@ -248,7 +240,7 @@ const Home = () => {
             </div>
 
             <div className="skills-stack">
-              {skills.map((group, index) => (
+              {homeSkillGroups.map((group, index) => (
                 <div
                   key={group.label}
                   ref={setSkillRef(index)}
@@ -316,7 +308,7 @@ const Home = () => {
             className={`project-list ${activeProject ? 'is-hovering' : ''}`}
             onMouseLeave={() => setActiveProject(null)}
           >
-            {projects.map((project, index) => (
+            {featuredProjects.map((project, index) => (
               <li
                 key={project.id}
                 ref={setProjectRef(index)}
@@ -349,8 +341,19 @@ const Home = () => {
                       className="project-thumb-inner"
                       style={{ background: project.accent }}
                     >
-                      <span className="project-thumb-grid" />
-                      <span className="project-thumb-noise" />
+                      {project.cover ? (
+                        <img
+                          className="project-thumb-img"
+                          src={project.cover}
+                          alt=""
+                          loading="lazy"
+                        />
+                      ) : (
+                        <>
+                          <span className="project-thumb-grid" />
+                          <span className="project-thumb-noise" />
+                        </>
+                      )}
                       <span className="project-thumb-label mono">{project.id}</span>
                     </span>
                   </span>
@@ -360,8 +363,33 @@ const Home = () => {
             ))}
           </ul>
 
-          <div className="projects-foot reveal delay-1">
-            <span className="mono">{String(projects.length).padStart(2, '0')} projects · mais em breve</span>
+          <div className="projects-secondary reveal delay-1" ref={projectsSecondaryRef}>
+            <span className="projects-secondary-label mono">Outros repositórios</span>
+            <ul className="projects-secondary-list">
+              {secondaryProjects.map((project) => (
+                <li key={project.id}>
+                  <a
+                    href={project.repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="projects-secondary-link"
+                  >
+                    <span className="projects-secondary-name">{project.title}</span>
+                    <span className="projects-secondary-tech mono">
+                      {project.tech.join(' · ')}
+                    </span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="projects-foot reveal delay-2" ref={projectsFootRef}>
+            <span className="mono">
+              {String(featuredProjects.length).padStart(2, '0')} projetos em destaque ·{' '}
+              {String(secondaryProjects.length).padStart(2, '0')} outros
+            </span>
             <Link to="/about" className="link-ghost magnetic">
               <span>Ver trajetória</span>
               <span aria-hidden="true">→</span>
@@ -383,40 +411,40 @@ const Home = () => {
 
           <div className="contact-grid">
             <a
-              href="mailto:metaemarketing2@gmail.com"
+              href={`mailto:${profile.email}`}
               className="contact-card reveal delay-1 magnetic"
             >
               <span className="contact-card-index mono">01</span>
               <span className="contact-card-label">Email</span>
-              <span className="contact-card-value">metaemarketing2@gmail.com</span>
+              <span className="contact-card-value">{profile.email}</span>
               <span className="contact-card-cta">
                 <span>Enviar mensagem</span>
                 <span aria-hidden="true">→</span>
               </span>
             </a>
             <a
-              href="https://linkedin.com/in/vinicius-duran"
+              href={profile.linkedin.url}
               target="_blank"
               rel="noopener noreferrer"
               className="contact-card reveal delay-2 magnetic"
             >
               <span className="contact-card-index mono">02</span>
               <span className="contact-card-label">LinkedIn</span>
-              <span className="contact-card-value">linkedin.com/in/vinicius-duran</span>
+              <span className="contact-card-value">{profile.linkedin.label}</span>
               <span className="contact-card-cta">
                 <span>Conectar</span>
                 <span aria-hidden="true">→</span>
               </span>
             </a>
             <a
-              href="https://github.com/vinicius-duran"
+              href={profile.github.url}
               target="_blank"
               rel="noopener noreferrer"
               className="contact-card reveal delay-3 magnetic"
             >
               <span className="contact-card-index mono">03</span>
               <span className="contact-card-label">GitHub</span>
-              <span className="contact-card-value">github.com/viniciusduran</span>
+              <span className="contact-card-value">{profile.github.label}</span>
               <span className="contact-card-cta">
                 <span>Ver código</span>
                 <span aria-hidden="true">→</span>
@@ -432,15 +460,21 @@ const Home = () => {
             <div className="footer-brand">
               <span className="footer-mark" aria-hidden="true" />
               <div>
-                <strong>Vinícius Duran</strong>
+                <strong>{profile.name}</strong>
                 <span className="footer-tag mono">© {new Date().getFullYear()} — All rights reserved</span>
               </div>
             </div>
             <div className="footer-links">
-              <a href="https://github.com/vinicius-duran" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="https://linkedin.com/in/vinicius-duran" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-              <a href="mailto:metaemarketing2@gmail.com">Email</a>
-              <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+              <a href={profile.github.url} target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href={profile.linkedin.url} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href={`mailto:${profile.email}`}>Email</a>
+              <a
+                href="#top"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
                 Topo ↑
               </a>
             </div>

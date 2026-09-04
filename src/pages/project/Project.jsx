@@ -9,16 +9,18 @@ const Project = () => {
   const project = getProjectBySlug(slug);
 
   const heroRef = useReveal({ threshold: 0.15 });
+  const coverRef = useReveal();
   const overviewRef = useReveal();
   const galleryRef = useReveal();
   const stackRef = useReveal();
   const storyRef = useReveal();
+  const ctaRef = useReveal();
   const nextRef = useReveal();
   const setGalleryRef = useRevealMany(project ? project.gallery.length : 0);
   const setStackRef = useRevealMany(project ? Object.keys(project.techDetailed).length : 0);
 
-  if (!project) {
-    return <Navigate to="/" replace />;
+  if (!project || !project.featured) {
+    return <Navigate to="/#projects" replace />;
   }
 
   const { prev, next } = getAdjacentProjects(slug);
@@ -68,31 +70,15 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="project-cover reveal-scale">
-        <div className="shell">
-          <div className="project-cover-frame">
-            {project.cover ? (
-              <img src={project.cover} alt={project.title} />
-            ) : (
-              <div
-                className="project-cover-placeholder"
-                style={{ background: project.accent }}
-              >
-                <span className="project-cover-grid" aria-hidden="true" />
-                <span className="project-cover-noise" aria-hidden="true" />
-                <div className="project-cover-info">
-                  <span className="mono project-cover-info-id">{project.id} · COVER</span>
-                  <span className="project-cover-info-text">
-                    Espaço para o cover do projeto
-                    <br />
-                    <span className="mono">substitua project.cover em src/data/projects.js</span>
-                  </span>
-                </div>
-              </div>
-            )}
+      {project.cover && (
+        <section className="project-cover reveal-scale" ref={coverRef}>
+          <div className="shell">
+            <div className="project-cover-frame">
+              <img src={project.cover} alt={`${project.title} — captura da interface`} />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="project-overview" ref={overviewRef}>
         <div className="shell">
@@ -108,9 +94,6 @@ const Project = () => {
               <p className="project-overview-lead">
                 {project.longDescription || project.description}
               </p>
-              <p className="project-placeholder-note mono">
-                [ ESPAÇO PARA TEXTO MAIS LONGO — edite longDescription em src/data/projects.js ]
-              </p>
             </div>
           </div>
         </div>
@@ -124,9 +107,7 @@ const Project = () => {
                 <span className="project-story-index mono">01 · Desafio</span>
                 <h3 className="display">O que precisava ser resolvido</h3>
               </header>
-              <p>
-                {project.challenge || 'Descreva aqui o problema central, restrições e contexto que motivaram o projeto.'}
-              </p>
+              <p>{project.challenge}</p>
             </article>
 
             <article className="project-story-card reveal delay-1">
@@ -134,9 +115,7 @@ const Project = () => {
                 <span className="project-story-index mono">02 · Solução</span>
                 <h3 className="display">A abordagem escolhida</h3>
               </header>
-              <p>
-                {project.solution || 'Explique a abordagem técnica, decisões de arquitetura e por que essa solução foi a escolhida.'}
-              </p>
+              <p>{project.solution}</p>
             </article>
 
             <article className="project-story-card reveal delay-2">
@@ -144,49 +123,36 @@ const Project = () => {
                 <span className="project-story-index mono">03 · Resultado</span>
                 <h3 className="display">Impacto e aprendizados</h3>
               </header>
-              <p>
-                {project.outcome || 'Conte os resultados, números, feedback e principais aprendizados levados para os próximos projetos.'}
-              </p>
+              <p>{project.outcome}</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section className="project-gallery" ref={galleryRef}>
-        <div className="shell">
-          <div className="section-header reveal">
-            <span className="section-index mono">#02 — gallery</span>
-            <h2 className="project-section-title display">
-              Imagens e <em>capturas</em>
-            </h2>
-          </div>
+      {project.gallery.length > 0 && (
+        <section className="project-gallery" ref={galleryRef}>
+          <div className="shell">
+            <div className="section-header reveal">
+              <span className="section-index mono">#02 — gallery</span>
+              <h2 className="project-section-title display">
+                Imagens e <em>capturas</em>
+              </h2>
+            </div>
 
-          <div className="project-gallery-grid">
-            {project.gallery.map((image, index) => (
-              <div
-                key={index}
-                ref={setGalleryRef(index)}
-                className={`project-gallery-item reveal delay-${(index % 4) + 1} ${index === 0 ? 'is-wide' : ''}`}
-              >
-                {image ? (
-                  <img src={image} alt={`${project.title} — capture ${index + 1}`} />
-                ) : (
-                  <div
-                    className="project-gallery-placeholder"
-                    style={{ background: project.accent }}
-                  >
-                    <span className="project-cover-grid" aria-hidden="true" />
-                    <span className="project-cover-noise" aria-hidden="true" />
-                    <span className="project-gallery-label mono">
-                      {String(index + 1).padStart(2, '0')} · imagem
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
+            <div className="project-gallery-grid">
+              {project.gallery.map((image, index) => (
+                <div
+                  key={image}
+                  ref={setGalleryRef(index)}
+                  className={`project-gallery-item reveal delay-${(index % 4) + 1} ${index === 0 ? 'is-wide' : ''}`}
+                >
+                  <img src={image} alt={`${project.title} — captura ${index + 1}`} />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="project-stack" ref={stackRef}>
         <div className="shell">
@@ -219,7 +185,7 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="project-cta">
+      <section className="project-cta" ref={ctaRef}>
         <div className="shell">
           <div className="project-cta-card reveal-scale">
             <div>
@@ -228,8 +194,8 @@ const Project = () => {
                 Quer ver de <em>perto</em>?
               </h2>
               <p>
-                Acesse o projeto ao vivo ou explore o código fonte para entender melhor
-                as decisões técnicas tomadas durante o desenvolvimento.
+                Explore o código fonte para entender as decisões técnicas tomadas
+                durante o desenvolvimento.
               </p>
             </div>
             <div className="project-cta-buttons">

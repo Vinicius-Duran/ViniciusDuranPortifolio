@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { profile } from '../../data/profile';
 import './Header.css';
 
 const Header = () => {
@@ -69,7 +70,7 @@ const Header = () => {
             <span className="brand-dot" />
           </span>
           <span className="brand-text">
-            <span className="brand-name">Vinícius Duran</span>
+            <span className="brand-name">{profile.name}</span>
             <span className="brand-role">Developer · Portfolio · 2026</span>
           </span>
         </Link>
