@@ -27,3 +27,6 @@ dist-ssr
 .omc/
 .superpowers/
 .playwright-mcp/
+
+# Pacotes de arte: mantemos os PNGs extraidos, nao o zip
+*.zip
