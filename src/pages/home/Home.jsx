@@ -210,7 +210,7 @@ const Home = () => {
             <h1
               className="hero-headline display"
               data-build-headline
-              data-parallax="-0.28"
+              data-parallax="-0.2"
             >
               Construo software{' '}
               <br />

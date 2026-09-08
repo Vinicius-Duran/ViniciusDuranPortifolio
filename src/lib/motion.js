@@ -350,8 +350,12 @@ export const stackCards = (cards, options = {}) => {
  * Devolve a função de limpeza — o ouvinte é DOM, e o contexto do GSAP não
  * sabe removê-lo.
  */
-export const pointerParallax = (area, alvos) => {
+export const pointerParallax = (area, alvos, options = {}) => {
   if (!area || !alvos?.length || reducedMotion()) return () => {};
+
+  // Amplitude total do gesto, de borda a borda da área, antes da força de
+  // cada camada. Fica aqui para calibrar num lugar só.
+  const { amplitudeX = 70, amplitudeY = 46 } = options;
 
   // Só onde existe ponteiro fino: em toque não há hover para acompanhar.
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return () => {};
@@ -370,8 +374,8 @@ export const pointerParallax = (area, alvos) => {
     const y = (evento.clientY - caixa.top) / caixa.height - 0.5;
 
     camadas.forEach(({ forca, paraX, paraY }) => {
-      paraX(x * 34 * forca);
-      paraY(y * 22 * forca);
+      paraX(x * amplitudeX * forca);
+      paraY(y * amplitudeY * forca);
     });
   };
 
