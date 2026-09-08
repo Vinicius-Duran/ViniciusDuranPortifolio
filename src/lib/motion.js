@@ -353,40 +353,66 @@ export const stackCards = (cards, options = {}) => {
 export const pointerParallax = (area, alvos, options = {}) => {
   if (!area || !alvos?.length || reducedMotion()) return () => {};
 
-  // Amplitude total do gesto, de borda a borda da área, antes da força de
-  // cada camada. Fica aqui para calibrar num lugar só.
-  const { amplitudeX = 70, amplitudeY = 46 } = options;
+  /* Amplitude total do gesto, de borda a borda da área, antes da força de
+     cada camada. Fica aqui para calibrar num lugar só. */
+  const { amplitudeX = 70, amplitudeY = 46, inclinacaoMax = 9 } = options;
 
   // Só onde existe ponteiro fino: em toque não há hover para acompanhar.
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return () => {};
 
-  const camadas = [...alvos].map((el) => ({
-    el,
-    forca: Number(el.dataset.parallax) || 1,
-    paraX: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3' }),
-    paraY: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3' }),
-  }));
+  const camadas = [...alvos].map((el) => {
+    const inclina = Number(el.dataset.tilt) || 0;
 
-  const aoMover = (evento) => {
-    const caixa = area.getBoundingClientRect();
-    // -1 a 1 a partir do centro da área.
-    const x = (evento.clientX - caixa.left) / caixa.width - 0.5;
-    const y = (evento.clientY - caixa.top) / caixa.height - 0.5;
+    return {
+      inclina,
+      forca: Number(el.dataset.parallax) || 1,
+      paraX: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3' }),
+      paraY: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3' }),
+      /* A inclinação vira profundidade de verdade: a placa deixa de deslizar
+         no plano e passa a girar em torno dos próprios eixos, como um objeto
+         plano visto de ângulo. Só quem declara `data-tilt` recebe. */
+      paraRotY: inclina
+        ? gsap.quickTo(el, 'rotationY', { duration: 1.1, ease: 'power3' })
+        : null,
+      paraRotX: inclina
+        ? gsap.quickTo(el, 'rotationX', { duration: 1.1, ease: 'power3' })
+        : null,
+    };
+  });
 
-    camadas.forEach(({ forca, paraX, paraY }) => {
+  const aplicar = (x, y) => {
+    camadas.forEach(({ forca, inclina, paraX, paraY, paraRotX, paraRotY }) => {
       paraX(x * amplitudeX * forca);
       paraY(y * amplitudeY * forca);
+
+      if (paraRotY) {
+        // Gira na direção do cursor no eixo vertical, e contra ele no
+        // horizontal — é assim que uma superfície reage a um ponto de vista.
+        paraRotY(x * inclinacaoMax * inclina);
+        paraRotX(-y * inclinacaoMax * inclina);
+      }
     });
   };
 
-  const aoSair = () => camadas.forEach(({ paraX, paraY }) => (paraX(0), paraY(0)));
+  const aoMover = (evento) => {
+    const caixa = area.getBoundingClientRect();
+    // -0.5 a 0.5 a partir do centro da área.
+    aplicar(
+      (evento.clientX - caixa.left) / caixa.width - 0.5,
+      (evento.clientY - caixa.top) / caixa.height - 0.5
+    );
+  };
+
+  const aoSair = () => aplicar(0, 0);
 
   area.addEventListener('pointermove', aoMover);
   area.addEventListener('pointerleave', aoSair);
+  window.addEventListener('blur', aoSair);
 
   return () => {
     area.removeEventListener('pointermove', aoMover);
     area.removeEventListener('pointerleave', aoSair);
+    window.removeEventListener('blur', aoSair);
   };
 };
 

@@ -97,6 +97,8 @@ const Manifesto = () => (
               className="plate manifesto-plate"
               key={project.id}
               data-depth={depth}
+              data-parallax={0.35 + depth * 0.14}
+              data-tilt="1"
               style={posicao}
             >
               <img src={project.cover} alt="" loading="lazy" decoding="async" />
@@ -108,14 +110,14 @@ const Manifesto = () => (
     {/* Camada solta: adereços em alturas diferentes, cada um em ritmo
         próprio, para a frase não ficar sozinha no meio de uma tela vazia. */}
     <div className="manifesto-floats" aria-hidden="true">
-      <span className="manifesto-float is-curve">
+      <span className="manifesto-float is-curve" data-parallax="0.9" data-tilt="1.2">
         <CurveProp />
       </span>
-      <span className="manifesto-float is-star">
+      <span className="manifesto-float is-star" data-parallax="1.3">
         <StarProp />
       </span>
-      <span className="manifesto-float is-square" />
-      <span className="manifesto-float is-dots">
+      <span className="manifesto-float is-square" data-parallax="1.1" data-tilt="1.4" />
+      <span className="manifesto-float is-dots" data-parallax="0.7">
         <svg viewBox="0 0 60 60">
           {[0, 1, 2, 3].map((row) =>
             [0, 1, 2, 3].map((col) => (

@@ -3,6 +3,9 @@
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  /* Sem perspectiva no pai, girar a placa nos eixos X e Y é uma deformação
+     plana; com ela, vira inclinação de verdade. */
+  perspective: 1200px;
   /* Some em direção ao texto: o lado esquerdo, onde mora o título, fica
      limpo, e as placas só existem como atmosfera à direita. */
   mask-image: linear-gradient(

@@ -69,6 +69,8 @@ const PagePlates = () => {
             className="plate page-plate"
             key={`${project.id}-${index}`}
             data-drift={depth}
+            data-parallax={0.4 + depth * 0.16}
+            data-tilt="1.1"
             style={estilo}
           >
             <img src={project.cover} alt="" loading="lazy" decoding="async" />

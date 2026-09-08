@@ -5,6 +5,8 @@
   /* Não recorta: as placas encostam de propósito nas bordas laterais, e o
      overflow-x do body já impede rolagem horizontal. */
   overflow: hidden;
+  /* Necessária para a inclinação ler como giro e não como deformação. */
+  perspective: 1400px;
 }
 
 /* Mais apagadas que as do herói: aqui elas passam atrás de texto corrido, e

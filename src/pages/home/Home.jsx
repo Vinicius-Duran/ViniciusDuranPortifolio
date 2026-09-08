@@ -18,7 +18,6 @@ import {
   stackCards,
   countTo,
   drawOnScroll,
-  pointerParallax,
   gsap,
   ScrollTrigger,
 } from '../../lib/motion';
@@ -172,16 +171,6 @@ const Home = () => {
         refreshPriority: 2,
       });
 
-      /* Paralaxe do ponteiro no herói. As placas puxam mais que a malha, e o
-         título vai contra o cursor — é a oposição de direções que constrói a
-         profundidade, não a quantidade de deslocamento. */
-      const limparParalaxe = pointerParallax(el('.hero'), [
-        ...all('.hero-plate'),
-        ...all('.build-grid span'),
-        el('.hero-headline'),
-      ]);
-
-      return limparParalaxe;
     });
   });
 
@@ -404,6 +393,7 @@ const Home = () => {
           loading="lazy"
           width="512"
           height="512"
+          data-parallax="0.8"
         />
 
         <div className="shell">
