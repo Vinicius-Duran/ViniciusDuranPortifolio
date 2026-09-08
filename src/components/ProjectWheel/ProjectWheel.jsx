@@ -1,112 +1,133 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  useGsapScope,
-  gsap,
-  ScrollTrigger,
-  reducedMotion,
-} from '../../lib/motion';
-import { featuredProjects } from '../../data/projects';
+import { useGsapScope, gsap, ScrollTrigger, reducedMotion } from '../../lib/motion';
+import { projects } from '../../data/projects';
 import './ProjectWheel.css';
 
 /**
- * Roda de projetos: as cartas distribuídas num anel e giradas no eixo Y.
+ * Globo de projetos: as capas distribuídas na superfície de uma esfera que
+ * gira. CSS 3D, sem WebGL.
  *
- * É CSS 3D, e não WebGL. A referência que originou isto usa Three.js para
- * espalhar as capas numa esfera; com seis projetos um anel diz a mesma coisa,
- * fica legível em vez de decorativo, e não custa uma biblioteca de 3D inteira
- * num site cujo bundle já carrega GSAP e anime.js.
- *
- * A rotação é função de UMA coisa: a posição da rolagem dentro do intervalo
- * da seção. Setas e arrasto também escrevem nessa mesma posição, então não
- * existem duas fontes de verdade brigando pelo ângulo.
+ * A referência (bleibtgleich.dev) faz isso em Three.js. Aqui a esfera é
+ * construída com transformações encadeadas: `rotateY(lon) rotateX(-lat)
+ * translateZ(raio)` leva cada carta ao ponto certo da superfície já com a
+ * face apontando para fora, que é o que dá a inclinação das cartas laterais.
  */
+
+/* Distribuição em espiral de Fibonacci: pontos espaçados de forma pareja na
+   esfera. Anéis de latitude fixa deixariam aglomerado nos polos. */
+const distribuir = (quantidade) => {
+  const anguloDourado = Math.PI * (3 - Math.sqrt(5));
+
+  return Array.from({ length: quantidade }, (_, i) => {
+    // De 1 (polo norte) a -1 (polo sul), evitando os polos exatos.
+    const y = quantidade === 1 ? 0 : 1 - (i / (quantidade - 1)) * 1.72 - 0.14;
+    const theta = anguloDourado * i;
+
+    /* Latitudes comprimidas a 0.78: a esfera fica levemente oblata e cabe na
+       faixa entre o título e a leitura. Sem isso as cartas do topo encostam
+       no "Trabalho selecionado". Continua lendo como globo. */
+    return {
+      lat: ((Math.asin(Math.max(-1, Math.min(1, y))) * 180) / Math.PI) * 0.78,
+      lon: ((theta * 180) / Math.PI) % 360,
+    };
+  });
+};
+
 const ProjectWheel = () => {
   const [ativo, setAtivo] = useState(0);
-  const total = featuredProjects.length;
-  const passoAngular = 360 / total;
-  const anel = useRef(null);
+  const pontos = useMemo(() => distribuir(projects.length), []);
 
-  /* Exige `pin`: o leitor de build também registra um gatilho nesta mesma
-     seção, e sem esse filtro as setas passariam a mirar o intervalo dele. */
   const gatilho = () => {
-    const secao = document.querySelector('.wheel-section');
+    const secao = document.querySelector('.globe-section');
     if (!secao) return null;
     return ScrollTrigger.getAll().find((t) => t.pin && t.trigger === secao) || null;
   };
 
   const raiz = useGsapScope((self) => {
     /* O seletor do contexto procura DENTRO do escopo, e o escopo é a própria
-       seção — `self.selector('.wheel-section')` volta vazio. A seção vem do
-       documento; os filhos continuam vindo do escopo. */
-    const secao = document.querySelector('.wheel-section');
-    const roda = self.selector('.wheel')[0];
-    const cartas = self.selector('.wheel-card');
-    if (!secao || !roda || !cartas.length) return;
+       seção — buscá-la por ele volta vazio. */
+    const secao = document.querySelector('.globe-section');
+    const globo = self.selector('.globe')[0];
+    const cartas = self.selector('.globe-card');
+    if (!secao || !globo || !cartas.length) return;
 
     if (reducedMotion()) {
-      // Sem movimento: o anel vira uma grade legível, tratada no CSS.
       secao.dataset.estatico = 'true';
       return;
     }
 
-    const estado = { giro: 0 };
+    // Duas fontes somadas: a rolagem conduz, a inércia mantém vivo parado.
+    const estado = { rolagem: 0, inercia: 0 };
 
-    /* Uma volta completa por travessia. Cada carta passa pela frente uma vez,
-       e o fim do intervalo coincide com o começo — não há salto. */
     const aplicar = () => {
-      roda.style.transform = `rotateX(-7deg) rotateY(${estado.giro}deg)`;
+      const giro = estado.rolagem + estado.inercia;
+      globo.style.transform = `rotateX(-12deg) rotateY(${giro}deg)`;
+
+      let melhor = 0;
+      let melhorFrente = -2;
 
       cartas.forEach((carta, i) => {
-        // Ângulo da carta em relação a quem olha.
-        const theta = ((i * passoAngular + estado.giro) % 360 + 360) % 360;
-        const radianos = (theta * Math.PI) / 180;
-        // 1 de frente, -1 atrás. É o que gradua nitidez e presença.
-        const frente = Math.cos(radianos);
+        const { lat, lon } = pontos[i];
+        const rad = (v) => (v * Math.PI) / 180;
 
+        /* Componente Z da normal da carta depois do giro. cos(lat) achata a
+           contribuição de quem está perto dos polos, que é o que faz o polo
+           parecer polo e não borda de disco. */
+        const frente = Math.cos(rad(lat)) * Math.cos(rad(lon + giro));
         const proximidade = (frente + 1) / 2;
-        carta.style.opacity = String(0.18 + proximidade * 0.82);
-        carta.style.filter = `blur(${(1 - proximidade) * 3.2}px)`;
+
+        /* O piso é alto o bastante para as cartas do fundo continuarem
+           visíveis: sobre um fundo escuro, apagar até quase zero desmancha a
+           esfera e sobram três cartas soltas no vazio. */
+        carta.style.opacity = String(0.24 + proximidade * 0.76);
+        carta.style.filter = `blur(${(1 - proximidade) * 2.6}px)`;
         carta.style.zIndex = String(Math.round(proximidade * 100));
+
+        if (frente > melhorFrente) {
+          melhorFrente = frente;
+          melhor = i;
+        }
       });
 
-      const indice = ((Math.round(-estado.giro / passoAngular) % total) + total) % total;
-      setAtivo((anterior) => (anterior === indice ? anterior : indice));
+      setAtivo((anterior) => (anterior === melhor ? anterior : melhor));
     };
 
-    /* `onUpdate` fica no TWEEN, e não no ScrollTrigger. Com scrub quem muda
-       o ângulo é o tween, que continua suavizando depois que a rolagem para;
-       pendurado no gatilho, o desenho lê o valor antes da suavização aplicar
-       e a roda fica parada num ângulo só. */
+    /* Giro contínuo, independente da rolagem: um globo parado quando a página
+       está parada lê como imagem, não como objeto. */
     gsap.to(estado, {
-      giro: -360,
+      inercia: 360,
+      duration: 90,
+      ease: 'none',
+      repeat: -1,
+      onUpdate: aplicar,
+    });
+
+    // Uma volta e meia ao atravessar a seção, somada à inércia.
+    gsap.to(estado, {
+      rolagem: -540,
       ease: 'none',
       onUpdate: aplicar,
       scrollTrigger: {
         trigger: secao,
         start: 'top top',
-        end: () => `+=${window.innerHeight * 2.4}`,
+        end: () => `+=${window.innerHeight * 2.6}`,
         pin: true,
-        scrub: 0.7,
+        scrub: 0.8,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        // Última da página entre os pins: mede depois de manifesto e processo.
+        // Último pin da página: mede depois do manifesto e do baralho.
         refreshPriority: 1,
-        onRefresh: aplicar,
       },
     });
 
     aplicar();
 
-    /* A roda é montada por um componente diferente do que monta os pins de
-       cima. Um refresh depois de todos existirem é o que garante que a ordem
-       de prioridade seja de fato aplicada. */
+    /* O globo é montado por um componente diferente do que monta os pins de
+       cima. Um refresh depois de todos existirem aplica a ordem de fato. */
     ScrollTrigger.refresh();
   }, []);
 
-  /* Setas e arrasto movem a rolagem dentro do intervalo da seção, nunca fora
-     dele: é o mesmo limite da galeria antiga, pelo mesmo motivo — sem ele o
-     controle da roda vira rolagem geral do site. */
   const limitar = (alvo) => {
     const st = gatilho();
     if (!st) return null;
@@ -116,7 +137,7 @@ const ProjectWheel = () => {
   const girar = (direcao) => {
     const st = gatilho();
     if (!st) return;
-    const passo = (st.end - st.start) / total;
+    const passo = (st.end - st.start) / projects.length;
     const alvo = limitar(window.scrollY + passo * direcao);
     if (alvo !== null) window.scrollTo({ top: alvo, behavior: 'smooth' });
   };
@@ -152,25 +173,25 @@ const ProjectWheel = () => {
     }
   };
 
-  const projetoAtivo = featuredProjects[ativo];
+  const projetoAtivo = projects[ativo];
 
   return (
     <section
       id="projects"
-      className="wheel-section"
+      className="globe-section"
       data-build-step="projects.jsx"
       ref={raiz}
     >
-      <div className="shell wheel-head">
+      <div className="shell globe-head">
         <h2 className="section-title">
           Trabalho <em>selecionado</em>
         </h2>
 
-        <div className="wheel-nav">
-          <p className="wheel-hint">Arraste ou use as setas</p>
+        <div className="globe-nav">
+          <p className="globe-hint">Arraste ou use as setas</p>
           <button
             type="button"
-            className="wheel-nav-btn"
+            className="globe-nav-btn"
             onClick={() => girar(-1)}
             aria-label="Projeto anterior"
           >
@@ -178,7 +199,7 @@ const ProjectWheel = () => {
           </button>
           <button
             type="button"
-            className="wheel-nav-btn"
+            className="globe-nav-btn"
             onClick={() => girar(1)}
             aria-label="Próximo projeto"
           >
@@ -188,54 +209,59 @@ const ProjectWheel = () => {
       </div>
 
       <div
-        className="wheel-stage"
+        className="globe-stage"
         onPointerDown={aoPressionar}
         onPointerMove={aoMover}
         onPointerUp={aoSoltar}
         onPointerCancel={aoSoltar}
       >
-        <div className="wheel" ref={anel}>
-          {featuredProjects.map((project, i) => (
+        <div className="globe">
+          {projects.map((project, i) => (
             <article
-              className="wheel-card"
+              className="globe-card"
               key={project.id}
-              style={{ '--giro-carta': `${i * passoAngular}deg` }}
+              style={{
+                '--lat': `${pontos[i].lat}deg`,
+                '--lon': `${pontos[i].lon}deg`,
+              }}
             >
               <Link
-                to={`/projects/${project.slug}`}
-                className="wheel-card-link"
+                to={project.featured ? `/projects/${project.slug}` : project.repo}
+                target={project.featured ? undefined : '_blank'}
+                rel={project.featured ? undefined : 'noopener noreferrer'}
+                className="globe-card-link"
                 onClick={aoClicar}
                 draggable={false}
                 tabIndex={i === ativo ? 0 : -1}
                 aria-hidden={i === ativo ? undefined : 'true'}
               >
-                <figure className="wheel-card-cover">
-                  {project.cover ? (
-                    <img src={project.cover} alt="" loading="lazy" />
-                  ) : (
-                    <span className="wheel-card-blank" aria-hidden="true">
-                      {project.id}
-                    </span>
-                  )}
-                </figure>
-                <span className="wheel-card-index">{project.id}</span>
+                {project.cover ? (
+                  <img src={project.cover} alt="" loading="lazy" />
+                ) : (
+                  <span className="globe-card-blank" aria-hidden="true">
+                    {project.id}
+                  </span>
+                )}
               </Link>
             </article>
           ))}
         </div>
       </div>
 
-      {/* Leitura do projeto na frente. É aqui que a roda vira informação: sem
-          isto ela seria bonita e muda. */}
-      <div className="shell wheel-readout">
-        <p className="wheel-readout-n">{projetoAtivo.id}</p>
-        <h3 className="wheel-readout-title">{projetoAtivo.title}</h3>
-        <p className="wheel-readout-meta">
+      {/* Leitura do projeto de frente: é o que transforma o globo de enfeite
+          em navegação. */}
+      <div className="shell globe-readout">
+        <p className="globe-readout-n">{projetoAtivo.id}</p>
+        <h3 className="globe-readout-title">{projetoAtivo.title}</h3>
+        <p className="globe-readout-meta">
           {projetoAtivo.role} · {projetoAtivo.year}
         </p>
-        <p className="wheel-readout-tech">{projetoAtivo.tech.join(' · ')}</p>
-        <Link to={`/projects/${projetoAtivo.slug}`} className="link wheel-readout-link">
-          <span>Ver o projeto</span>
+        <p className="globe-readout-tech">{projetoAtivo.tech.join(' · ')}</p>
+        <Link
+          to={projetoAtivo.featured ? `/projects/${projetoAtivo.slug}` : '/#projects'}
+          className="link globe-readout-link"
+        >
+          <span>{projetoAtivo.featured ? 'Ver o projeto' : 'Repositório'}</span>
           <span className="link-arrow" aria-hidden="true">
             →
           </span>

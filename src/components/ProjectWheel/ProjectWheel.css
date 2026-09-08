@@ -1,9 +1,9 @@
 /* =========================================================================
-   RODA DE PROJETOS
-   As cartas num anel, giradas no eixo Y. CSS 3D, sem WebGL.
+   GLOBO DE PROJETOS
+   As capas na superfície de uma esfera que gira. CSS 3D, sem WebGL.
    ========================================================================= */
 
-.wheel-section {
+.globe-section {
   position: relative;
   height: 100dvh;
   display: flex;
@@ -13,7 +13,7 @@
   overflow: hidden;
 }
 
-.wheel-head {
+.globe-head {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -21,13 +21,13 @@
   flex-wrap: wrap;
 }
 
-.wheel-nav {
+.globe-nav {
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
-.wheel-hint {
+.globe-hint {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.16em;
@@ -37,7 +37,7 @@
   margin-right: 0.5rem;
 }
 
-.wheel-nav-btn {
+.globe-nav-btn {
   display: grid;
   place-items: center;
   width: 2.75rem;
@@ -53,12 +53,12 @@
     color 220ms ease;
 }
 
-.wheel-nav-btn:active {
+.globe-nav-btn:active {
   transform: scale(0.94);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .wheel-nav-btn:hover {
+  .globe-nav-btn:hover {
     color: var(--ink-000);
     background: var(--amber);
     border-color: var(--amber);
@@ -67,96 +67,73 @@
 
 /* --- O palco 3D --------------------------------------------------------- */
 
-.wheel-stage {
+.globe-stage {
   position: relative;
   flex: 1;
   display: grid;
   place-items: center;
-  /* A perspectiva é o que transforma o anel em roda; sem ela as cartas só
-     encolhem em duas dimensões.
-     O valor é alto de propósito: a carta da frente está a `raio` de distância
-     do plano, e a ampliação é P/(P−raio). A 1500px ela chegava a 1.8x, saía
-     da área e cobria a leitura embaixo; a 2800 fica em ~1.2x. */
-  perspective: 2800px;
+  /* Alta de propósito: a carta da frente está a um raio inteiro da câmera e
+     é ampliada por P/(P−raio). Um valor baixo a estoura sobre a leitura. */
+  perspective: 2600px;
   perspective-origin: 50% 50%;
-  padding-block: 1.5rem;
   cursor: grab;
   touch-action: pan-y;
 }
 
-.wheel-stage:active {
+.globe-stage:active {
   cursor: grabbing;
 }
 
-.wheel {
+.globe {
   position: relative;
-  width: var(--carta-larg);
-  height: calc(var(--carta-larg) * 0.66);
+  width: var(--carta);
+  height: calc(var(--carta) * 0.68);
   transform-style: preserve-3d;
   will-change: transform;
 
-  /* O raio precisa ser maior que (largura/2) / tan(180/n) para as cartas não
-     se atravessarem. Com seis cartas isso é largura x 0.87; o fator 1.05 dá
-     o vão sem jogar as cartas laterais para fora da tela. */
-  --carta-larg: clamp(11rem, 17vw, 15.5rem);
-  --raio: calc(var(--carta-larg) * 1.05 / 0.5774);
+  --carta: clamp(8rem, 12.5vw, 11.5rem);
+  --raio: clamp(12rem, 19vw, 18rem);
 }
 
-.wheel-card {
+.globe-card {
   position: absolute;
   inset: 0;
-  transform: rotateY(var(--giro-carta)) translateZ(var(--raio));
-  backface-visibility: hidden;
+  /* A ordem importa: gira em torno do eixo vertical, inclina para a latitude
+     e só então afasta pela normal. Assim a face aponta para fora da esfera,
+     que é o que inclina as cartas das bordas. */
+  transform: rotateY(var(--lon)) rotateX(var(--lat)) translateZ(var(--raio));
   will-change: opacity, filter;
 }
 
-.wheel-card-link {
-  position: relative;
+.globe-card-link {
   display: block;
-  height: 100%;
-}
-
-.wheel-card-cover {
   height: 100%;
   overflow: hidden;
   border: 1px solid var(--paper-20);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--ink-100);
-  box-shadow: var(--shadow-lift);
+  box-shadow: var(--shadow-soft);
 }
 
-.wheel-card-cover img {
+.globe-card-link img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.wheel-card-blank {
+.globe-card-blank {
   display: grid;
   place-items: center;
   height: 100%;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 3rem;
-  color: var(--paper-20);
-}
-
-.wheel-card-index {
-  position: absolute;
-  top: 0.7rem;
-  left: 0.7rem;
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.12em;
-  color: var(--ink-000);
-  background: var(--amber);
-  padding: 0.18rem 0.42rem;
-  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  color: var(--paper-40);
 }
 
-/* --- Leitura do projeto na frente --------------------------------------- */
+/* --- Leitura do projeto de frente --------------------------------------- */
 
-.wheel-readout {
+.globe-readout {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: baseline;
@@ -165,14 +142,14 @@
   border-top: 1px solid var(--paper-10);
 }
 
-.wheel-readout-n {
+.globe-readout-n {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   color: var(--amber);
 }
 
-.wheel-readout-title {
+.globe-readout-title {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(1.4rem, 2.6vw, 2.2rem);
@@ -181,7 +158,7 @@
   grid-column: 2;
 }
 
-.wheel-readout-meta {
+.globe-readout-meta {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.12em;
@@ -190,13 +167,13 @@
   grid-column: 2;
 }
 
-.wheel-readout-tech {
+.globe-readout-tech {
   font-size: 0.85rem;
   color: var(--paper-60);
   grid-column: 2;
 }
 
-.wheel-readout-link {
+.globe-readout-link {
   grid-column: 3;
   grid-row: 1 / span 3;
   align-self: center;
@@ -207,59 +184,60 @@
 /* --- Telas estreitas ---------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .wheel-section {
+  .globe-section {
     height: auto;
     min-height: 100dvh;
   }
 
-  .wheel {
-    --carta-larg: min(62vw, 15rem);
+  .globe {
+    --carta: min(30vw, 7rem);
+    --raio: min(42vw, 11rem);
   }
 
-  .wheel-stage {
-    perspective: 900px;
-    min-height: 58vh;
+  .globe-stage {
+    perspective: 1400px;
+    min-height: 56vh;
   }
 
-  .wheel-hint {
+  .globe-hint {
     display: none;
   }
 
-  .wheel-readout {
+  .globe-readout {
     grid-template-columns: 1fr;
   }
 
-  .wheel-readout-title,
-  .wheel-readout-meta,
-  .wheel-readout-tech {
+  .globe-readout-title,
+  .globe-readout-meta,
+  .globe-readout-tech {
     grid-column: 1;
   }
 
-  .wheel-readout-link {
+  .globe-readout-link {
     grid-column: 1;
     grid-row: auto;
     margin-top: 0.75rem;
   }
 }
 
-/* --- Sem movimento: o anel vira grade ----------------------------------- */
+/* --- Sem movimento: a esfera vira grade --------------------------------- */
 
-.wheel-section[data-estatico='true'] .wheel-stage {
+.globe-section[data-estatico='true'] .globe-stage {
   perspective: none;
   display: block;
 }
 
-.wheel-section[data-estatico='true'] .wheel {
+.globe-section[data-estatico='true'] .globe {
   width: 100%;
   height: auto;
   transform: none !important;
   transform-style: flat;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.85rem;
 }
 
-.wheel-section[data-estatico='true'] .wheel-card {
+.globe-section[data-estatico='true'] .globe-card {
   position: relative;
   inset: auto;
   transform: none !important;
