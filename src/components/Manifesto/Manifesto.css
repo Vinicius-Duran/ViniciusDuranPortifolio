@@ -1,0 +1,205 @@
+.manifesto {
+  /* A altura é a da tela: quem estica a rolagem é o pin, não a seção. */
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0;
+  border-block: 1px solid var(--paper-10);
+}
+
+/* --- Adereços soltos --------------------------------------------------- */
+
+.manifesto-floats {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.manifesto-float {
+  position: absolute;
+  display: block;
+  will-change: transform;
+}
+
+.manifesto-float svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.manifesto-float.is-curve {
+  top: 14%;
+  right: 12%;
+  width: clamp(4rem, 7vw, 7rem);
+  aspect-ratio: 1;
+  opacity: 0.75;
+}
+
+.manifesto-float.is-star {
+  bottom: 16%;
+  left: 14%;
+  width: clamp(2.5rem, 4vw, 4rem);
+  aspect-ratio: 1;
+  opacity: 0.5;
+}
+
+.manifesto-float.is-square {
+  top: 22%;
+  left: 26%;
+  width: clamp(2rem, 3.5vw, 3.5rem);
+  aspect-ratio: 1;
+  border: 2px solid var(--amber-line);
+  border-radius: 3px;
+}
+
+.manifesto-float.is-dots {
+  bottom: 20%;
+  right: 24%;
+  width: clamp(3rem, 5vw, 4.5rem);
+  aspect-ratio: 1;
+  opacity: 0.4;
+}
+
+.manifesto-float.is-dots circle {
+  fill: var(--paper-40);
+}
+
+.manifesto-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.6rem, 1.4vw, 1.5rem);
+  /* Começa e termina fora da tela para a frase entrar e sair de fato. Cada
+     ponto de vw aqui é rolagem presa a mais, então fica no mínimo que ainda
+     deixa a primeira palavra chegar de fora. */
+  padding-inline: 26vw;
+  width: max-content;
+  will-change: transform;
+}
+
+.manifesto-word,
+.manifesto-chip {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: 'wdth' 108;
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.manifesto-word {
+  color: var(--paper);
+}
+
+/* --- Chips: o termo que importa vira objeto --------------------------- */
+
+.manifesto-chip {
+  display: inline-block;
+  /* <mark> chega com fundo amarelo do navegador. Sem zerar aqui, a variante
+     contornada — que só define cor e borda — herda o amarelo. */
+  background: none;
+  color: inherit;
+  padding: 0.1em 0.32em 0.16em;
+  border-radius: 4px;
+  rotate: var(--tilt, 0deg);
+  /* A sombra carrega o matiz do fundo em vez de ser preto genérico. */
+  box-shadow: 0 10px 26px -12px rgba(9, 8, 7, 0.9);
+}
+
+.manifesto-chip.is-amber {
+  background: var(--amber);
+  color: var(--ink-000);
+}
+
+.manifesto-chip.is-paper {
+  background: var(--paper);
+  color: var(--ink-000);
+}
+
+.manifesto-chip.is-outline {
+  color: var(--amber);
+  border: 2px solid var(--amber-line);
+  box-shadow: none;
+}
+
+/* --- Adereços técnicos ------------------------------------------------ */
+
+.manifesto-prop {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: clamp(3.5rem, 7vw, 6.5rem);
+}
+
+.prop {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.prop-path {
+  stroke: var(--amber);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.prop-handle {
+  stroke: var(--paper-20);
+  stroke-width: 2;
+  stroke-dasharray: 4 5;
+}
+
+.prop-node {
+  fill: var(--amber);
+}
+
+.prop-handle-cap {
+  fill: var(--paper-60);
+}
+
+.prop-ray {
+  stroke: var(--paper-60);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.prop-bracket .prop-path {
+  stroke: var(--paper-40);
+  stroke-width: 5;
+}
+
+/* --- Sem pin: a frase vira um bloco legível --------------------------- */
+
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  .manifesto {
+    height: auto;
+    padding-block: clamp(3.5rem, 10vw, 6rem);
+  }
+
+  /* Sem pin não há espaço vertical para eles morarem. */
+  .manifesto-floats {
+    display: none;
+  }
+
+  .manifesto-track {
+    flex-wrap: wrap;
+    width: auto;
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    gap: 0.35rem 0.6rem;
+    transform: none !important;
+  }
+
+  .manifesto-word,
+  .manifesto-chip {
+    font-size: clamp(1.75rem, 8.5vw, 3rem);
+    white-space: normal;
+  }
+
+  .manifesto-prop {
+    width: 2.5rem;
+  }
+}

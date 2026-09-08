@@ -26,18 +26,6 @@
   text-wrap: nowrap;
 }
 
-@media (max-width: 900px) {
-  /* Estreito demais para a quebra manual: deixa o navegador decidir. */
-  .hero-headline {
-    text-wrap: balance;
-    max-width: 14ch;
-  }
-
-  .hero-headline br {
-    display: none;
-  }
-}
-
 .hero-intro-part {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
@@ -79,9 +67,20 @@
   font-size: 1.25rem;
   letter-spacing: -0.02em;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 900px) {
+  /* Estreito demais para a quebra manual: deixa o navegador decidir. */
+  .hero-headline {
+    text-wrap: balance;
+    max-width: 14ch;
+  }
+
+  .hero-headline br {
+    display: none;
+  }
+
   .hero-intro-part {
     grid-template-columns: 1fr;
   }
@@ -99,7 +98,21 @@
 }
 
 .about-lead .section-title {
-  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+
+/* Traço desenhado sob o título conforme a seção entra. */
+.about-underline {
+  display: block;
+  width: min(100%, 26rem);
+  height: 12px;
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.about-underline path {
+  stroke: var(--amber);
+  stroke-width: 3;
+  stroke-linecap: round;
 }
 
 .about-lead .prose {
@@ -110,7 +123,6 @@
 .about-skills {
   display: grid;
   gap: 0;
-  /* Alinha opticamente com a primeira linha do parágrafo ao lado. */
   padding-top: 0.4rem;
 }
 
@@ -145,265 +157,271 @@
 }
 
 /* =========================================================================
-   PROCESSO
+   PROCESSO — cartas que se empilham
    ========================================================================= */
 
-.process .section-title {
-  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+.process-head {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
 }
 
-.process-list {
-  list-style: none;
-  counter-reset: none;
-}
-
-.process-step {
+.process-stack {
   display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr) 8rem;
-  gap: clamp(1rem, 3vw, 2.5rem);
-  align-items: baseline;
-  padding-block: clamp(1.6rem, 3vw, 2.4rem);
-  border-top: 1px solid var(--paper-10);
-  transition: background-color 300ms ease;
+  gap: clamp(1rem, 2vw, 1.75rem);
 }
 
-.process-step:last-child {
+.process-card {
+  /* Posicionada para o z-index da pilha valer: em elemento estático ele é
+     ignorado, e a carta que sai pintaria por cima da que chega. */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 46vh;
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  /* Fundo sólido: sem ele as cartas empilhadas leem umas através das outras. */
+  background: var(--ink-100);
+  border: 1px solid var(--paper-10);
+  border-radius: 4px;
+  transform-origin: center top;
+  will-change: transform;
+}
+
+.process-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--paper-10);
 }
 
-.process-step-n {
+.process-card-n {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  color: var(--paper-20);
-  transition: color 300ms ease;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--amber);
 }
 
-.process-step-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  margin-bottom: 0.6rem;
+.process-card-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-40);
 }
 
-.process-step-body p {
-  max-width: 56ch;
+.process-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3.4vw, 2.85rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin-top: auto;
+}
+
+.process-card-text {
+  max-width: 52ch;
   color: var(--paper-60);
   text-wrap: pretty;
 }
 
-.process-step-label {
-  font-size: 0.72rem;
-  font-weight: 600;
+/* =========================================================================
+   TRABALHO — galeria horizontal presa
+   ========================================================================= */
+
+.work {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: 0;
+  overflow: hidden;
+}
+
+.work-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.work-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--paper-40);
-  text-align: right;
+  white-space: nowrap;
+}
+
+.work-hint-line {
+  width: 3rem;
+  height: 1px;
+  background: var(--amber);
+}
+
+.work-track {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding-inline: var(--gutter);
+  width: max-content;
+  will-change: transform;
+}
+
+.work-card {
+  width: clamp(19rem, 27vw, 25rem);
+  flex-shrink: 0;
+}
+
+.work-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1.1rem;
+}
+
+.work-card-cover {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--paper-10);
+  background: var(--ink-100);
+}
+
+.work-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--ease-out), filter 500ms ease;
+  filter: saturate(0.75);
+}
+
+.work-card-blank {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 4rem;
+  color: var(--paper-20);
+}
+
+.work-card-index {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-000);
+  background: var(--amber);
+  padding: 0.2rem 0.45rem;
+  border-radius: 2px;
+}
+
+.work-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.work-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  transition: color 260ms ease;
+}
+
+.work-card-role {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.work-card-tech {
+  font-size: 0.85rem;
+  color: var(--paper-60);
+}
+
+.work-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--paper-10);
+  font-size: 0.85rem;
+  color: var(--paper-40);
+  font-variant-numeric: tabular-nums;
+}
+
+.work-card-arrow {
+  transition: transform 340ms var(--ease-out), color 260ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .process-step:hover {
-    background: var(--ink-100);
+  .work-card-link:hover .work-card-cover img {
+    transform: scale(1.05);
+    filter: saturate(1);
   }
 
-  .process-step:hover .process-step-n {
+  .work-card-link:hover .work-card-title {
+    color: var(--amber);
+  }
+
+  .work-card-link:hover .work-card-arrow {
+    transform: translateX(0.4rem);
     color: var(--amber);
   }
 }
 
-@media (max-width: 760px) {
-  .process-step {
-    grid-template-columns: 3rem minmax(0, 1fr);
+/* Sem pin em tela estreita: a galeria vira rolagem horizontal por toque. */
+@media (max-width: 900px) {
+  .work {
+    height: auto;
+    padding-block: clamp(3.25rem, 8vw, 5rem);
   }
 
-  .process-step-label {
-    grid-column: 2;
-    text-align: left;
-    margin-top: 0.75rem;
+  .work-track {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+    transform: none !important;
+    /* O trilho rola sozinho, então o pin não é necessário nem desejável. */
+    scrollbar-width: thin;
+  }
+
+  .work-card {
+    width: min(78vw, 20rem);
+    scroll-snap-align: start;
+  }
+
+  .work-hint {
+    display: none;
   }
 }
 
 /* =========================================================================
-   ÍNDICE DE PROJETOS
+   OUTROS REPOSITÓRIOS
    ========================================================================= */
 
-.index .section-title {
-  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
-}
-
-.index-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(18rem, 26vw, 25rem);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: start;
-}
-
-.index-list {
-  list-style: none;
-}
-
-.index-row {
-  border-top: 1px solid var(--paper-10);
-}
-
-.index-row:last-child {
-  border-bottom: 1px solid var(--paper-10);
-}
-
-.index-link {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) auto 4rem 1.5rem;
-  gap: clamp(0.75rem, 2vw, 1.75rem);
-  align-items: baseline;
-  padding-block: clamp(1.3rem, 2.4vw, 2rem);
-  /* O recuo é transform, não padding: padding animado recalcula layout a
-     cada frame e o índice inteiro treme junto. */
-  transition: opacity 340ms ease, transform 420ms var(--ease-out);
-}
-
-.index-n {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--paper-40);
-  transition: color 300ms ease;
-}
-
-.index-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
-.index-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.9rem, 3.4vw, 3.1rem);
-  line-height: 1;
-  letter-spacing: -0.025em;
-  transition: color 300ms ease;
-}
-
-.index-role {
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--paper-40);
-}
-
-.index-tech {
-  font-size: 0.82rem;
-  color: var(--paper-60);
-  text-align: right;
-}
-
-.index-year {
-  font-size: 0.85rem;
-  color: var(--paper-40);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.index-arrow {
-  font-size: 1.05rem;
-  color: var(--paper-20);
-  transition: transform 380ms var(--ease-out), color 300ms ease;
-}
-
-/* Escurece as linhas irmãs quando uma está em foco: o índice inteiro
-   responde, e não só a linha sob o cursor. */
-@media (hover: hover) and (pointer: fine) {
-  .index-list.is-focused .index-link {
-    opacity: 0.34;
-  }
-
-  .index-row[data-active='true'] .index-link {
-    opacity: 1;
-    transform: translateX(1.25rem);
-  }
-
-  .index-row[data-active='true'] .index-title {
-    color: var(--amber);
-  }
-
-  .index-row[data-active='true'] .index-n {
-    color: var(--amber);
-  }
-
-  .index-row[data-active='true'] .index-arrow {
-    color: var(--amber);
-    transform: translateX(0.45rem);
-  }
-}
-
-.index-link:focus-visible {
-  outline-offset: -2px;
-}
-
-/* --- Painel de capa ----------------------------------------------------- */
-
-.index-preview {
-  position: sticky;
-  top: 22vh;
-  aspect-ratio: 4 / 3;
-  border: 1px solid var(--paper-10);
-  background: var(--ink-100);
-  overflow: hidden;
-}
-
-.index-preview-frame {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  /* Fechado por baixo: a capa se desenha de cima para baixo ao entrar. */
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 620ms var(--ease-out);
-}
-
-.index-preview-frame[data-active='true'] {
-  clip-path: inset(0 0 0 0);
-}
-
-.index-preview-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.06);
-  transition: transform 900ms var(--ease-out);
-}
-
-.index-preview-frame[data-active='true'] img {
-  transform: scale(1);
-}
-
-.index-cover-blank {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: var(--paper-40);
-  text-align: center;
-  padding: 1.5rem;
-  line-height: 1.1;
-}
-
-.index-inline-cover {
-  display: none;
-}
-
-/* --- Outros repositórios ------------------------------------------------ */
-
-.index-more {
-  margin-top: clamp(3.5rem, 7vw, 6rem);
-}
-
 .index-more-label {
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--paper-40);
@@ -444,70 +462,6 @@
   }
 }
 
-/* --- Índice em telas estreitas ------------------------------------------ */
-
-@media (max-width: 1000px) {
-  .index-body {
-    grid-template-columns: 1fr;
-  }
-
-  /* Sem hover não há painel: a capa passa a morar dentro da linha. */
-  .index-preview {
-    display: none;
-  }
-
-  .index-link {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.5rem 1rem;
-    padding-block: 1.5rem;
-  }
-
-  .index-n {
-    grid-column: 1;
-  }
-
-  .index-year {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .index-main {
-    grid-column: 1 / -1;
-  }
-
-  .index-tech {
-    grid-column: 1 / -1;
-    text-align: left;
-  }
-
-  .index-arrow {
-    display: none;
-  }
-
-  .index-inline-cover {
-    display: block;
-    grid-column: 1 / -1;
-    margin-top: 1rem;
-    aspect-ratio: 16 / 10;
-    border: 1px solid var(--paper-10);
-    background: var(--ink-100);
-    overflow: hidden;
-  }
-
-  .index-inline-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .index-inline-cover .index-cover-blank {
-    display: grid;
-    place-items: center;
-    height: 100%;
-    font-size: 1.3rem;
-  }
-}
-
 /* =========================================================================
    CONTATO
    ========================================================================= */
@@ -539,8 +493,8 @@
 }
 
 .contact-kind {
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--paper-40);
@@ -551,7 +505,7 @@
   font-weight: 700;
   font-size: clamp(1.3rem, 2.6vw, 2.1rem);
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   overflow-wrap: anywhere;
 }
 

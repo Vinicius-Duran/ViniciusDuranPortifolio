@@ -18,17 +18,31 @@ gradiente de marca e sem serif.
 
 ## Motion
 
-O site se monta na frente de quem chega. Cada bloco é uma **peça**: um quadro de
-wireframe é desenhado, ganha o rótulo do que ele é (`h1 · hero`, `section ·
-intro`), o conteúdo entra por dentro dele, e a guia se retira. O herói roda essa
-sequência inteira no carregamento, com o título escrito caractere a caractere
-como saída de compilador; as demais seções repetem a mesma gramática, mais
-rápida, quando entram na tela. Um leitor de build fixo no canto acompanha qual
-"arquivo" está montado.
+A rolagem não revela conteúdo, ela conduz. São três movimentos:
 
-Toda a animação sai de `src/lib/motion.js`, que registra os plugins do GSAP e
-expõe essa gramática — `assemblePart`, `buildIntro`, `buildOnScroll` — mais o
-stagger das listas (anime.js) e o embaralhamento de texto no índice de projetos.
+**A montagem.** Cada bloco é uma peça: um quadro de wireframe é desenhado, ganha
+o rótulo do que ele é (`h1 · hero`, `section · intro`), o conteúdo entra por
+dentro dele, e a guia se retira. O herói roda a sequência inteira no
+carregamento, com o título escrito caractere a caractere como saída de
+compilador; as outras seções repetem a mesma gramática, mais rápida, ao entrar
+na tela. Um leitor de build fixo acompanha qual "arquivo" está montado.
+
+**Os trilhos horizontais.** O manifesto e a galeria de trabalho prendem a seção
+na tela e convertem rolagem vertical em deslocamento horizontal. Os elementos
+dentro do trilho têm gatilhos próprios via `containerAnimation` — sem isso um
+ScrollTrigger de filho mede a posição vertical e nunca dispara. A distância é
+recalculada a cada refresh, porque depende de larguras que mudam quando a fonte
+carrega.
+
+**O baralho.** As quatro etapas do processo param no topo e se empilham. A carta
+que sai recua por escurecimento e desfoque, nunca por opacidade: translúcida,
+ela deixaria a de trás atravessá-la e as duas leriam sobrepostas.
+
+Toda a animação sai de `src/lib/motion.js` — `assemblePart`, `buildIntro`,
+`buildOnScroll`, `horizontalTrack`, `enterFromTrack`, `stackCards` — mais o
+stagger das listas (anime.js) e o embaralhamento de texto nos projetos. O
+pin só existe acima de 900px, por `gsap.matchMedia`: no toque os mesmos blocos
+viram pilha e rolagem horizontal nativa.
 
 Duas regras sustentam esse módulo:
 

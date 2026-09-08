@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
 import Frame from '../../components/Frame/Frame';
+import Manifesto from '../../components/Manifesto/Manifesto';
 import {
   useGsapScope,
   buildIntro,
@@ -9,6 +10,13 @@ import {
   revealStack,
   playOnEnter,
   scrambleTo,
+  horizontalTrack,
+  enterFromTrack,
+  driftInTrack,
+  stackCards,
+  countTo,
+  drawOnScroll,
+  gsap,
 } from '../../lib/motion';
 import { featuredProjects, secondaryProjects } from '../../data/projects';
 import { profile, getYearsOfExperience } from '../../data/profile';
@@ -43,32 +51,82 @@ const processSteps = [
 ];
 
 const Home = () => {
-  const [activeProject, setActiveProject] = useState(featuredProjects[0]?.id ?? null);
-  const [isBrowsing, setIsBrowsing] = useState(false);
   const roleRefs = useRef({});
   const anosDeExperiencia = getYearsOfExperience();
+  const totalProjetos = featuredProjects.length + secondaryProjects.length;
 
   const root = useGsapScope((self) => {
     const el = (selector) => self.selector(selector)[0];
     const all = (selector) => self.selector(selector);
 
-    // A abertura: a única vez que a montagem roda por inteiro e devagar.
     buildIntro(el('.hero'));
 
-    // As seções chegam montando, mais rápido.
     all('[data-build-step]').forEach((section) => {
       if (!section.classList.contains('hero')) buildOnScroll(section);
     });
 
-    // Listas longas entram por stagger, que é mais leve que montar item a item.
-    playOnEnter(el('.index-list'), revealStack(all('.index-row'), { delayStep: 70 }));
+    playOnEnter(el('.about-grid'), revealStack(all('.skill-line'), { delayStep: 55 }));
     playOnEnter(el('.contact-list'), revealStack(all('.contact-row'), { delayStep: 80 }));
+
+    // Os números do balanço sobem quando o bloco entra.
+    all('[data-count]').forEach((node) =>
+      countTo(node, Number(node.dataset.count), el('.hero-ledger'))
+    );
+
+    drawOnScroll(el('.about-underline path'), el('.about-lead'));
+
+    /* Prender e arrastar só faz sentido onde há tela larga e ponteiro fino.
+       No toque, os mesmos blocos existem empilhados e sem pin. */
+    const mm = gsap.matchMedia();
+
+    mm.add('(min-width: 901px) and (prefers-reduced-motion: no-preference)', () => {
+      const manifesto = horizontalTrack(el('.manifesto'), el('.manifesto-track'));
+
+      all('.manifesto-chip').forEach((chip) => {
+        const tilt = parseFloat(getComputedStyle(chip).getPropertyValue('--tilt')) || 0;
+        enterFromTrack(chip, manifesto, { rotate: tilt });
+      });
+
+      all('.manifesto-prop').forEach((prop, index) =>
+        driftInTrack(prop, manifesto, 30 + index * 18)
+      );
+
+      /* Os adereços soltos ficam fora do trilho, então seguem a rolagem do
+         próprio pin — cada um numa direção e num ritmo. */
+      all('.manifesto-float').forEach((node, index) => {
+        const sobe = index % 2 === 0;
+        gsap.fromTo(
+          node,
+          { yPercent: sobe ? 70 : -70, rotate: sobe ? -35 : 25, opacity: 0 },
+          {
+            yPercent: sobe ? -70 : 70,
+            rotate: sobe ? 35 : -25,
+            opacity: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el('.manifesto'),
+              start: 'top top',
+              end: () => manifesto.scrollTrigger.end,
+              scrub: 0.6,
+            },
+          }
+        );
+      });
+
+      const work = horizontalTrack(el('.work'), el('.work-track'), { scrub: 0.6 });
+
+      all('.work-card').forEach((card) =>
+        enterFromTrack(card, work, {
+          from: { scale: 0.86, opacity: 0.25, rotate: 0 },
+          to: { scale: 1, opacity: 1 },
+        })
+      );
+
+      stackCards(all('.process-card'));
+    });
   });
 
   const handleEnter = (project) => {
-    setIsBrowsing(true);
-    if (project.id === activeProject) return;
-    setActiveProject(project.id);
     scrambleTo(roleRefs.current[project.id], project.role);
   };
 
@@ -109,12 +167,16 @@ const Home = () => {
                 <dd>{profile.location}</dd>
               </div>
               <div>
-                <dt>Desde</dt>
-                <dd>{profile.careerStartYear}</dd>
+                <dt>Anos</dt>
+                <dd>
+                  <span data-count={anosDeExperiencia}>{anosDeExperiencia}</span>
+                </dd>
               </div>
               <div>
                 <dt>Projetos</dt>
-                <dd>{featuredProjects.length + secondaryProjects.length}</dd>
+                <dd>
+                  <span data-count={totalProjetos}>{totalProjetos}</span>
+                </dd>
               </div>
             </dl>
           </div>
@@ -146,6 +208,9 @@ const Home = () => {
       />
 
       {/* ---------------------------------------------------------------- */}
+      <Manifesto />
+
+      {/* ---------------------------------------------------------------- */}
       <section id="about" className="about" data-build-step="about.jsx">
         <div className="shell about-grid">
           <div className="part about-lead">
@@ -153,6 +218,15 @@ const Home = () => {
             <h2 className="section-title">
               Código, design e <em>narrativa visual</em> na mesma mesa.
             </h2>
+
+            <svg
+              className="about-underline"
+              viewBox="0 0 400 12"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path d="M2 8 C 90 2, 150 11, 240 5 S 350 2, 398 7" fill="none" />
+            </svg>
 
             <div className="prose">
               <p>
@@ -197,123 +271,103 @@ const Home = () => {
               Como eu trabalho, em <em>quatro movimentos</em>.
             </h2>
           </div>
+        </div>
 
-          <ol className="process-list">
-            {processSteps.map((step) => (
-              <li className="part process-step" key={step.n}>
-                <Frame tag={`step · ${step.n}`} />
-                <span className="process-step-n">{step.n}</span>
-                <div className="process-step-body">
-                  <h3 className="process-step-title">{step.title}</h3>
-                  <p>{step.text}</p>
-                </div>
-                <span className="process-step-label">{step.label}</span>
-              </li>
-            ))}
-          </ol>
+        <div className="shell process-stack">
+          {processSteps.map((step) => (
+            <article className="process-card" key={step.n}>
+              <header className="process-card-head">
+                <span className="process-card-n">{step.n}</span>
+                <span className="process-card-label">{step.label}</span>
+              </header>
+              <h3 className="process-card-title">{step.title}</h3>
+              <p className="process-card-text">{step.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section id="projects" className="index" data-build-step="projects.jsx">
-        <div className="shell">
-          <div className="part index-head">
-            <Frame tag="h2 · work" />
-            <h2 className="section-title">
-              Trabalho <em>selecionado</em>
-            </h2>
-          </div>
+      <section id="projects" className="work" data-build-step="projects.jsx">
+        <div className="work-head shell">
+          <h2 className="section-title">
+            Trabalho <em>selecionado</em>
+          </h2>
+          <p className="work-hint">
+            <span className="work-hint-line" aria-hidden="true" />
+            Role para atravessar
+          </p>
+        </div>
 
-          <div className="index-body">
-            <ul
-              className={`index-list ${isBrowsing ? 'is-focused' : ''}`}
-              onMouseLeave={() => setIsBrowsing(false)}
+        <div className="work-track">
+          {featuredProjects.map((project) => (
+            <article
+              className="work-card"
+              key={project.id}
+              onMouseEnter={() => handleEnter(project)}
             >
-              {featuredProjects.map((project) => (
-                <li
-                  key={project.id}
-                  className="index-row"
-                  data-active={
-                    isBrowsing && activeProject === project.id ? 'true' : undefined
-                  }
-                  onMouseEnter={() => handleEnter(project)}
-                >
-                  <Link
-                    to={`/projects/${project.slug}`}
-                    className="index-link"
-                    onFocus={() => handleEnter(project)}
-                    onBlur={() => setIsBrowsing(false)}
-                  >
-                    <span className="index-n">{project.id}</span>
-
-                    <span className="index-main">
-                      <span className="index-title">{project.title}</span>
-                      <span
-                        className="index-role"
-                        ref={(node) => {
-                          roleRefs.current[project.id] = node;
-                        }}
-                      >
-                        {project.role}
-                      </span>
-                    </span>
-
-                    <span className="index-tech">{project.tech.join(' · ')}</span>
-                    <span className="index-year">{project.year}</span>
-                    <span className="index-arrow" aria-hidden="true">
-                      →
-                    </span>
-
-                    <span className="index-inline-cover" aria-hidden="true">
-                      {project.cover ? (
-                        <img src={project.cover} alt="" loading="lazy" />
-                      ) : (
-                        <span className="index-cover-blank">{project.title}</span>
-                      )}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
-            <div className="index-preview" aria-hidden="true">
-              {featuredProjects.map((project) => (
-                <figure
-                  key={project.id}
-                  className="index-preview-frame"
-                  data-active={activeProject === project.id ? 'true' : undefined}
-                >
+              <Link
+                to={`/projects/${project.slug}`}
+                className="work-card-link"
+                onFocus={() => handleEnter(project)}
+              >
+                <figure className="work-card-cover">
                   {project.cover ? (
                     <img src={project.cover} alt="" loading="lazy" />
                   ) : (
-                    <span className="index-cover-blank">{project.title}</span>
-                  )}
-                </figure>
-              ))}
-            </div>
-          </div>
-
-          <div className="index-more">
-            <h3 className="index-more-label">Outros repositórios</h3>
-            <ul>
-              {secondaryProjects.map((project) => (
-                <li key={project.id}>
-                  <a
-                    href={project.repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="index-more-link"
-                  >
-                    <span>{project.title}</span>
-                    <span className="index-more-tech">{project.tech.join(' · ')}</span>
-                    <span className="link-arrow" aria-hidden="true">
-                      ↗
+                    <span className="work-card-blank" aria-hidden="true">
+                      {project.id}
                     </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+                  )}
+                  <span className="work-card-index">{project.id}</span>
+                </figure>
+
+                <div className="work-card-body">
+                  <h3 className="work-card-title">{project.title}</h3>
+                  <p
+                    className="work-card-role"
+                    ref={(node) => {
+                      roleRefs.current[project.id] = node;
+                    }}
+                  >
+                    {project.role}
+                  </p>
+                  <p className="work-card-tech">{project.tech.join(' · ')}</p>
+                  <span className="work-card-foot">
+                    <span>{project.year}</span>
+                    <span className="work-card-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </span>
+                </div>
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      <section className="index-more-section" data-build-step="repos.jsx">
+        <div className="shell index-more">
+          <h3 className="index-more-label">Outros repositórios</h3>
+          <ul>
+            {secondaryProjects.map((project) => (
+              <li key={project.id}>
+                <a
+                  href={project.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="index-more-link"
+                >
+                  <span>{project.title}</span>
+                  <span className="index-more-tech">{project.tech.join(' · ')}</span>
+                  <span className="link-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

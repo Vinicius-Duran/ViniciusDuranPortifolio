@@ -3,9 +3,10 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import { animate, stagger, createScope } from 'animejs';
 
-gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
+gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin, DrawSVGPlugin);
 
 export const reducedMotion = () =>
   typeof window !== 'undefined' &&
@@ -172,6 +173,180 @@ export const buildOnScroll = (section) => {
   });
 
   return timeline;
+};
+
+/* =========================================================================
+   TRILHOS HORIZONTAIS
+   A rolagem vertical vira deslocamento horizontal enquanto a seção fica
+   presa na tela. É o movimento central: o scroll deixa de só revelar e passa
+   a conduzir.
+   ========================================================================= */
+
+/**
+ * Prende a seção e arrasta o trilho para a esquerda conforme a página rola.
+ * Devolve o tween, que serve de `containerAnimation` para gatilhos dos
+ * elementos lá dentro — sem isso, um ScrollTrigger de filho mede a posição
+ * vertical dele e nunca dispara.
+ *
+ * A distância é recalculada em cada refresh: ela depende de larguras que
+ * mudam quando a fonte carrega ou a janela muda de tamanho.
+ */
+export const horizontalTrack = (section, track, options = {}) => {
+  if (!section || !track) return null;
+
+  const { endPadding = 0, scrub = 0.8 } = options;
+  const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
+  return gsap.to(track, {
+    x: () => -distance(),
+    ease: 'none',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top top',
+      end: () => `+=${distance() + endPadding}`,
+      pin: true,
+      scrub,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+    },
+  });
+};
+
+/**
+ * Entrada de um elemento que vive dentro de um trilho horizontal. As marcas
+ * `left ...%` medem a travessia horizontal, e não a vertical.
+ */
+export const enterFromTrack = (element, containerAnimation, vars = {}) => {
+  if (!element || !containerAnimation || reducedMotion()) return null;
+
+  const { rotate = 0, from = {}, to = {} } = vars;
+
+  return gsap.fromTo(
+    element,
+    { scale: 0.72, rotate: rotate - 6, opacity: 0, ...from },
+    {
+      scale: 1,
+      rotate,
+      opacity: 1,
+      ease: 'power2.out',
+      ...to,
+      scrollTrigger: {
+        trigger: element,
+        containerAnimation,
+        start: 'left 92%',
+        end: 'left 55%',
+        scrub: true,
+      },
+    }
+  );
+};
+
+/**
+ * Deslocamento em ritmo próprio dentro do trilho: os adereços passam mais
+ * rápido ou mais devagar que o texto, e a cena ganha profundidade.
+ */
+export const driftInTrack = (element, containerAnimation, amount) => {
+  if (!element || !containerAnimation || reducedMotion()) return null;
+
+  return gsap.fromTo(
+    element,
+    { xPercent: -amount, yPercent: amount / 3 },
+    {
+      xPercent: amount,
+      yPercent: -amount / 3,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: element,
+        containerAnimation,
+        start: 'left right',
+        end: 'right left',
+        scrub: true,
+      },
+    }
+  );
+};
+
+/**
+ * Cartas que se empilham: cada uma para no topo e a seguinte sobe por cima,
+ * enquanto a de baixo encolhe e escurece. `pinSpacing: false` é o que faz
+ * elas ocuparem o mesmo espaço em vez de esticar a página.
+ */
+export const stackCards = (cards, options = {}) => {
+  if (!cards?.length || reducedMotion()) return [];
+
+  const { top = 18 } = options;
+
+  return [...cards].map((card, index) => {
+    const isLast = index === cards.length - 1;
+
+    /* A carta presa vira `fixed` e passa a pintar por cima da seguinte, que
+       ainda está no fluxo. Ordenar a pilha explicitamente é o que garante
+       que a que chega fique sempre na frente. */
+    gsap.set(card, { zIndex: index + 1 });
+
+    ScrollTrigger.create({
+      trigger: card,
+      start: `top ${top}%`,
+      endTrigger: cards[cards.length - 1],
+      end: `bottom ${top + 12}%`,
+      pin: true,
+      pinSpacing: false,
+    });
+
+    if (isLast) return null;
+
+    /* O recuo é por escurecimento e desfoque, nunca por opacidade: uma carta
+       translúcida deixa a de trás atravessá-la, e as duas leem sobrepostas
+       em texto ilegível. Opaca, a carta da frente sempre oculta a anterior, e
+       o que sobra é a borda superior espiando — que é o efeito de baralho. */
+    return gsap.to(card, {
+      scale: 0.94,
+      y: -18,
+      filter: 'blur(4px) brightness(0.45)',
+      ease: 'none',
+      scrollTrigger: {
+        trigger: cards[index + 1],
+        start: `top ${top + 55}%`,
+        end: `top ${top}%`,
+        scrub: true,
+      },
+    });
+  });
+};
+
+/** Desenha um traço SVG conforme a rolagem. */
+export const drawOnScroll = (path, trigger) => {
+  if (!path || reducedMotion()) return null;
+
+  return gsap.fromTo(
+    path,
+    { drawSVG: '0%' },
+    {
+      drawSVG: '100%',
+      ease: 'none',
+      scrollTrigger: { trigger: trigger || path, start: 'top 85%', end: 'bottom 55%', scrub: true },
+    }
+  );
+};
+
+/**
+ * Conta um número até o valor final conforme ele entra na tela. Escreve no
+ * nó direto, sem passar pelo estado do React.
+ */
+export const countTo = (element, value, trigger) => {
+  if (!element || reducedMotion()) return null;
+
+  const counter = { n: 0 };
+
+  return gsap.to(counter, {
+    n: value,
+    ease: 'power2.out',
+    duration: 1.4,
+    onUpdate: () => {
+      element.textContent = Math.round(counter.n);
+    },
+    scrollTrigger: { trigger: trigger || element, start: 'top 88%', once: true },
+  });
 };
 
 /**
