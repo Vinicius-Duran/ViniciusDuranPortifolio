@@ -191,20 +191,20 @@ export const projects = [
     featured: true,
     repo: 'https://github.com/Vinicius-Duran/ViniciusDuranPortifolio',
     description:
-      'O site que você está navegando: React 19, design system em CSS custom properties e animação por IntersectionObserver.',
+      'O site que você está navegando: React 19, design system em CSS custom properties e motion com GSAP e anime.js.',
     longDescription:
-      'Portfólio construído do zero em React 19 com React Router 7. O sistema visual é definido por custom properties do CSS — paleta, tipografia e curvas de easing num único ponto — e as animações de entrada usam IntersectionObserver por um hook próprio, sem biblioteca de animação. Todo o conteúdo vive numa camada de dados separada dos componentes.',
+      'Portfólio construído do zero em React 19 com React Router 7. O sistema visual é definido por custom properties do CSS — paleta, tipografia e curvas de easing num único ponto — sobre Archivo, uma grotesk técnica, pesada no display. A ideia que organiza o site é a montagem: cada bloco é uma peça que primeiro aparece como quadro de wireframe rotulado, depois recebe o conteúdo e larga a guia, de modo que a página se constrói na frente de quem chega. GSAP cuida da sequência de abertura, da escrita do título caractere a caractere e do embaralhamento de texto no índice de projetos; anime.js cuida dos stagger de lista. Todo o conteúdo vive numa camada de dados separada dos componentes.',
     challenge:
       'Um portfólio precisa ser visualmente memorável sem virar um amontoado de efeitos, e precisa ser fácil de atualizar — senão o conteúdo envelhece e o site vira uma vitrine desatualizada de si mesmo.',
     solution:
-      'Centralizei paleta, tipografia e easing em custom properties, de modo que ajustar a identidade é editar variáveis, não caçar valores no CSS. Escrevi um hook de reveal sobre IntersectionObserver em vez de importar biblioteca de animação, mantendo o bundle enxuto. O conteúdo — perfil, projetos, certificados, competências — mora em src/data, separado da apresentação.',
+      'Centralizei paleta, tipografia e easing em custom properties, de modo que ajustar a identidade é editar variáveis, não caçar valores no CSS. O motion mora num módulo único que registra os plugins do GSAP e expõe as poucas gramáticas de animação que o site usa, em vez de espalhar tween por componente. Nenhum estado inicial de animação vive no CSS: quem esconde para revelar é o JS, então uma falha de script mostra a página inteira em vez de apagá-la. O conteúdo — perfil, projetos, certificados, competências — mora em src/data, separado da apresentação.',
     outcome:
       'Resultou num site cujo conteúdo se atualiza sem tocar em JSX, com uma suíte de testes que impede a volta de dados fictícios e de texto de rascunho na interface.',
-    tech: ['React 19', 'React Router 7', 'CSS Custom Properties'],
+    tech: ['React 19', 'GSAP', 'anime.js'],
     techDetailed: {
       Frontend: ['React 19', 'React Router DOM 7', 'Vite 6'],
-      Estilo: ['CSS Custom Properties', 'Animações próprias'],
-      Motion: ['IntersectionObserver', 'Mouse follower em rAF'],
+      Estilo: ['CSS Custom Properties', 'Archivo', 'JetBrains Mono'],
+      Motion: ['GSAP', 'ScrollTrigger', 'SplitText', 'ScrambleText', 'anime.js'],
       Qualidade: ['Vitest', 'ESLint'],
     },
     links: [

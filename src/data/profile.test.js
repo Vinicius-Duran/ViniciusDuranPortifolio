@@ -1,14 +1,40 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { profile, getYearsOfExperience } from './profile.js';
 
 describe('profile', () => {
   it('expõe os campos de identidade exigidos pela spec', () => {
-    expect(profile.name).toBe('Vinícius Duran');
-    expect(profile.company).toBe('Zicard Digital Business Agency');
+    expect(profile.name).toBe('Vinicius Duran');
     expect(profile.location).toBe('Florianópolis, SC');
     expect(profile.email).toBe('metaemarketing2@gmail.com');
+  });
+
+  it('não anuncia empregador: o vínculo com a Zicard acabou', () => {
+    expect(profile.company).toBeUndefined();
+  });
+
+  it('não deixa o empregador antigo voltar por nenhum arquivo de src', () => {
+    const varrer = (dir, achados = []) => {
+      for (const entrada of readdirSync(dir)) {
+        const caminho = join(dir, entrada);
+        if (statSync(caminho).isDirectory()) varrer(caminho, achados);
+        else if (/\.(jsx?|css)$/.test(caminho)) {
+          // O próprio arquivo de teste cita o nome ao descrever a regra.
+          if (caminho.endsWith('profile.test.js')) continue;
+          const texto = readFileSync(caminho, 'utf8');
+          if (/zicard/i.test(texto)) achados.push(caminho);
+        }
+      }
+      return achados;
+    };
+
+    // A menção no comentário de profile.js explica a ausência; qualquer
+    // outra é o nome vazando de volta para a interface.
+    const ofensores = varrer(resolve('src')).filter(
+      (f) => !f.endsWith(join('data', 'profile.js'))
+    );
+    expect(ofensores).toEqual([]);
   });
 
   it('usa o handle exato do GitHub, com hífen e maiúsculas', () => {

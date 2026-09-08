@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header/Header';
-import Background from './components/Background/Background';
-import MouseFollower from './components/MouseFollower/MouseFollower';
+import Ambience from './components/Ambience/Ambience';
 import ScrollProgress from './components/ScrollProgress/ScrollProgress';
+import BuildHud from './components/BuildHud/BuildHud';
+import PagePlates from './components/PagePlates/PagePlates';
 import Home from './pages/home/Home';
 import About from './pages/about/About';
 import Project from './pages/project/Project';
+import NotFound from './pages/notfound/NotFound';
 import './App.css';
 
 function ScrollToTop() {
@@ -30,19 +32,26 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="App">
-        <Background />
-        <ScrollProgress />
-        <MouseFollower />
-        <div className="page-shell">
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/projects/:slug" element={<Project />} />
-          </Routes>
-        </div>
-      </div>
+      <a className="skip-link" href="#content">
+        Ir direto ao conteúdo
+      </a>
+      <Ambience />
+      <ScrollProgress />
+      <Header />
+      <main id="content">
+        {/* Camada de fundo do conteúdo: rola junto, e as seções com fundo
+            sólido passam por cima dela naturalmente. */}
+        <PagePlates />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects/:slug" element={<Project />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      {/* Depois de <main>: os efeitos de irmãos rodam em ordem de árvore, e
+          ele precisa das seções já montadas para lê-las. */}
+      <BuildHud />
     </Router>
   );
 }

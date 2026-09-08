@@ -1,0 +1,23 @@
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Some em direção ao texto: o lado esquerdo, onde mora o título, fica
+     limpo, e as placas só existem como atmosfera à direita. */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 34%,
+    rgba(0, 0, 0, 0.4) 58%,
+    #000 84%
+  );
+}
+
+@media (max-width: 900px) {
+  /* Em tela estreita não há coluna livre: as placas passariam por trás do
+     texto em vez de ao lado dele. */
+  .hero-backdrop {
+    display: none;
+  }
+}

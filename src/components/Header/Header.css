@@ -1,374 +1,244 @@
-.site-header {
+.masthead {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  padding: 1.4rem 0;
-  transition: padding 0.4s var(--ease-smooth), background 0.4s var(--ease-smooth), backdrop-filter 0.4s var(--ease-smooth);
+  z-index: var(--z-header);
+  border-bottom: 1px solid transparent;
+  transition: border-color 320ms ease;
 }
 
-.site-header.is-scrolled {
-  padding: 0.8rem 0;
-  background: rgba(6, 3, 12, 0.7);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border-bottom: 1px solid var(--white-10);
+.masthead.is-scrolled {
+  border-bottom-color: var(--paper-10);
 }
 
-.site-header.is-menu-open {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+/* O fundo mora numa camada própria, e não no .masthead: qualquer filtro ou
+   backdrop-filter num ancestral vira bloco de contenção para descendentes
+   `fixed`, e com ele na barra o menu de tela cheia colapsava dentro dela
+   assim que a página saía do topo.
+   Sólido, não translúcido: a 96% o título da seção abaixo ainda deixava um
+   fantasma legível atravessando a barra. */
+.masthead::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ink-050);
+  opacity: 0;
+  transition: opacity 320ms ease;
+  pointer-events: none;
 }
 
-.site-header-inner {
+.masthead.is-scrolled::before {
+  opacity: 1;
+}
+
+.masthead-inner {
   position: relative;
-  z-index: 2;
+  width: 100%;
   max-width: var(--max-w);
-  margin: 0 auto;
-  padding-left: var(--shell-pad);
-  padding-right: var(--shell-pad);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  margin-inline: auto;
+  padding: 1.15rem var(--gutter);
+  display: flex;
   align-items: center;
   gap: 2rem;
 }
 
-.brand {
-  display: inline-flex;
+/* --- Assinatura --------------------------------------------------------- */
+
+.wordmark {
+  display: flex;
   align-items: center;
-  gap: 0.85rem;
-  text-decoration: none;
-  color: var(--white);
-  transition: transform 0.3s var(--ease-smooth);
+  margin-right: auto;
 }
 
-.brand:hover {
-  transform: translateY(-1px);
+.wordmark-logo {
+  width: auto;
+  height: clamp(1.9rem, 3.4vw, 2.5rem);
+  transition: opacity 220ms ease;
 }
 
-.brand-mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: inline-flex;
+@media (hover: hover) and (pointer: fine) {
+  .wordmark:hover .wordmark-logo {
+    opacity: 0.78;
+  }
+}
+
+/* --- Navegação ---------------------------------------------------------- */
+
+.masthead-nav ul {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  background: conic-gradient(from 180deg at 50% 50%, #68b2f8, #8a52ff, #ff3da8, #68b2f8);
+  gap: clamp(1.1rem, 2vw, 2.1rem);
+  list-style: none;
+}
+
+.masthead-link {
   position: relative;
-  box-shadow: 0 0 24px rgba(138, 82, 255, 0.45);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--paper-80);
+  padding-block: 0.35rem;
+  transition: color 200ms ease;
 }
 
-.brand-mark::before {
+.masthead-link::after {
   content: '';
   position: absolute;
-  inset: 2px;
-  border-radius: 50%;
-  background: var(--bg-deep);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 280ms var(--ease-out);
 }
 
-.brand-dot {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--white);
-  box-shadow: 0 0 14px var(--white);
-  animation: pulse-glow 2.4s var(--ease-cinema) infinite;
+.masthead-link[aria-current='page'] {
+  color: var(--paper);
 }
 
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
+.masthead-link[aria-current='page']::after,
+.masthead-link:focus-visible::after {
+  transform: scaleX(1);
 }
 
-.brand-name {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--white);
+@media (hover: hover) and (pointer: fine) {
+  .masthead-link:hover {
+    color: var(--paper);
+  }
+
+  .masthead-link:hover::after {
+    transform: scaleX(1);
+  }
 }
 
-.brand-role {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--white-60);
-  margin-top: 2px;
-}
-
-.site-nav {
-  justify-self: center;
-}
-
-.nav-list {
-  list-style: none;
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  padding: 0;
-  background: rgba(245, 241, 255, 0.04);
-  border: 1px solid var(--white-10);
-  border-radius: 999px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  overflow: hidden;
-}
-
-.nav-list li {
-  display: flex;
-  align-items: stretch;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-link {
-  position: relative;
-  display: flex;
-  flex: 1 1 auto;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 1.1rem 1.25rem;
-  line-height: 1;
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--white-60);
-  border-radius: 999px;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.3s var(--ease-smooth), background 0.3s var(--ease-smooth);
-}
-
-.nav-link-index {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  color: var(--blue-400);
-  opacity: 0.7;
-  transition: opacity 0.3s ease, color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: var(--white);
-  background: linear-gradient(135deg, rgba(104, 178, 248, 0.18), rgba(138, 82, 255, 0.16));
-  box-shadow: inset 0 0 0 1px rgba(104, 178, 248, 0.25);
-}
-
-.nav-link:hover .nav-link-index {
-  color: var(--cyan-300);
-  opacity: 1;
-}
-
-.nav-link.is-active {
-  color: var(--white);
-  background: linear-gradient(135deg, rgba(104, 178, 248, 0.18), rgba(138, 82, 255, 0.18));
-  box-shadow: inset 0 0 0 1px rgba(104, 178, 248, 0.3);
-}
-
-.nav-link.is-active .nav-link-index {
-  color: var(--cyan-300);
-  opacity: 1;
-}
-
-.header-meta {
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--white-60);
-  padding: 0.5rem 0.9rem;
-  border: 1px solid var(--white-10);
-  border-radius: 999px;
-  background: rgba(245, 241, 255, 0.03);
-}
-
-.meta-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
-  animation: pulse-glow 2.4s ease infinite;
-}
-
-.meta-status {
-  color: var(--white);
-}
-
-.meta-sep {
-  color: var(--white-40);
-}
-
-.menu-toggle {
+.masthead-nav-foot {
   display: none;
-  width: 44px;
-  height: 44px;
-  background: rgba(245, 241, 255, 0.05);
-  border: 1px solid var(--white-10);
-  border-radius: 12px;
-  color: var(--white);
-  position: relative;
 }
 
-.menu-toggle span {
-  position: absolute;
-  left: 50%;
-  width: 18px;
-  height: 1.5px;
-  background: var(--white);
-  transition: transform 0.3s var(--ease-smooth), opacity 0.3s ease;
-  transform-origin: center;
+/* --- Estado ------------------------------------------------------------- */
+
+.masthead-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-60);
+  white-space: nowrap;
 }
 
-.menu-toggle span:nth-child(1) {
-  top: 38%;
-  transform: translateX(-50%);
+.masthead-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 0 var(--amber-line);
+  animation: status-pulse 2.8s var(--ease-in-out) infinite;
 }
 
-.menu-toggle span:nth-child(2) {
-  top: 58%;
-  transform: translateX(-50%);
+@keyframes status-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--amber-line);
+  }
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
 }
 
-.menu-toggle.is-open span:nth-child(1) {
-  top: 50%;
-  transform: translateX(-50%) rotate(45deg);
+/* --- Botão de menu ------------------------------------------------------ */
+
+.masthead-toggle {
+  display: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--paper-20);
+  border-radius: var(--radius-sm);
+  transition: transform 160ms var(--ease-out), border-color 200ms ease;
 }
 
-.menu-toggle.is-open span:nth-child(2) {
-  top: 50%;
-  transform: translateX(-50%) rotate(-45deg);
+.masthead-toggle:active {
+  transform: scale(0.97);
 }
 
-@media (max-width: 960px) {
-  .header-meta {
+/* --- Abaixo de 900px: menu de tela cheia -------------------------------- */
+
+@media (max-width: 900px) {
+  .masthead-status {
     display: none;
   }
 
-  .site-header-inner {
-    grid-template-columns: 1fr auto;
+  .masthead-toggle {
+    display: block;
+  }
+
+  /* O painel é fixo e cobre a barra inteira. Sem levantar estes dois, o
+     botão de fechar fica embaixo dele e o menu só sai pelo Escape. */
+  .masthead-toggle,
+  .wordmark {
     position: relative;
-    z-index: 102;
+    z-index: calc(var(--z-menu) + 1);
   }
 
-  .brand {
-    position: relative;
-    z-index: 200;
-  }
-
-  .menu-toggle {
-    display: inline-flex;
-    justify-self: end;
-    z-index: 200;
-    position: relative;
-  }
-
-  .menu-toggle.is-open {
-    background: rgba(245, 241, 255, 0.08);
-    border-color: rgba(245, 241, 255, 0.25);
-    box-shadow: 0 6px 24px rgba(6, 3, 12, 0.4);
-  }
-
-  .menu-toggle.is-open span {
-    background: var(--white);
-    width: 22px;
-    height: 2px;
-  }
-
-  .site-nav {
+  .masthead-nav {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    height: 100dvh;
-    margin: 0;
-    background:
-      radial-gradient(900px 500px at 20% 0%, rgba(138, 82, 255, 0.22), transparent 55%),
-      radial-gradient(700px 400px at 90% 100%, rgba(104, 178, 248, 0.15), transparent 50%),
-      var(--bg-deep);
+    inset: 0;
+    z-index: var(--z-menu);
+    background: var(--ink-050);
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.35s var(--ease-smooth), visibility 0.35s;
-    z-index: 101;
-    padding: calc(5.5rem + env(safe-area-inset-top, 0px)) var(--shell-pad)
-      calc(2.5rem + env(safe-area-inset-bottom, 0px));
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .site-nav.is-open {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .nav-list {
     flex-direction: column;
-    align-items: stretch;
+    justify-content: center;
+    gap: 3rem;
+    padding: var(--gutter);
+    /* Fecha por cima em vez de deslizar: a máscara evita o pulo de layout. */
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+    transition: clip-path 460ms var(--ease-in-out), visibility 0s linear 460ms;
+  }
+
+  .masthead-nav.is-open {
+    clip-path: inset(0 0 0 0);
+    visibility: visible;
+    transition: clip-path 460ms var(--ease-in-out), visibility 0s;
+  }
+
+  .masthead-nav ul {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 0.35rem;
-    width: 100%;
-    max-width: 100%;
-    background: none;
-    border: none;
-    border-radius: 0;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    overflow: visible;
-    padding: 0;
   }
 
-  .nav-list li {
-    width: 100%;
-  }
-
-  .nav-link {
-    width: 100%;
-    justify-content: flex-start;
+  .masthead-link {
     font-family: var(--font-display);
-    font-size: clamp(1.85rem, 7vw, 2.5rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    padding: 0.85rem 0.25rem;
-    gap: 1rem;
-    border-radius: 12px;
+  font-weight: 700;
+    font-size: clamp(2.4rem, 12vw, 3.6rem);
+    letter-spacing: -0.03em;
+    color: var(--paper);
+    padding-block: 0.12em;
   }
 
-  .nav-link-index {
-    font-size: 0.75rem;
-    min-width: 1.6rem;
-  }
-
-  .nav-link.is-active {
-    background: linear-gradient(135deg, rgba(104, 178, 248, 0.12), rgba(138, 82, 255, 0.12));
-  }
-}
-
-@media (max-width: 480px) {
-  .brand-role {
+  .masthead-link::after {
     display: none;
   }
 
-  .brand-name {
-    font-size: 0.95rem;
+  .masthead-link[aria-current='page'] {
+    color: var(--amber);
   }
 
-  .brand-mark {
-    width: 32px;
-    height: 32px;
+  .masthead-nav-foot {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper-60);
   }
 }
