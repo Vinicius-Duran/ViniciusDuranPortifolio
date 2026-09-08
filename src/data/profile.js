@@ -1,7 +1,8 @@
 export const profile = {
   name: 'Vinícius Duran',
   role: 'Desenvolvedor Full-Stack',
-  company: 'Zicard Digital Business Agency',
+  // Sem campo de empresa: o vínculo com a Zicard acabou, e um portfólio que
+  // anuncia empregador antigo envelhece contra quem o publica.
   location: 'Florianópolis, SC',
   careerStartYear: 2023,
   email: 'metaemarketing2@gmail.com',

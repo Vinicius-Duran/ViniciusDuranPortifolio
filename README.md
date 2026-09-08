@@ -70,11 +70,18 @@ npm test         # suíte de testes
 
 ```
 src/
-  components/    Header, Grain, Marquee, ScrollProgress
-  data/          conteúdo do site — perfil, projetos, certificados, competências
+  components/    Header, Grain, Marquee, ScrollProgress, Manifesto,
+                 AiSection, HeroBackdrop, BuildHud, Frame
+  data/          conteúdo do site — perfil, projetos, certificados,
+                 competências, engenharia de IA
   lib/           motion.js — registro do GSAP e as gramáticas de animação
   pages/         home, about, project, notfound
 ```
+
+O fundo do herói é montado com as capturas reais dos projetos, em duotone
+âmbar e bem apagadas. Não há banco de imagens no site: "código na tela" é o
+clichê número um do portfólio de desenvolvedor e diria o contrário do que a
+página afirma.
 
 ## Camada de dados
 
@@ -87,6 +94,7 @@ editar esses arquivos, não os componentes.
 | `projects.js` | nove projetos: seis em destaque, com case study completo (desafio, solução, resultado), e três secundários, listados só como link de repositório |
 | `certificates.js` | 19 certificados e seus PDFs em `public/` |
 | `skills.js` | competências por grupo |
+| `ai.js` | engenharia de IA — descreve capacidade e resultado, nunca mecanismo |
 
 Uma rota de case study (`/projects/:slug`) só existe para os projetos em destaque;
 acessar o slug de um projeto secundário redireciona de volta para a seção de

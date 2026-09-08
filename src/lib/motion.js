@@ -349,9 +349,23 @@ export const drawOnScroll = (path, trigger) => {
 /**
  * Conta um número até o valor final conforme ele entra na tela. Escreve no
  * nó direto, sem passar pelo estado do React.
+ *
+ * `pad` mantém a largura fixa em dígitos: "03" em vez de "3". Sem isso o
+ * número dança de largura enquanto conta, e num balanço alinhado à direita
+ * isso lê como defeito.
  */
-export const countTo = (element, value, trigger) => {
-  if (!element || reducedMotion()) return null;
+export const countTo = (element, value, trigger, pad = 2) => {
+  if (!element) return null;
+
+  const escrever = (n) => {
+    element.textContent = String(Math.round(n)).padStart(pad, '0');
+  };
+
+  // Sob movimento reduzido não há contagem, mas o zero à esquerda continua.
+  if (reducedMotion()) {
+    escrever(value);
+    return null;
+  }
 
   const counter = { n: 0 };
 
@@ -359,9 +373,7 @@ export const countTo = (element, value, trigger) => {
     n: value,
     ease: 'power2.out',
     duration: 1.4,
-    onUpdate: () => {
-      element.textContent = Math.round(counter.n);
-    },
+    onUpdate: () => escrever(counter.n),
     scrollTrigger: { trigger: trigger || element, start: 'top 88%', once: true },
   });
 };

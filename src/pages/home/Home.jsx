@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
 import Frame from '../../components/Frame/Frame';
 import Manifesto from '../../components/Manifesto/Manifesto';
+import AiSection from '../../components/AiSection/AiSection';
+import HeroBackdrop from '../../components/HeroBackdrop/HeroBackdrop';
 import {
   useGsapScope,
   buildIntro,
@@ -17,6 +19,7 @@ import {
   countTo,
   drawOnScroll,
   gsap,
+  ScrollTrigger,
 } from '../../lib/motion';
 import { featuredProjects, secondaryProjects } from '../../data/projects';
 import { profile, getYearsOfExperience } from '../../data/profile';
@@ -75,11 +78,41 @@ const Home = () => {
 
     drawOnScroll(el('.about-underline path'), el('.about-lead'));
 
+    // O fio do fluxo de IA se desenha, e cada etapa acende quando ele chega.
+    drawOnScroll(el('.ai-flow-live'), el('.ai-flow'));
+    playOnEnter(el('.ai-grid'), revealStack(all('.ai-item'), { delayStep: 60 }));
+
+    const etapas = all('.ai-flow-step');
+    etapas.forEach((etapa, index) => {
+      ScrollTrigger.create({
+        trigger: el('.ai-flow'),
+        start: `top ${72 - index * 4}%`,
+        once: true,
+        onEnter: () => etapa.classList.add('is-on'),
+      });
+    });
+
     /* Prender e arrastar só faz sentido onde há tela larga e ponteiro fino.
        No toque, os mesmos blocos existem empilhados e sem pin. */
     const mm = gsap.matchMedia();
 
     mm.add('(min-width: 901px) and (prefers-reduced-motion: no-preference)', () => {
+      /* As placas do herói sobem em ritmos diferentes: é o que separa elas do
+         fundo e evita que leiam como um adesivo colado atrás do título. */
+      all('.hero-plate').forEach((plate) => {
+        const depth = Number(plate.dataset.depth) || 1;
+        gsap.to(plate, {
+          yPercent: -9 * depth,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el('.hero'),
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      });
+
       const manifesto = horizontalTrack(el('.manifesto'), el('.manifesto-track'));
 
       all('.manifesto-chip').forEach((chip) => {
@@ -134,6 +167,8 @@ const Home = () => {
     <div className="home" ref={root}>
       {/* ---------------------------------------------------------------- */}
       <section className="hero" data-build-step="hero.jsx">
+        <HeroBackdrop />
+
         <div className="build-grid" aria-hidden="true">
           <span style={{ left: '8%' }} />
           <span style={{ left: '28%' }} />
@@ -166,16 +201,23 @@ const Home = () => {
                 <dt>Base</dt>
                 <dd>{profile.location}</dd>
               </div>
+              {/* O valor já sai preenchido com zero à esquerda para que o
+                  número nasça com a largura final, mesmo antes da contagem
+                  e mesmo se o JS não rodar. */}
               <div>
                 <dt>Anos</dt>
                 <dd>
-                  <span data-count={anosDeExperiencia}>{anosDeExperiencia}</span>
+                  <span data-count={anosDeExperiencia}>
+                    {String(anosDeExperiencia).padStart(2, '0')}
+                  </span>
                 </dd>
               </div>
               <div>
                 <dt>Projetos</dt>
                 <dd>
-                  <span data-count={totalProjetos}>{totalProjetos}</span>
+                  <span data-count={totalProjetos}>
+                    {String(totalProjetos).padStart(2, '0')}
+                  </span>
                 </dd>
               </div>
             </dl>
@@ -286,6 +328,9 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      {/* ---------------------------------------------------------------- */}
+      <AiSection />
 
       {/* ---------------------------------------------------------------- */}
       <section id="projects" className="work" data-build-step="projects.jsx">

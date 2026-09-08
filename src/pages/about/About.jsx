@@ -80,12 +80,12 @@ const About = () => {
                 <dd>{profile.location}</dd>
               </div>
               <div>
-                <dt>Empresa</dt>
-                <dd>{profile.company}</dd>
+                <dt>Disponível</dt>
+                <dd>Para novos projetos</dd>
               </div>
               <div>
                 <dt>Certificações</dt>
-                <dd>{certificates.length}</dd>
+                <dd>{String(certificates.length).padStart(2, '0')}</dd>
               </div>
             </dl>
           </div>
