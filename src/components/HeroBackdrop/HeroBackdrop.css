@@ -14,46 +14,10 @@
   );
 }
 
-.hero-plate {
-  position: absolute;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  /* O âmbar por baixo é o que colore: a imagem entra em `luminosity` e cede
-     a cor, ficando duotone em vez de uma miniatura colorida no fundo. */
-  background: var(--amber);
-  box-shadow: var(--shadow-lift);
-  opacity: 0.13;
-  will-change: transform;
-}
-
-.hero-plate img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  mix-blend-mode: luminosity;
-  filter: contrast(1.15) brightness(0.92);
-}
-
-/* Uma borda interna de 1px dá a impressão de vidro em vez de recorte seco. */
-.hero-plate::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(239, 232, 220, 0.14);
-  border-radius: inherit;
-}
-
 @media (max-width: 900px) {
   /* Em tela estreita não há coluna livre: as placas passariam por trás do
      texto em vez de ao lado dele. */
   .hero-backdrop {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-plate {
-    opacity: 0.1;
   }
 }

@@ -1,5 +1,5 @@
 /* =========================================================================
-   Vinícius Duran — sistema visual
+   Vinicius Duran — sistema visual
    Editorial escuro e quente. Um acento só. Sem gradiente de marca.
    ========================================================================= */
 
@@ -337,6 +337,49 @@ img {
   .btn-line:hover {
     border-color: var(--paper-40);
     background: var(--ink-100);
+  }
+}
+
+/* =========================================================================
+   PLACAS
+   As capturas reais dos projetos usadas como atmosfera. Compartilhado entre
+   o herói e o manifesto para que o tratamento seja um só: se o duotone mudar,
+   muda nos dois.
+   ========================================================================= */
+
+.plate {
+  position: absolute;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  /* O âmbar por baixo é o que colore: a imagem entra em `luminosity` e cede
+     a cor, ficando duotone em vez de uma miniatura colorida no fundo. */
+  background: var(--amber);
+  box-shadow: var(--shadow-lift);
+  opacity: 0.13;
+  will-change: transform;
+}
+
+.plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: luminosity;
+  filter: contrast(1.15) brightness(0.92);
+}
+
+/* Uma borda interna de 1px dá a impressão de vidro em vez de recorte seco. */
+.plate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(239, 232, 220, 0.14);
+  border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate {
+    opacity: 0.1;
   }
 }
 

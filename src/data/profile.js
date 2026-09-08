@@ -1,5 +1,5 @@
 export const profile = {
-  name: 'Vinícius Duran',
+  name: 'Vinicius Duran',
   role: 'Desenvolvedor Full-Stack',
   // Sem campo de empresa: o vínculo com a Zicard acabou, e um portfólio que
   // anuncia empregador antigo envelhece contra quem o publica.

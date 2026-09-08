@@ -9,6 +9,26 @@
   border-block: 1px solid var(--paper-10);
 }
 
+/* --- Placas de fundo ---------------------------------------------------- */
+
+.manifesto-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Apaga a faixa central, que é exatamente a altura por onde a frase
+     atravessa: placa atrás de tipografia dessa escala vira sujeira. */
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    rgba(0, 0, 0, 0.55) 24%,
+    transparent 38%,
+    transparent 62%,
+    rgba(0, 0, 0, 0.55) 76%,
+    #000 100%
+  );
+}
+
 /* --- Adereços soltos --------------------------------------------------- */
 
 .manifesto-floats {
@@ -179,7 +199,8 @@
   }
 
   /* Sem pin não há espaço vertical para eles morarem. */
-  .manifesto-floats {
+  .manifesto-floats,
+  .manifesto-backdrop {
     display: none;
   }
 

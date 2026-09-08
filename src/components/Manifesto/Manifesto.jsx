@@ -1,5 +1,17 @@
 import React from 'react';
+import { featuredProjects } from '../../data/projects';
 import './Manifesto.css';
+
+/* As mesmas capturas do herói continuam aqui para a imagem não terminar num
+   corte seco: sem elas a seção volta a ser um retângulo preto logo depois de
+   uma primeira dobra cheia. Ficam nas faixas de cima e de baixo, fora da
+   altura em que a frase atravessa. */
+const placas = [
+  { top: '5%', left: '4%', width: '19vw', rotate: '-2deg', depth: 1 },
+  { top: '9%', right: '6%', width: '17vw', rotate: '2deg', depth: 2 },
+  { bottom: '6%', left: '22%', width: '16vw', rotate: '1.5deg', depth: 3 },
+  { bottom: '9%', right: '13%', width: '20vw', rotate: '-1.5deg', depth: 4 },
+];
 
 /**
  * A frase corre na horizontal enquanto a seção fica presa na tela. Os termos
@@ -73,6 +85,25 @@ const Manifesto = () => (
       Desenho o schema, escrevo a API, construo a interface e cuido do detalhe
       que ninguém vê.
     </h2>
+
+    <div className="manifesto-backdrop" aria-hidden="true">
+      {featuredProjects
+        .filter((p) => p.cover)
+        .slice(0, placas.length)
+        .map((project, index) => {
+          const { depth, ...posicao } = placas[index];
+          return (
+            <figure
+              className="plate manifesto-plate"
+              key={project.id}
+              data-depth={depth}
+              style={posicao}
+            >
+              <img src={project.cover} alt="" loading="lazy" decoding="async" />
+            </figure>
+          );
+        })}
+    </div>
 
     {/* Camada solta: adereços em alturas diferentes, cada um em ritmo
         próprio, para a frase não ficar sozinha no meio de uma tela vazia. */}

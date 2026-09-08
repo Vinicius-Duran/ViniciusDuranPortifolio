@@ -124,6 +124,22 @@ const Home = () => {
         driftInTrack(prop, manifesto, 30 + index * 18)
       );
 
+      /* As placas do manifesto sobem devagar durante o pin: a imagem continua
+         viva enquanto a frase atravessa, em vez de ficar parada no fundo. */
+      all('.manifesto-plate').forEach((plate) => {
+        const depth = Number(plate.dataset.depth) || 1;
+        gsap.to(plate, {
+          yPercent: -6 * depth,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el('.manifesto'),
+            start: 'top top',
+            end: () => manifesto.scrollTrigger.end,
+            scrub: 0.8,
+          },
+        });
+      });
+
       /* Os adereços soltos ficam fora do trilho, então seguem a rolagem do
          próprio pin — cada um numa direção e num ritmo. */
       all('.manifesto-float').forEach((node, index) => {

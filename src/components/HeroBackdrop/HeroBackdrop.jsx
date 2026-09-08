@@ -29,7 +29,7 @@ const HeroBackdrop = () => {
         const pos = posicoes[index];
         return (
           <figure
-            className="hero-plate"
+            className="plate hero-plate"
             key={project.id}
             data-depth={pos.depth}
             style={{
