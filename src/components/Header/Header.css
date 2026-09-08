@@ -47,31 +47,19 @@
 
 .wordmark {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  align-items: center;
   margin-right: auto;
-  line-height: 1.15;
 }
 
-.wordmark-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
-  transition: color 200ms ease;
-}
-
-.wordmark-role {
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--paper-60);
+.wordmark-logo {
+  width: auto;
+  height: clamp(1.9rem, 3.4vw, 2.5rem);
+  transition: opacity 220ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .wordmark:hover .wordmark-name {
-    color: var(--amber);
+  .wordmark:hover .wordmark-logo {
+    opacity: 0.78;
   }
 }
 

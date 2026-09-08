@@ -434,6 +434,17 @@ const Home = () => {
 
       {/* ---------------------------------------------------------------- */}
       <section id="contact" className="contact" data-build-step="contact.jsx">
+        {/* O monograma como marca-d'água: é a seção com menos matéria na
+            página, e um símbolo grande e apagado sustenta o vazio melhor
+            que mais texto. */}
+        <img
+          className="contact-mark"
+          src="/logos/logo-icon.png"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+        />
+
         <div className="shell">
           <div className="part contact-head">
             <Frame tag="h2 · contact" />

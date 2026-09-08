@@ -474,6 +474,33 @@
    CONTATO
    ========================================================================= */
 
+.contact {
+  position: relative;
+  /* A marca-d'água sai da caixa de propósito; sem recorte aqui ela estica a
+     página e cria rolagem horizontal em tela estreita. */
+  overflow: hidden;
+}
+
+.contact-mark {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--gutter) * -0.4);
+  width: clamp(16rem, 34vw, 30rem);
+  translate: 0 -50%;
+  opacity: 0.06;
+  pointer-events: none;
+  /* Some para dentro da página em vez de terminar num recorte. */
+  mask-image: radial-gradient(closest-side, #000 45%, transparent 92%);
+}
+
+@media (max-width: 900px) {
+  .contact-mark {
+    right: -18%;
+    width: 22rem;
+    opacity: 0.05;
+  }
+}
+
 .contact-title {
   max-width: 13ch;
   margin-bottom: clamp(2.5rem, 5vw, 4rem);

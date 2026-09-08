@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header/Header';
-import Grain from './components/Grain/Grain';
+import Ambience from './components/Ambience/Ambience';
 import ScrollProgress from './components/ScrollProgress/ScrollProgress';
 import BuildHud from './components/BuildHud/BuildHud';
 import Home from './pages/home/Home';
@@ -34,7 +34,7 @@ function App() {
       <a className="skip-link" href="#content">
         Ir direto ao conteúdo
       </a>
-      <Grain />
+      <Ambience />
       <ScrollProgress />
       <Header />
       <main id="content">

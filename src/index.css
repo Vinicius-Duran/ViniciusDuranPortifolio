@@ -83,16 +83,10 @@ body {
   font-weight: 400;
   line-height: 1.6;
   color: var(--paper);
-  /* Luz ambiente: três lavagens radiais muito fracas dão uma direção de luz
-     e tiram a chapa do fundo. Presas à viewport, então a atmosfera é a mesma
-     nas doze telas em vez de escorrer com a rolagem. */
+  /* A luz ambiente mora no componente Ambience, e não aqui: presa ao body
+     ela era imóvel, e o fundo voltava a ser uma chapa assim que a primeira
+     dobra saía da tela. Lá os clarões se deslocam com a rolagem. */
   background-color: var(--ink-050);
-  background-image:
-    radial-gradient(80rem 55rem at 10% -8%, rgba(217, 116, 63, 0.11), transparent 62%),
-    radial-gradient(65rem 45rem at 96% 12%, rgba(217, 116, 63, 0.055), transparent 58%),
-    radial-gradient(70rem 60rem at 50% 108%, rgba(239, 232, 220, 0.04), transparent 60%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

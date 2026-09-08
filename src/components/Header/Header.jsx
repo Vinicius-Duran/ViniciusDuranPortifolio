@@ -63,9 +63,17 @@ const Header = () => {
   return (
     <header className={`masthead ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="masthead-inner">
+        {/* A variante horizontal para fundo escuro já traz o monograma, o
+            nome e o cargo — os mesmos três dados que o texto trazia. O nome
+            segue no DOM para leitor de tela e para busca. */}
         <Link to="/" className="wordmark" onClick={closeMenu}>
-          <span className="wordmark-name">{profile.name}</span>
-          <span className="wordmark-role">{profile.role}</span>
+          <img
+            className="wordmark-logo"
+            src="/logos/logo-fpreto-h.png"
+            alt={`${profile.name} — ${profile.role}`}
+            width="1000"
+            height="200"
+          />
         </Link>
 
         <nav
