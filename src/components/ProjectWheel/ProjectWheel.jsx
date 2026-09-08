@@ -90,6 +90,9 @@ const ProjectWheel = () => {
         }
       });
 
+      // A carta da frente se marca: é o elo visual com a leitura embaixo.
+      cartas.forEach((carta, i) => carta.classList.toggle('is-front', i === melhor));
+
       setAtivo((anterior) => (anterior === melhor ? anterior : melhor));
     };
 
@@ -235,13 +238,26 @@ const ProjectWheel = () => {
                 tabIndex={i === ativo ? 0 : -1}
                 aria-hidden={i === ativo ? undefined : 'true'}
               >
-                {project.cover ? (
-                  <img src={project.cover} alt="" loading="lazy" />
-                ) : (
-                  <span className="globe-card-blank" aria-hidden="true">
-                    {project.id}
-                  </span>
-                )}
+                {/* Moldura de navegador: é o que faz nove capturas soltas
+                    lerem como nove sites, e dá casa para as que não têm
+                    captura em vez de deixá-las como retângulo vazio. */}
+                <span className="globe-card-chrome" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                  <em>{project.id}</em>
+                </span>
+
+                <span className="globe-card-screen">
+                  {project.cover ? (
+                    <img src={project.cover} alt="" loading="lazy" />
+                  ) : (
+                    <span className="globe-card-fallback" aria-hidden="true">
+                      <strong>{project.title}</strong>
+                      <small>{project.tech.join(' · ')}</small>
+                    </span>
+                  )}
+                </span>
               </Link>
             </article>
           ))}
