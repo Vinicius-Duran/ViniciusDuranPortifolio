@@ -1,0 +1,343 @@
+/* =========================================================================
+   GLOBO DE PROJETOS
+   As capas na superfície de uma esfera que gira. CSS 3D, sem WebGL.
+   ========================================================================= */
+
+.globe-section {
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block: clamp(6rem, 5rem + 4vw, 8rem) clamp(2.5rem, 4vw, 4rem);
+  overflow: hidden;
+}
+
+.globe-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.globe-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.globe-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-40);
+  white-space: nowrap;
+  margin-right: 0.5rem;
+}
+
+.globe-nav-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1rem;
+  color: var(--paper-80);
+  border: 1px solid var(--paper-20);
+  border-radius: 50%;
+  transition:
+    transform 160ms var(--ease-out),
+    border-color 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease;
+}
+
+.globe-nav-btn:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .globe-nav-btn:hover {
+    color: var(--ink-000);
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+}
+
+/* --- O palco 3D --------------------------------------------------------- */
+
+.globe-stage {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  /* Alta de propósito: a carta da frente está a um raio inteiro da câmera e
+     é ampliada por P/(P−raio). Um valor baixo a estoura sobre a leitura. */
+  perspective: 2600px;
+  perspective-origin: 50% 50%;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.globe-stage:active {
+  cursor: grabbing;
+}
+
+.globe {
+  position: relative;
+  width: var(--carta);
+  height: calc(var(--carta) * 0.68);
+  transform-style: preserve-3d;
+  will-change: transform;
+
+  --carta: clamp(8rem, 12.5vw, 11.5rem);
+  --raio: clamp(12rem, 19vw, 18rem);
+}
+
+.globe-card {
+  position: absolute;
+  inset: 0;
+  /* A ordem importa: gira em torno do eixo vertical, inclina para a latitude
+     e só então afasta pela normal. Assim a face aponta para fora da esfera,
+     que é o que inclina as cartas das bordas. */
+  transform: rotateY(var(--lon)) rotateX(var(--lat)) translateZ(var(--raio));
+  will-change: opacity, filter;
+}
+
+.globe-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--paper-20);
+  border-radius: var(--radius-sm);
+  background: var(--ink-200);
+  box-shadow: var(--shadow-soft);
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+
+/* --- Moldura de navegador ----------------------------------------------- */
+
+.globe-card-chrome {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  height: 15%;
+  min-height: 12px;
+  padding-inline: 6%;
+  background: var(--ink-300);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+.globe-card-chrome i {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: var(--paper-20);
+}
+
+.globe-card-chrome em {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 6px;
+  letter-spacing: 0.1em;
+  color: var(--paper-40);
+}
+
+/* --- A tela ------------------------------------------------------------- */
+
+.globe-card-screen {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.globe-card-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Pelo topo: é onde mora o herói de cada site. Centralizado, a captura
+     mostra um pedaço qualquer do meio da página. */
+  object-position: top center;
+  /* Gradação leve para as capturas claras não virarem lasca branca contra a
+     paleta quente — sem chegar a duotone, que apagaria a identidade delas. */
+  filter: saturate(0.88) contrast(1.04) brightness(0.92);
+}
+
+/* Véu quente por cima, mais denso embaixo: assenta a captura no ambiente e
+   dá peso ao pé da carta. */
+.globe-card-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 45%, rgba(20, 16, 12, 0.55)),
+    rgba(217, 116, 63, 0.07);
+  pointer-events: none;
+}
+
+.globe-card-fallback {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  height: 100%;
+  padding: 0 8%;
+  text-align: left;
+}
+
+.globe-card-fallback strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--paper-80);
+}
+
+.globe-card-fallback small {
+  font-family: var(--font-mono);
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  color: var(--paper-40);
+}
+
+/* --- A carta de frente -------------------------------------------------- */
+
+.globe-card.is-front .globe-card-link {
+  border-color: var(--amber-line);
+  box-shadow: var(--shadow-lift), 0 0 0 1px var(--amber-line);
+}
+
+.globe-card.is-front .globe-card-screen img {
+  filter: saturate(1) contrast(1.02) brightness(1);
+}
+
+.globe-card.is-front .globe-card-screen::after {
+  background: linear-gradient(to bottom, transparent 62%, rgba(20, 16, 12, 0.4));
+}
+
+/* --- Leitura do projeto de frente --------------------------------------- */
+
+.globe-readout {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.4rem 1.5rem;
+  padding-top: clamp(1rem, 2vw, 1.75rem);
+  border-top: 1px solid var(--paper-10);
+}
+
+.globe-readout-n {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+}
+
+.globe-readout-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  grid-column: 2;
+}
+
+.globe-readout-meta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-40);
+  grid-column: 2;
+}
+
+.globe-readout-tech {
+  font-size: 0.85rem;
+  color: var(--paper-60);
+  grid-column: 2;
+}
+
+.globe-readout-link {
+  grid-column: 3;
+  grid-row: 1 / span 3;
+  align-self: center;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* --- Telas estreitas ---------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .globe-section {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .globe {
+    --carta: min(30vw, 7rem);
+    --raio: min(42vw, 11rem);
+  }
+
+  .globe-stage {
+    perspective: 1400px;
+    min-height: 56vh;
+  }
+
+  .globe-hint {
+    display: none;
+  }
+
+  .globe-readout {
+    grid-template-columns: 1fr;
+  }
+
+  .globe-readout-title,
+  .globe-readout-meta,
+  .globe-readout-tech {
+    grid-column: 1;
+  }
+
+  .globe-readout-link {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 0.75rem;
+  }
+}
+
+/* --- Sem movimento: a esfera vira grade --------------------------------- */
+
+.globe-section[data-estatico='true'] .globe-stage {
+  perspective: none;
+  display: block;
+}
+
+.globe-section[data-estatico='true'] .globe {
+  width: 100%;
+  height: auto;
+  transform: none !important;
+  transform-style: flat;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.85rem;
+}
+
+.globe-section[data-estatico='true'] .globe-card {
+  position: relative;
+  inset: auto;
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  aspect-ratio: 3 / 2;
+}
+
+/* Sem giro não há "carta de frente"; o anel de destaque não deve ficar
+   preso numa carta arbitrária. */
+.globe-section[data-estatico='true'] .globe-card.is-front .globe-card-link {
+  border-color: var(--paper-20);
+  box-shadow: var(--shadow-soft);
+}

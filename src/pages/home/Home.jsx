@@ -1,17 +1,17 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
 import Frame from '../../components/Frame/Frame';
 import Manifesto from '../../components/Manifesto/Manifesto';
 import AiSection from '../../components/AiSection/AiSection';
 import HeroBackdrop from '../../components/HeroBackdrop/HeroBackdrop';
+import ProjectWheel from '../../components/ProjectWheel/ProjectWheel';
 import {
   useGsapScope,
   buildIntro,
   buildOnScroll,
   revealStack,
   playOnEnter,
-  scrambleTo,
   horizontalTrack,
   enterFromTrack,
   driftInTrack,
@@ -54,7 +54,6 @@ const processSteps = [
 ];
 
 const Home = () => {
-  const roleRefs = useRef({});
   const anosDeExperiencia = getYearsOfExperience();
   const totalProjetos = featuredProjects.length + secondaryProjects.length;
 
@@ -113,7 +112,12 @@ const Home = () => {
         });
       });
 
-      const manifesto = horizontalTrack(el('.manifesto'), el('.manifesto-track'));
+      /* Prioridades em ordem de página: manifesto (3) mede antes do processo
+         (2), que mede antes da roda (1). Fora dessa ordem os pins leem
+         posições que os de cima ainda vão mudar, e as seções se sobrepõem. */
+      const manifesto = horizontalTrack(el('.manifesto'), el('.manifesto-track'), {
+        refreshPriority: 3,
+      });
 
       all('.manifesto-chip').forEach((chip) => {
         const tilt = parseFloat(getComputedStyle(chip).getPropertyValue('--tilt')) || 0;
@@ -162,109 +166,13 @@ const Home = () => {
         );
       });
 
-      const work = horizontalTrack(el('.work'), el('.work-track'), { scrub: 0.6 });
-
-      all('.work-card').forEach((card) =>
-        enterFromTrack(card, work, {
-          from: { scale: 0.86, opacity: 0.25, rotate: 0 },
-          to: { scale: 1, opacity: 1 },
-        })
-      );
-
-      stackCards(all('.process-card'), { container: el('.process-stack') });
+      stackCards(all('.process-card'), {
+        container: el('.process-stack'),
+        refreshPriority: 2,
+      });
     });
   });
 
-  const handleEnter = (project) => {
-    scrambleTo(roleRefs.current[project.id], project.role);
-  };
-
-  /* --- Travessia da galeria sem depender da roda do mouse ---------------
-     Acima de 900px a faixa é presa e o deslocamento horizontal vem da
-     rolagem da página — o scrub mapeia 1px de página para 1px de trilho,
-     então andar uma carta é rolar a largura de uma carta. Abaixo disso o
-     trilho rola nativamente e quem anda é ele.
-
-     O alvo é SEMPRE limitado ao intervalo do pin. Sem esse limite os botões
-     viram rolagem geral do site: passado o fim da faixa, o mesmo clique que
-     antes andava uma carta passa a empurrar a página para a seção seguinte.
-
-     O gatilho é procurado na hora do clique, e não guardado numa referência.
-     Guardado, ele empata com o ciclo de vida do React: em modo estrito o
-     componente monta, desmonta e remonta, e a limpeza do matchMedia zera a
-     referência depois da remontagem — as setas ficam mudas sem nenhum erro
-     no console. Consultado na hora, sempre existe se o pin existe. */
-
-  const trilhoDoTrabalho = () => {
-    const secao = document.querySelector('.work');
-    if (!secao) return null;
-    return ScrollTrigger.getAll().find((t) => t.pin && t.trigger === secao) || null;
-  };
-
-  const limitarAoTrilho = (alvo) => {
-    const st = trilhoDoTrabalho();
-    if (!st) return null;
-    return Math.min(Math.max(alvo, st.start), st.end);
-  };
-
-  const passoDaCarta = () => {
-    const card = document.querySelector('.work-card');
-    const track = document.querySelector('.work-track');
-    if (!card || !track) return 0;
-    const gap = parseFloat(getComputedStyle(track).columnGap || '0') || 0;
-    return card.getBoundingClientRect().width + gap;
-  };
-
-  const andarTrabalho = (direcao) => {
-    const passo = passoDaCarta();
-    if (!passo) return;
-
-    const alvo = limitarAoTrilho(window.scrollY + passo * direcao);
-    if (alvo !== null) {
-      window.scrollTo({ top: alvo, behavior: 'smooth' });
-      return;
-    }
-    document
-      .querySelector('.work-track')
-      ?.scrollBy({ left: passo * direcao, behavior: 'smooth' });
-  };
-
-  const arrasto = useRef({ ativo: false, x: 0, andou: 0 });
-
-  const aoPressionar = (event) => {
-    // Só ponteiro primário; não sequestra o botão do meio nem o direito.
-    if (event.button !== 0) return;
-    arrasto.current = { ativo: true, x: event.clientX, andou: 0 };
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-
-  const aoMover = (event) => {
-    if (!arrasto.current.ativo) return;
-    const delta = event.clientX - arrasto.current.x;
-    arrasto.current.x = event.clientX;
-    arrasto.current.andou += Math.abs(delta);
-
-    // Mesmo limite do botão: arrastar não pode empurrar a página para fora
-    // da galeria depois que a última carta chega.
-    const alvo = limitarAoTrilho(window.scrollY - delta);
-    if (alvo !== null) window.scrollTo({ top: alvo });
-    else event.currentTarget.scrollLeft -= delta;
-  };
-
-  const aoSoltar = (event) => {
-    arrasto.current.ativo = false;
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
-  };
-
-  /* Um arrasto termina em `click` no link que estava embaixo do dedo. O
-     limiar separa arrastar de clicar; sem ele, atravessar a galeria abre um
-     projeto no meio do caminho. */
-  const aoClicarCarta = (event) => {
-    if (arrasto.current.andou > 8) {
-      event.preventDefault();
-      arrasto.current.andou = 0;
-    }
-  };
 
   return (
     <div className="home" ref={root}>
@@ -436,86 +344,7 @@ const Home = () => {
       <AiSection />
 
       {/* ---------------------------------------------------------------- */}
-      <section id="projects" className="work" data-build-step="projects.jsx">
-        <div className="work-head shell">
-          <h2 className="section-title">
-            Trabalho <em>selecionado</em>
-          </h2>
-          <div className="work-nav">
-            <p className="work-hint">Arraste ou use as setas</p>
-            <button
-              type="button"
-              className="work-nav-btn"
-              onClick={() => andarTrabalho(-1)}
-              aria-label="Projeto anterior"
-            >
-              <span aria-hidden="true">←</span>
-            </button>
-            <button
-              type="button"
-              className="work-nav-btn"
-              onClick={() => andarTrabalho(1)}
-              aria-label="Próximo projeto"
-            >
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-        </div>
-
-        <div
-          className="work-track"
-          onPointerDown={aoPressionar}
-          onPointerMove={aoMover}
-          onPointerUp={aoSoltar}
-          onPointerCancel={aoSoltar}
-        >
-          {featuredProjects.map((project) => (
-            <article
-              className="work-card"
-              key={project.id}
-              onMouseEnter={() => handleEnter(project)}
-            >
-              <Link
-                to={`/projects/${project.slug}`}
-                className="work-card-link"
-                onFocus={() => handleEnter(project)}
-                onClick={aoClicarCarta}
-                draggable={false}
-              >
-                <figure className="work-card-cover">
-                  {project.cover ? (
-                    <img src={project.cover} alt="" loading="lazy" />
-                  ) : (
-                    <span className="work-card-blank" aria-hidden="true">
-                      {project.id}
-                    </span>
-                  )}
-                  <span className="work-card-index">{project.id}</span>
-                </figure>
-
-                <div className="work-card-body">
-                  <h3 className="work-card-title">{project.title}</h3>
-                  <p
-                    className="work-card-role"
-                    ref={(node) => {
-                      roleRefs.current[project.id] = node;
-                    }}
-                  >
-                    {project.role}
-                  </p>
-                  <p className="work-card-tech">{project.tech.join(' · ')}</p>
-                  <span className="work-card-foot">
-                    <span>{project.year}</span>
-                    <span className="work-card-arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </span>
-                </div>
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
+      <ProjectWheel />
 
       {/* ---------------------------------------------------------------- */}
       <section className="index-more-section" data-build-step="repos.jsx">

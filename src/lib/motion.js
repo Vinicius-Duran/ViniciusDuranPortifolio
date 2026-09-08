@@ -194,7 +194,7 @@ export const buildOnScroll = (section) => {
 export const horizontalTrack = (section, track, options = {}) => {
   if (!section || !track) return null;
 
-  const { endPadding = 0, scrub = 0.8 } = options;
+  const { endPadding = 0, scrub = 0.8, refreshPriority = 0 } = options;
   const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
   return gsap.to(track, {
@@ -208,6 +208,10 @@ export const horizontalTrack = (section, track, options = {}) => {
       scrub,
       anticipatePin: 1,
       invalidateOnRefresh: true,
+      /* Quem está mais acima na página precisa medir primeiro: um pin
+         recalculado fora de ordem lê posições que o pin de cima ainda vai
+         mudar, e as seções passam a se sobrepor. */
+      refreshPriority,
     },
   });
 };
@@ -274,7 +278,7 @@ export const driftInTrack = (element, containerAnimation, amount) => {
 export const stackCards = (cards, options = {}) => {
   if (!cards?.length || reducedMotion()) return [];
 
-  const { top = 18, container } = options;
+  const { top = 18, container, refreshPriority = 0 } = options;
   if (!container) return [];
 
   const lista = [...cards];
@@ -325,6 +329,7 @@ export const stackCards = (cards, options = {}) => {
       end: 'bottom bottom',
       pin: true,
       pinSpacing: false,
+      refreshPriority,
     });
   });
 
