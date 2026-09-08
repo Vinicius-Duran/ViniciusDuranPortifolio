@@ -1,0 +1,269 @@
+/* =========================================================================
+   RODA DE PROJETOS
+   As cartas num anel, giradas no eixo Y. CSS 3D, sem WebGL.
+   ========================================================================= */
+
+.wheel-section {
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block: clamp(6rem, 5rem + 4vw, 8rem) clamp(2.5rem, 4vw, 4rem);
+  overflow: hidden;
+}
+
+.wheel-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.wheel-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.wheel-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-40);
+  white-space: nowrap;
+  margin-right: 0.5rem;
+}
+
+.wheel-nav-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1rem;
+  color: var(--paper-80);
+  border: 1px solid var(--paper-20);
+  border-radius: 50%;
+  transition:
+    transform 160ms var(--ease-out),
+    border-color 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease;
+}
+
+.wheel-nav-btn:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wheel-nav-btn:hover {
+    color: var(--ink-000);
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+}
+
+/* --- O palco 3D --------------------------------------------------------- */
+
+.wheel-stage {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  /* A perspectiva é o que transforma o anel em roda; sem ela as cartas só
+     encolhem em duas dimensões.
+     O valor é alto de propósito: a carta da frente está a `raio` de distância
+     do plano, e a ampliação é P/(P−raio). A 1500px ela chegava a 1.8x, saía
+     da área e cobria a leitura embaixo; a 2800 fica em ~1.2x. */
+  perspective: 2800px;
+  perspective-origin: 50% 50%;
+  padding-block: 1.5rem;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.wheel-stage:active {
+  cursor: grabbing;
+}
+
+.wheel {
+  position: relative;
+  width: var(--carta-larg);
+  height: calc(var(--carta-larg) * 0.66);
+  transform-style: preserve-3d;
+  will-change: transform;
+
+  /* O raio precisa ser maior que (largura/2) / tan(180/n) para as cartas não
+     se atravessarem. Com seis cartas isso é largura x 0.87; o fator 1.05 dá
+     o vão sem jogar as cartas laterais para fora da tela. */
+  --carta-larg: clamp(11rem, 17vw, 15.5rem);
+  --raio: calc(var(--carta-larg) * 1.05 / 0.5774);
+}
+
+.wheel-card {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(var(--giro-carta)) translateZ(var(--raio));
+  backface-visibility: hidden;
+  will-change: opacity, filter;
+}
+
+.wheel-card-link {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+.wheel-card-cover {
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--paper-20);
+  border-radius: var(--radius-md);
+  background: var(--ink-100);
+  box-shadow: var(--shadow-lift);
+}
+
+.wheel-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wheel-card-blank {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 3rem;
+  color: var(--paper-20);
+}
+
+.wheel-card-index {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-000);
+  background: var(--amber);
+  padding: 0.18rem 0.42rem;
+  border-radius: var(--radius-sm);
+}
+
+/* --- Leitura do projeto na frente --------------------------------------- */
+
+.wheel-readout {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.4rem 1.5rem;
+  padding-top: clamp(1rem, 2vw, 1.75rem);
+  border-top: 1px solid var(--paper-10);
+}
+
+.wheel-readout-n {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+}
+
+.wheel-readout-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  grid-column: 2;
+}
+
+.wheel-readout-meta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-40);
+  grid-column: 2;
+}
+
+.wheel-readout-tech {
+  font-size: 0.85rem;
+  color: var(--paper-60);
+  grid-column: 2;
+}
+
+.wheel-readout-link {
+  grid-column: 3;
+  grid-row: 1 / span 3;
+  align-self: center;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* --- Telas estreitas ---------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .wheel-section {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .wheel {
+    --carta-larg: min(62vw, 15rem);
+  }
+
+  .wheel-stage {
+    perspective: 900px;
+    min-height: 58vh;
+  }
+
+  .wheel-hint {
+    display: none;
+  }
+
+  .wheel-readout {
+    grid-template-columns: 1fr;
+  }
+
+  .wheel-readout-title,
+  .wheel-readout-meta,
+  .wheel-readout-tech {
+    grid-column: 1;
+  }
+
+  .wheel-readout-link {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 0.75rem;
+  }
+}
+
+/* --- Sem movimento: o anel vira grade ----------------------------------- */
+
+.wheel-section[data-estatico='true'] .wheel-stage {
+  perspective: none;
+  display: block;
+}
+
+.wheel-section[data-estatico='true'] .wheel {
+  width: 100%;
+  height: auto;
+  transform: none !important;
+  transform-style: flat;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+.wheel-section[data-estatico='true'] .wheel-card {
+  position: relative;
+  inset: auto;
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  aspect-ratio: 3 / 2;
+}
