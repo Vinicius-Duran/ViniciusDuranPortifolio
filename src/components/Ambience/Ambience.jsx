@@ -52,9 +52,6 @@ const Ambience = () => {
       <span className="ambience-bloom is-b" data-drift="2" />
       <span className="ambience-bloom is-c" data-drift="3" />
 
-      {/* Colunas de guia: a mesma malha do herói, estendida ao site todo. */}
-      <span className="ambience-rules" />
-
       <svg className="ambience-grain" xmlns="http://www.w3.org/2000/svg">
         <filter id="ambience-noise">
           <feTurbulence

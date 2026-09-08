@@ -4,6 +4,7 @@ import Header from './components/Header/Header';
 import Ambience from './components/Ambience/Ambience';
 import ScrollProgress from './components/ScrollProgress/ScrollProgress';
 import BuildHud from './components/BuildHud/BuildHud';
+import PagePlates from './components/PagePlates/PagePlates';
 import Home from './pages/home/Home';
 import About from './pages/about/About';
 import Project from './pages/project/Project';
@@ -38,6 +39,9 @@ function App() {
       <ScrollProgress />
       <Header />
       <main id="content">
+        {/* Camada de fundo do conteúdo: rola junto, e as seções com fundo
+            sólido passam por cima dela naturalmente. */}
+        <PagePlates />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

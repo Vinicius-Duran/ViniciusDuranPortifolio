@@ -56,28 +56,6 @@
   );
 }
 
-/* --- Colunas de guia ---------------------------------------------------- */
-
-.ambience-rules {
-  position: absolute;
-  inset: 0;
-  /* Seis colunas de 1px. Como gradiente, não como seis elementos. */
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--paper-10) 0 1px,
-    transparent 1px calc(100% / 6)
-  );
-  /* Some nas bordas para a malha não bater seca na lateral da tela. */
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 12%,
-    #000 88%,
-    transparent
-  );
-  opacity: 0.55;
-}
-
 /* --- Grão --------------------------------------------------------------- */
 
 .ambience-grain {

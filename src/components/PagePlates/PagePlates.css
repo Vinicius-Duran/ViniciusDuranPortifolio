@@ -1,0 +1,22 @@
+.page-plates {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Não recorta: as placas encostam de propósito nas bordas laterais, e o
+     overflow-x do body já impede rolagem horizontal. */
+  overflow: hidden;
+}
+
+/* Mais apagadas que as do herói: aqui elas passam atrás de texto corrido, e
+   não ao lado dele. */
+.page-plate {
+  opacity: 0.085;
+}
+
+@media (max-width: 900px) {
+  /* Em tela estreita o texto ocupa a largura inteira: não há margem para a
+     imagem existir sem passar por baixo da leitura. */
+  .page-plates {
+    display: none;
+  }
+}
