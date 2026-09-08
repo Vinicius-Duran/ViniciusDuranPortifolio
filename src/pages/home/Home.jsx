@@ -55,6 +55,9 @@ const processSteps = [
 
 const Home = () => {
   const roleRefs = useRef({});
+  // O ScrollTrigger da galeria presa: é dele que saem os limites em que a
+  // rolagem ainda significa deslocamento horizontal.
+  const trilhoDoTrabalho = useRef(null);
   const anosDeExperiencia = getYearsOfExperience();
   const totalProjetos = featuredProjects.length + secondaryProjects.length;
 
@@ -163,6 +166,7 @@ const Home = () => {
       });
 
       const work = horizontalTrack(el('.work'), el('.work-track'), { scrub: 0.6 });
+      trilhoDoTrabalho.current = work.scrollTrigger;
 
       all('.work-card').forEach((card) =>
         enterFromTrack(card, work, {
@@ -172,6 +176,11 @@ const Home = () => {
       );
 
       stackCards(all('.process-card'), { container: el('.process-stack') });
+
+      // Abaixo de 901px não existe pin, e a referência não pode sobreviver.
+      return () => {
+        trilhoDoTrabalho.current = null;
+      };
     });
   });
 
@@ -183,10 +192,17 @@ const Home = () => {
      Acima de 900px a faixa é presa e o deslocamento horizontal vem da
      rolagem da página — o scrub mapeia 1px de página para 1px de trilho,
      então andar uma carta é rolar a largura de uma carta. Abaixo disso o
-     trilho rola nativamente e quem anda é ele. */
+     trilho rola nativamente e quem anda é ele.
 
-  const presa = () =>
-    typeof window !== 'undefined' && window.matchMedia('(min-width: 901px)').matches;
+     O alvo é SEMPRE limitado ao intervalo do pin. Sem esse limite os botões
+     viram rolagem geral do site: passado o fim da faixa, o mesmo clique que
+     antes andava uma carta passa a empurrar a página para a seção seguinte. */
+
+  const limitarAoTrilho = (alvo) => {
+    const st = trilhoDoTrabalho.current;
+    if (!st) return null;
+    return Math.min(Math.max(alvo, st.start), st.end);
+  };
 
   const passoDaCarta = () => {
     const card = document.querySelector('.work-card');
@@ -200,8 +216,9 @@ const Home = () => {
     const passo = passoDaCarta();
     if (!passo) return;
 
-    if (presa()) {
-      window.scrollBy({ top: passo * direcao, behavior: 'smooth' });
+    const alvo = limitarAoTrilho(window.scrollY + passo * direcao);
+    if (alvo !== null) {
+      window.scrollTo({ top: alvo, behavior: 'smooth' });
       return;
     }
     document
@@ -224,7 +241,10 @@ const Home = () => {
     arrasto.current.x = event.clientX;
     arrasto.current.andou += Math.abs(delta);
 
-    if (presa()) window.scrollBy({ top: -delta });
+    // Mesmo limite do botão: arrastar não pode empurrar a página para fora
+    // da galeria depois que a última carta chega.
+    const alvo = limitarAoTrilho(window.scrollY - delta);
+    if (alvo !== null) window.scrollTo({ top: alvo });
     else event.currentTarget.scrollLeft -= delta;
   };
 
