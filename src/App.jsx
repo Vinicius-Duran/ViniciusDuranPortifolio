@@ -5,6 +5,7 @@ import Ambience from './components/Ambience/Ambience';
 import ScrollProgress from './components/ScrollProgress/ScrollProgress';
 import BuildHud from './components/BuildHud/BuildHud';
 import PagePlates from './components/PagePlates/PagePlates';
+import PointerParallax from './components/PointerParallax/PointerParallax';
 import Home from './pages/home/Home';
 import About from './pages/about/About';
 import Project from './pages/project/Project';
@@ -52,6 +53,8 @@ function App() {
       {/* Depois de <main>: os efeitos de irmãos rodam em ordem de árvore, e
           ele precisa das seções já montadas para lê-las. */}
       <BuildHud />
+      {/* Depois de tudo: precisa das camadas da rota já no DOM para achá-las. */}
+      <PointerParallax />
     </Router>
   );
 }

@@ -336,6 +336,86 @@ export const stackCards = (cards, options = {}) => {
   return recuos;
 };
 
+/**
+ * Paralaxe do ponteiro: as camadas do bloco se deslocam em direções e
+ * intensidades diferentes conforme o cursor atravessa a área.
+ *
+ * Cada camada declara sua força em `data-parallax`; negativo desloca contra
+ * o ponteiro, que é o que separa o que está na frente do que está atrás.
+ *
+ * `quickTo` existe justamente para isto: amarrar a posição do elemento
+ * direto na do mouse fica robótico, porque o movimento não tem inércia
+ * nenhuma. O quickTo interpola até o valor e devolve peso ao gesto.
+ *
+ * Devolve a função de limpeza — o ouvinte é DOM, e o contexto do GSAP não
+ * sabe removê-lo.
+ */
+export const pointerParallax = (area, alvos, options = {}) => {
+  if (!area || !alvos?.length || reducedMotion()) return () => {};
+
+  /* Amplitude total do gesto, de borda a borda da área, antes da força de
+     cada camada. Fica aqui para calibrar num lugar só. */
+  const { amplitudeX = 70, amplitudeY = 46, inclinacaoMax = 9 } = options;
+
+  // Só onde existe ponteiro fino: em toque não há hover para acompanhar.
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return () => {};
+
+  const camadas = [...alvos].map((el) => {
+    const inclina = Number(el.dataset.tilt) || 0;
+
+    return {
+      inclina,
+      forca: Number(el.dataset.parallax) || 1,
+      paraX: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3' }),
+      paraY: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3' }),
+      /* A inclinação vira profundidade de verdade: a placa deixa de deslizar
+         no plano e passa a girar em torno dos próprios eixos, como um objeto
+         plano visto de ângulo. Só quem declara `data-tilt` recebe. */
+      paraRotY: inclina
+        ? gsap.quickTo(el, 'rotationY', { duration: 1.1, ease: 'power3' })
+        : null,
+      paraRotX: inclina
+        ? gsap.quickTo(el, 'rotationX', { duration: 1.1, ease: 'power3' })
+        : null,
+    };
+  });
+
+  const aplicar = (x, y) => {
+    camadas.forEach(({ forca, inclina, paraX, paraY, paraRotX, paraRotY }) => {
+      paraX(x * amplitudeX * forca);
+      paraY(y * amplitudeY * forca);
+
+      if (paraRotY) {
+        // Gira na direção do cursor no eixo vertical, e contra ele no
+        // horizontal — é assim que uma superfície reage a um ponto de vista.
+        paraRotY(x * inclinacaoMax * inclina);
+        paraRotX(-y * inclinacaoMax * inclina);
+      }
+    });
+  };
+
+  const aoMover = (evento) => {
+    const caixa = area.getBoundingClientRect();
+    // -0.5 a 0.5 a partir do centro da área.
+    aplicar(
+      (evento.clientX - caixa.left) / caixa.width - 0.5,
+      (evento.clientY - caixa.top) / caixa.height - 0.5
+    );
+  };
+
+  const aoSair = () => aplicar(0, 0);
+
+  area.addEventListener('pointermove', aoMover);
+  area.addEventListener('pointerleave', aoSair);
+  window.addEventListener('blur', aoSair);
+
+  return () => {
+    area.removeEventListener('pointermove', aoMover);
+    area.removeEventListener('pointerleave', aoSair);
+    window.removeEventListener('blur', aoSair);
+  };
+};
+
 /** Desenha um traço SVG conforme a rolagem. */
 export const drawOnScroll = (path, trigger) => {
   if (!path || reducedMotion()) return null;

@@ -48,9 +48,12 @@ const Ambience = () => {
     <div className="ambience" aria-hidden="true" ref={raiz}>
       {/* Clarões: gradiente radial puro, sem filtro de desfoque — a essa
           escala o blur custa caro e o gradiente já entrega a borda macia. */}
-      <span className="ambience-bloom is-a" data-drift="1" />
-      <span className="ambience-bloom is-b" data-drift="2" />
-      <span className="ambience-bloom is-c" data-drift="3" />
+      {/* Os clarões também seguem o ponteiro: a luz da página acompanha o
+          cursor, que é o que faz a atmosfera parecer um espaço e não uma
+          textura pintada no fundo. */}
+      <span className="ambience-bloom is-a" data-drift="1" data-parallax="1.6" />
+      <span className="ambience-bloom is-b" data-drift="2" data-parallax="1.1" />
+      <span className="ambience-bloom is-c" data-drift="3" data-parallax="2" />
 
       <svg className="ambience-grain" xmlns="http://www.w3.org/2000/svg">
         <filter id="ambience-noise">
