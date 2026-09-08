@@ -179,6 +179,70 @@ const Home = () => {
     scrambleTo(roleRefs.current[project.id], project.role);
   };
 
+  /* --- Travessia da galeria sem depender da roda do mouse ---------------
+     Acima de 900px a faixa é presa e o deslocamento horizontal vem da
+     rolagem da página — o scrub mapeia 1px de página para 1px de trilho,
+     então andar uma carta é rolar a largura de uma carta. Abaixo disso o
+     trilho rola nativamente e quem anda é ele. */
+
+  const presa = () =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 901px)').matches;
+
+  const passoDaCarta = () => {
+    const card = document.querySelector('.work-card');
+    const track = document.querySelector('.work-track');
+    if (!card || !track) return 0;
+    const gap = parseFloat(getComputedStyle(track).columnGap || '0') || 0;
+    return card.getBoundingClientRect().width + gap;
+  };
+
+  const andarTrabalho = (direcao) => {
+    const passo = passoDaCarta();
+    if (!passo) return;
+
+    if (presa()) {
+      window.scrollBy({ top: passo * direcao, behavior: 'smooth' });
+      return;
+    }
+    document
+      .querySelector('.work-track')
+      ?.scrollBy({ left: passo * direcao, behavior: 'smooth' });
+  };
+
+  const arrasto = useRef({ ativo: false, x: 0, andou: 0 });
+
+  const aoPressionar = (event) => {
+    // Só ponteiro primário; não sequestra o botão do meio nem o direito.
+    if (event.button !== 0) return;
+    arrasto.current = { ativo: true, x: event.clientX, andou: 0 };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const aoMover = (event) => {
+    if (!arrasto.current.ativo) return;
+    const delta = event.clientX - arrasto.current.x;
+    arrasto.current.x = event.clientX;
+    arrasto.current.andou += Math.abs(delta);
+
+    if (presa()) window.scrollBy({ top: -delta });
+    else event.currentTarget.scrollLeft -= delta;
+  };
+
+  const aoSoltar = (event) => {
+    arrasto.current.ativo = false;
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+  };
+
+  /* Um arrasto termina em `click` no link que estava embaixo do dedo. O
+     limiar separa arrastar de clicar; sem ele, atravessar a galeria abre um
+     projeto no meio do caminho. */
+  const aoClicarCarta = (event) => {
+    if (arrasto.current.andou > 8) {
+      event.preventDefault();
+      arrasto.current.andou = 0;
+    }
+  };
+
   return (
     <div className="home" ref={root}>
       {/* ---------------------------------------------------------------- */}
@@ -354,13 +418,34 @@ const Home = () => {
           <h2 className="section-title">
             Trabalho <em>selecionado</em>
           </h2>
-          <p className="work-hint">
-            <span className="work-hint-line" aria-hidden="true" />
-            Role para atravessar
-          </p>
+          <div className="work-nav">
+            <p className="work-hint">Arraste ou use as setas</p>
+            <button
+              type="button"
+              className="work-nav-btn"
+              onClick={() => andarTrabalho(-1)}
+              aria-label="Projeto anterior"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+            <button
+              type="button"
+              className="work-nav-btn"
+              onClick={() => andarTrabalho(1)}
+              aria-label="Próximo projeto"
+            >
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </div>
 
-        <div className="work-track">
+        <div
+          className="work-track"
+          onPointerDown={aoPressionar}
+          onPointerMove={aoMover}
+          onPointerUp={aoSoltar}
+          onPointerCancel={aoSoltar}
+        >
           {featuredProjects.map((project) => (
             <article
               className="work-card"
@@ -371,6 +456,8 @@ const Home = () => {
                 to={`/projects/${project.slug}`}
                 className="work-card-link"
                 onFocus={() => handleEnter(project)}
+                onClick={aoClicarCarta}
+                draggable={false}
               >
                 <figure className="work-card-cover">
                   {project.cover ? (
@@ -437,12 +524,16 @@ const Home = () => {
         {/* O monograma como marca-d'água: é a seção com menos matéria na
             página, e um símbolo grande e apagado sustenta o vazio melhor
             que mais texto. */}
+        {/* O quadrado de 512 em vez do original de 630KB: mesmo desenho, e
+            aqui ele nunca é exibido maior que isso. */}
         <img
           className="contact-mark"
-          src="/logos/logo-icon.png"
+          src="/favicon-512.png"
           alt=""
           aria-hidden="true"
           loading="lazy"
+          width="512"
+          height="512"
         />
 
         <div className="shell">
