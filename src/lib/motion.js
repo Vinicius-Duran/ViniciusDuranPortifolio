@@ -336,6 +336,56 @@ export const stackCards = (cards, options = {}) => {
   return recuos;
 };
 
+/**
+ * Paralaxe do ponteiro: as camadas do bloco se deslocam em direções e
+ * intensidades diferentes conforme o cursor atravessa a área.
+ *
+ * Cada camada declara sua força em `data-parallax`; negativo desloca contra
+ * o ponteiro, que é o que separa o que está na frente do que está atrás.
+ *
+ * `quickTo` existe justamente para isto: amarrar a posição do elemento
+ * direto na do mouse fica robótico, porque o movimento não tem inércia
+ * nenhuma. O quickTo interpola até o valor e devolve peso ao gesto.
+ *
+ * Devolve a função de limpeza — o ouvinte é DOM, e o contexto do GSAP não
+ * sabe removê-lo.
+ */
+export const pointerParallax = (area, alvos) => {
+  if (!area || !alvos?.length || reducedMotion()) return () => {};
+
+  // Só onde existe ponteiro fino: em toque não há hover para acompanhar.
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return () => {};
+
+  const camadas = [...alvos].map((el) => ({
+    el,
+    forca: Number(el.dataset.parallax) || 1,
+    paraX: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3' }),
+    paraY: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3' }),
+  }));
+
+  const aoMover = (evento) => {
+    const caixa = area.getBoundingClientRect();
+    // -1 a 1 a partir do centro da área.
+    const x = (evento.clientX - caixa.left) / caixa.width - 0.5;
+    const y = (evento.clientY - caixa.top) / caixa.height - 0.5;
+
+    camadas.forEach(({ forca, paraX, paraY }) => {
+      paraX(x * 34 * forca);
+      paraY(y * 22 * forca);
+    });
+  };
+
+  const aoSair = () => camadas.forEach(({ paraX, paraY }) => (paraX(0), paraY(0)));
+
+  area.addEventListener('pointermove', aoMover);
+  area.addEventListener('pointerleave', aoSair);
+
+  return () => {
+    area.removeEventListener('pointermove', aoMover);
+    area.removeEventListener('pointerleave', aoSair);
+  };
+};
+
 /** Desenha um traço SVG conforme a rolagem. */
 export const drawOnScroll = (path, trigger) => {
   if (!path || reducedMotion()) return null;

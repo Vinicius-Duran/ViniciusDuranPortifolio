@@ -32,6 +32,9 @@ const HeroBackdrop = () => {
             className="plate hero-plate"
             key={project.id}
             data-depth={pos.depth}
+            /* Quanto mais ao fundo, mais a placa acompanha o ponteiro: é a
+               diferença entre as camadas que dá profundidade. */
+            data-parallax={pos.depth * 0.55}
             style={{
               top: pos.top,
               right: pos.right,

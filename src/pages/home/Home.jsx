@@ -18,6 +18,7 @@ import {
   stackCards,
   countTo,
   drawOnScroll,
+  pointerParallax,
   gsap,
   ScrollTrigger,
 } from '../../lib/motion';
@@ -170,6 +171,17 @@ const Home = () => {
         container: el('.process-stack'),
         refreshPriority: 2,
       });
+
+      /* Paralaxe do ponteiro no herói. As placas puxam mais que a malha, e o
+         título vai contra o cursor — é a oposição de direções que constrói a
+         profundidade, não a quantidade de deslocamento. */
+      const limparParalaxe = pointerParallax(el('.hero'), [
+        ...all('.hero-plate'),
+        ...all('.build-grid span'),
+        el('.hero-headline'),
+      ]);
+
+      return limparParalaxe;
     });
   });
 
@@ -181,11 +193,11 @@ const Home = () => {
         <HeroBackdrop />
 
         <div className="build-grid" aria-hidden="true">
-          <span style={{ left: '8%' }} />
-          <span style={{ left: '28%' }} />
-          <span style={{ left: '50%' }} />
-          <span style={{ left: '72%' }} />
-          <span style={{ left: '92%' }} />
+          <span style={{ left: '8%' }} data-parallax="0.3" />
+          <span style={{ left: '28%' }} data-parallax="0.24" />
+          <span style={{ left: '50%' }} data-parallax="0.18" />
+          <span style={{ left: '72%' }} data-parallax="0.24" />
+          <span style={{ left: '92%' }} data-parallax="0.3" />
         </div>
 
         <div className="shell hero-shell">
@@ -193,7 +205,13 @@ const Home = () => {
             <Frame tag="h1 · hero" />
             {/* O espaço antes do <br> é obrigatório: em telas estreitas a
                 quebra é escondida, e sem ele as palavras colam. */}
-            <h1 className="hero-headline display" data-build-headline>
+            {/* Negativo: o título anda contra o cursor, e é essa oposição
+                que o coloca na frente das placas. */}
+            <h1
+              className="hero-headline display"
+              data-build-headline
+              data-parallax="-0.28"
+            >
               Construo software{' '}
               <br />
               inteiro, <em>peça a peça</em>.
