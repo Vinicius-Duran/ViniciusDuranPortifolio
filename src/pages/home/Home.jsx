@@ -55,9 +55,6 @@ const processSteps = [
 
 const Home = () => {
   const roleRefs = useRef({});
-  // O ScrollTrigger da galeria presa: é dele que saem os limites em que a
-  // rolagem ainda significa deslocamento horizontal.
-  const trilhoDoTrabalho = useRef(null);
   const anosDeExperiencia = getYearsOfExperience();
   const totalProjetos = featuredProjects.length + secondaryProjects.length;
 
@@ -166,7 +163,6 @@ const Home = () => {
       });
 
       const work = horizontalTrack(el('.work'), el('.work-track'), { scrub: 0.6 });
-      trilhoDoTrabalho.current = work.scrollTrigger;
 
       all('.work-card').forEach((card) =>
         enterFromTrack(card, work, {
@@ -176,11 +172,6 @@ const Home = () => {
       );
 
       stackCards(all('.process-card'), { container: el('.process-stack') });
-
-      // Abaixo de 901px não existe pin, e a referência não pode sobreviver.
-      return () => {
-        trilhoDoTrabalho.current = null;
-      };
     });
   });
 
@@ -196,10 +187,22 @@ const Home = () => {
 
      O alvo é SEMPRE limitado ao intervalo do pin. Sem esse limite os botões
      viram rolagem geral do site: passado o fim da faixa, o mesmo clique que
-     antes andava uma carta passa a empurrar a página para a seção seguinte. */
+     antes andava uma carta passa a empurrar a página para a seção seguinte.
+
+     O gatilho é procurado na hora do clique, e não guardado numa referência.
+     Guardado, ele empata com o ciclo de vida do React: em modo estrito o
+     componente monta, desmonta e remonta, e a limpeza do matchMedia zera a
+     referência depois da remontagem — as setas ficam mudas sem nenhum erro
+     no console. Consultado na hora, sempre existe se o pin existe. */
+
+  const trilhoDoTrabalho = () => {
+    const secao = document.querySelector('.work');
+    if (!secao) return null;
+    return ScrollTrigger.getAll().find((t) => t.pin && t.trigger === secao) || null;
+  };
 
   const limitarAoTrilho = (alvo) => {
-    const st = trilhoDoTrabalho.current;
+    const st = trilhoDoTrabalho();
     if (!st) return null;
     return Math.min(Math.max(alvo, st.start), st.end);
   };

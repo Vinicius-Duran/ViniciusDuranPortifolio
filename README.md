@@ -66,6 +66,17 @@ npm run lint     # análise estática
 npm test         # suíte de testes
 ```
 
+## Deploy
+
+Vercel, a partir de `main`. O build sai em `dist/`.
+
+`vercel.json` existe por um motivo específico: o roteamento é do cliente, e o
+build gera um `index.html` só. Sem a regra de rewrite, `/about` e
+`/projects/:slug` respondem 404 do servidor em acesso direto, refresh ou link
+compartilhado — o visitante nem chega na página 404 do site. A regra manda
+todo caminho para o `index.html` e deixa o React Router resolver; arquivos que
+existem no disco continuam sendo servidos antes dela.
+
 ## Estrutura
 
 ```
