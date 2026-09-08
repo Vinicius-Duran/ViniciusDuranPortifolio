@@ -38,11 +38,11 @@ const ProjectWheel = () => {
   const [ativo, setAtivo] = useState(0);
   const pontos = useMemo(() => distribuir(projects.length), []);
 
-  const gatilho = () => {
-    const secao = document.querySelector('.globe-section');
-    if (!secao) return null;
-    return ScrollTrigger.getAll().find((t) => t.pin && t.trigger === secao) || null;
-  };
+  /* Três parcelas somam o ângulo: a rolagem conduz, a inércia mantém vivo
+     parado, e o arrasto é o que a mão faz. Vive num ref para que os
+     manipuladores de ponteiro cheguem nele fora do contexto do GSAP. */
+  const estado = useRef({ rolagem: 0, inercia: 0, arrasto: 0 });
+  const desenhar = useRef(null);
 
   const raiz = useGsapScope((self) => {
     /* O seletor do contexto procura DENTRO do escopo, e o escopo é a própria
@@ -57,11 +57,10 @@ const ProjectWheel = () => {
       return;
     }
 
-    // Duas fontes somadas: a rolagem conduz, a inércia mantém vivo parado.
-    const estado = { rolagem: 0, inercia: 0 };
+    const valores = estado.current;
 
     const aplicar = () => {
-      const giro = estado.rolagem + estado.inercia;
+      const giro = valores.rolagem + valores.inercia + valores.arrasto;
       globo.style.transform = `rotateX(-12deg) rotateY(${giro}deg)`;
 
       let melhor = 0;
@@ -96,9 +95,12 @@ const ProjectWheel = () => {
       setAtivo((anterior) => (anterior === melhor ? anterior : melhor));
     };
 
+    // Os manipuladores de ponteiro precisam redesenhar fora deste contexto.
+    desenhar.current = aplicar;
+
     /* Giro contínuo, independente da rolagem: um globo parado quando a página
        está parada lê como imagem, não como objeto. */
-    gsap.to(estado, {
+    gsap.to(valores, {
       inercia: 360,
       duration: 90,
       ease: 'none',
@@ -107,7 +109,7 @@ const ProjectWheel = () => {
     });
 
     // Uma volta e meia ao atravessar a seção, somada à inércia.
-    gsap.to(estado, {
+    gsap.to(valores, {
       rolagem: -540,
       ease: 'none',
       onUpdate: aplicar,
@@ -131,25 +133,30 @@ const ProjectWheel = () => {
     ScrollTrigger.refresh();
   }, []);
 
-  const limitar = (alvo) => {
-    const st = gatilho();
-    if (!st) return null;
-    return Math.min(Math.max(alvo, st.start), st.end);
-  };
+  /* Setas e arrasto giram o globo direto, e não a rolagem da página. Mexer na
+     rolagem funcionava, mas arrastar empurrava a página meio milhar de pixels
+     e o giro chegava atrasado pelo scrub — parecia arrastar a página, não
+     agarrar o objeto. Escrevendo no ângulo, a resposta é imediata e a página
+     fica parada onde está. */
 
   const girar = (direcao) => {
-    const st = gatilho();
-    if (!st) return;
-    const passo = (st.end - st.start) / projects.length;
-    const alvo = limitar(window.scrollY + passo * direcao);
-    if (alvo !== null) window.scrollTo({ top: alvo, behavior: 'smooth' });
+    const valores = estado.current;
+    gsap.to(valores, {
+      arrasto: valores.arrasto - direcao * (360 / projects.length),
+      duration: 0.9,
+      ease: 'power3.out',
+      overwrite: 'auto',
+      onUpdate: () => desenhar.current?.(),
+    });
   };
 
-  const arrasto = useRef({ ativo: false, x: 0, andou: 0 });
+  const arrasto = useRef({ ativo: false, x: 0, andou: 0, velocidade: 0 });
 
   const aoPressionar = (event) => {
     if (event.button !== 0) return;
-    arrasto.current = { ativo: true, x: event.clientX, andou: 0 };
+    // Um arrasto novo interrompe a inércia do anterior.
+    gsap.killTweensOf(estado.current, 'arrasto');
+    arrasto.current = { ativo: true, x: event.clientX, andou: 0, velocidade: 0 };
     event.currentTarget.setPointerCapture?.(event.pointerId);
   };
 
@@ -158,14 +165,31 @@ const ProjectWheel = () => {
     const delta = event.clientX - arrasto.current.x;
     arrasto.current.x = event.clientX;
     arrasto.current.andou += Math.abs(delta);
+    // Graus por pixel: o suficiente para a travessia da tela dar meia volta.
+    arrasto.current.velocidade = delta * 0.22;
 
-    const alvo = limitar(window.scrollY - delta * 1.6);
-    if (alvo !== null) window.scrollTo({ top: alvo });
+    estado.current.arrasto += arrasto.current.velocidade;
+    desenhar.current?.();
   };
 
   const aoSoltar = (event) => {
+    if (!arrasto.current.ativo) return;
     arrasto.current.ativo = false;
     event.currentTarget.releasePointerCapture?.(event.pointerId);
+
+    /* Continua girando com a velocidade que a mão deixou e desacelera. Sem
+       isso o globo trava no instante em que o dedo levanta, que é a diferença
+       entre um objeto com massa e um controle deslizante. */
+    const restante = arrasto.current.velocidade * 14;
+    if (Math.abs(restante) < 1) return;
+
+    gsap.to(estado.current, {
+      arrasto: estado.current.arrasto + restante,
+      duration: 1.4,
+      ease: 'power3.out',
+      overwrite: 'auto',
+      onUpdate: () => desenhar.current?.(),
+    });
   };
 
   // Um arrasto termina em clique no link sob o ponteiro; o limiar separa os dois.
