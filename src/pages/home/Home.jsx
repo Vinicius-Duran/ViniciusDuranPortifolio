@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
+import Frame from '../../components/Frame/Frame';
 import {
   useGsapScope,
-  heroIntro,
-  revealHeading,
+  buildIntro,
+  buildOnScroll,
   revealStack,
   playOnEnter,
   scrambleTo,
@@ -42,8 +43,6 @@ const processSteps = [
 ];
 
 const Home = () => {
-  // O painel nasce mostrando o primeiro projeto e nunca volta a ficar vazio:
-  // uma moldura em branco em repouso lê como imagem que falhou ao carregar.
   const [activeProject, setActiveProject] = useState(featuredProjects[0]?.id ?? null);
   const [isBrowsing, setIsBrowsing] = useState(false);
   const roleRefs = useRef({});
@@ -53,12 +52,15 @@ const Home = () => {
     const el = (selector) => self.selector(selector)[0];
     const all = (selector) => self.selector(selector);
 
-    heroIntro(el('.hero'));
+    // A abertura: a única vez que a montagem roda por inteiro e devagar.
+    buildIntro(el('.hero'));
 
-    all('.section-title').forEach(revealHeading);
+    // As seções chegam montando, mais rápido.
+    all('[data-build-step]').forEach((section) => {
+      if (!section.classList.contains('hero')) buildOnScroll(section);
+    });
 
-    playOnEnter(el('.about-grid'), revealStack(all('.skill-line'), { delayStep: 55 }));
-    playOnEnter(el('.process-list'), revealStack(all('.process-step'), { delayStep: 90 }));
+    // Listas longas entram por stagger, que é mais leve que montar item a item.
     playOnEnter(el('.index-list'), revealStack(all('.index-row'), { delayStep: 70 }));
     playOnEnter(el('.contact-list'), revealStack(all('.contact-row'), { delayStep: 80 }));
   });
@@ -73,23 +75,35 @@ const Home = () => {
   return (
     <div className="home" ref={root}>
       {/* ---------------------------------------------------------------- */}
-      <section className="hero">
-        <div className="shell">
-          <h1 className="hero-headline display" data-hero-headline>
-            Interfaces vivas,
-            <br />
-            sistemas <em>robustos</em>.
-          </h1>
+      <section className="hero" data-build-step="hero.jsx">
+        <div className="build-grid" aria-hidden="true">
+          <span style={{ left: '8%' }} />
+          <span style={{ left: '28%' }} />
+          <span style={{ left: '50%' }} />
+          <span style={{ left: '72%' }} />
+          <span style={{ left: '92%' }} />
+        </div>
 
-          <span className="hero-rule" data-hero-rule aria-hidden="true" />
+        <div className="shell hero-shell">
+          <div className="part hero-title-part">
+            <Frame tag="h1 · hero" />
+            {/* O espaço antes do <br> é obrigatório: em telas estreitas a
+                quebra é escondida, e sem ele as palavras colam. */}
+            <h1 className="hero-headline display" data-build-headline>
+              Construo software{' '}
+              <br />
+              inteiro, <em>peça a peça</em>.
+            </h1>
+          </div>
 
-          <div className="hero-foot">
-            <p className="lede" data-hero-fade>
-              {profile.bio} Transformo ideias em produtos digitais com código limpo,
-              motion e atenção obsessiva aos detalhes.
+          <div className="part hero-intro-part">
+            <Frame tag="section · intro" />
+            <p className="lede">
+              {profile.bio} Do modelo de dados à última micro-interação — front,
+              back e o banco que sustenta os dois.
             </p>
 
-            <dl className="hero-ledger" data-hero-fade>
+            <dl className="hero-ledger">
               <div>
                 <dt>Base</dt>
                 <dd>{profile.location}</dd>
@@ -105,7 +119,8 @@ const Home = () => {
             </dl>
           </div>
 
-          <div className="hero-actions" data-hero-fade>
+          <div className="part hero-cta-part">
+            <Frame tag="nav · cta" />
             <Link to="/#projects" className="btn btn-solid">
               Ver o trabalho
             </Link>
@@ -131,9 +146,10 @@ const Home = () => {
       />
 
       {/* ---------------------------------------------------------------- */}
-      <section id="about" className="about">
+      <section id="about" className="about" data-build-step="about.jsx">
         <div className="shell about-grid">
-          <div className="about-lead">
+          <div className="part about-lead">
+            <Frame tag="h2 · about" />
             <h2 className="section-title">
               Código, design e <em>narrativa visual</em> na mesma mesa.
             </h2>
@@ -160,7 +176,8 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="about-skills">
+          <div className="part about-skills">
+            <Frame tag="ul · stack" />
             {homeSkillGroups.map((group) => (
               <div className="skill-line" key={group.label}>
                 <h3 className="skill-line-label">{group.label}</h3>
@@ -172,15 +189,19 @@ const Home = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="process">
+      <section className="process" data-build-step="process.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Como eu trabalho, em <em>quatro movimentos</em>.
-          </h2>
+          <div className="part process-head">
+            <Frame tag="h2 · process" />
+            <h2 className="section-title">
+              Como eu trabalho, em <em>quatro movimentos</em>.
+            </h2>
+          </div>
 
           <ol className="process-list">
             {processSteps.map((step) => (
-              <li className="process-step" key={step.n}>
+              <li className="part process-step" key={step.n}>
+                <Frame tag={`step · ${step.n}`} />
                 <span className="process-step-n">{step.n}</span>
                 <div className="process-step-body">
                   <h3 className="process-step-title">{step.title}</h3>
@@ -194,11 +215,14 @@ const Home = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section id="projects" className="index">
+      <section id="projects" className="index" data-build-step="projects.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Trabalho <em>selecionado</em>
-          </h2>
+          <div className="part index-head">
+            <Frame tag="h2 · work" />
+            <h2 className="section-title">
+              Trabalho <em>selecionado</em>
+            </h2>
+          </div>
 
           <div className="index-body">
             <ul
@@ -240,8 +264,6 @@ const Home = () => {
                       →
                     </span>
 
-                    {/* Capa inline: no toque não existe hover, então ela mora
-                        na própria linha em telas estreitas. */}
                     <span className="index-inline-cover" aria-hidden="true">
                       {project.cover ? (
                         <img src={project.cover} alt="" loading="lazy" />
@@ -296,11 +318,14 @@ const Home = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section id="contact" className="contact">
+      <section id="contact" className="contact" data-build-step="contact.jsx">
         <div className="shell">
-          <h2 className="section-title contact-title">
-            Vamos criar algo <em>memorável</em> juntos.
-          </h2>
+          <div className="part contact-head">
+            <Frame tag="h2 · contact" />
+            <h2 className="section-title contact-title">
+              Vamos criar algo <em>memorável</em> juntos.
+            </h2>
+          </div>
 
           <ul className="contact-list">
             <li className="contact-row">

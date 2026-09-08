@@ -25,8 +25,13 @@
   --amber-wash: rgba(217, 116, 63, 0.14);
   --amber-line: rgba(217, 116, 63, 0.32);
 
-  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-  --font-body: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Grotesk técnica, desenhada a régua — a mesma família de sensação do DIN
+     no animejs.com e do Mori no gsap.com. Uma família só, em pesos e larguras
+     diferentes, como os dois fazem. */
+  --font-display: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* Mono aqui é literal: rótulo de build, nome de arquivo, medida. */
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Curvas fortes: as nativas do CSS são fracas demais para ter intenção. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -134,33 +139,48 @@ img {
 
 /* --- Escala tipográfica ------------------------------------------------- */
 
+/* Display: pesado, largo e apertado. A ênfase vem de peso e cor, nunca de
+   itálico caligráfico. */
 .display {
   font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 0.92;
-  letter-spacing: -0.025em;
+  font-weight: 800;
+  font-variation-settings: 'wdth' 108;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
   text-wrap: balance;
 }
 
 .display em {
-  font-style: italic;
+  font-style: normal;
   color: var(--amber);
 }
 
-/* O título de seção: uma voz só no site inteiro, sem rótulo acima dele. */
 .section-title {
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(2.4rem, 1.2rem + 4.6vw, 5.25rem);
-  line-height: 0.94;
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  font-variation-settings: 'wdth' 108;
+  font-size: clamp(2.3rem, 1.1rem + 4.4vw, 4.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
   text-wrap: balance;
-  max-width: 16ch;
+  max-width: 17ch;
 }
 
 .section-title em {
-  font-style: italic;
+  font-style: normal;
   color: var(--amber);
+}
+
+/* Rótulo de build: mono, minúsculo, espaçado. Usado só onde há nome de
+   arquivo, contagem ou medida de verdade. */
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
 }
 
 .lede {
@@ -294,6 +314,89 @@ img {
   .btn-line:hover {
     border-color: var(--paper-40);
     background: var(--ink-100);
+  }
+}
+
+/* =========================================================================
+   MONTAGEM
+   Cada peça da página é desenhada como quadro de wireframe, ganha o rótulo
+   do que ela é, e só então recebe o conteúdo. O conteúdo real está sempre no
+   DOM — o quadro e o rótulo são decoração por cima, nunca substitutos.
+   ========================================================================= */
+
+.part {
+  position: relative;
+}
+
+/* Quadro do wireframe. Fica fora do fluxo e não recebe ponteiro, então
+   aparecer ou sumir nunca mexe no layout. */
+.part-frame {
+  position: absolute;
+  inset: -0.65rem -0.9rem;
+  border: 1px solid var(--amber-line);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+/* Cantos: dois traços curtos que dão o ar de guia de layout. */
+.part-frame::before,
+.part-frame::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--amber);
+}
+
+.part-frame::before {
+  top: -3px;
+  left: -3px;
+}
+
+.part-frame::after {
+  bottom: -3px;
+  right: -3px;
+}
+
+.part-tag {
+  position: absolute;
+  top: -1.65rem;
+  left: -0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--amber);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Malha de guias do fundo, só na primeira dobra. */
+.build-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.build-grid span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--paper-10);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .part-frame,
+  .part-tag,
+  .build-grid {
+    display: none;
   }
 }
 

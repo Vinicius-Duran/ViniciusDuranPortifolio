@@ -43,6 +43,7 @@
 
 .about-record dd {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.2rem;
   text-align: right;
   line-height: 1.2;
@@ -75,8 +76,8 @@
 
 .toolbox-label {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.6rem;
-  font-weight: 400;
   letter-spacing: -0.02em;
   color: var(--amber);
   margin-bottom: 0.6rem;
@@ -125,8 +126,8 @@
 
 .education-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.7rem, 3vw, 2.6rem);
-  font-weight: 400;
   line-height: 1.05;
   letter-spacing: -0.025em;
   margin-bottom: 0.5rem;
@@ -197,6 +198,7 @@
 
 .credential-name {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.2rem, 2vw, 1.6rem);
   line-height: 1.15;
   letter-spacing: -0.015em;
@@ -282,6 +284,7 @@
 
 .goal-what {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.25rem, 2.2vw, 1.8rem);
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -350,8 +353,8 @@
 
 .cert-dialog-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.35rem, 2.4vw, 1.9rem);
-  font-weight: 400;
   line-height: 1.15;
   letter-spacing: -0.02em;
   max-width: 30ch;

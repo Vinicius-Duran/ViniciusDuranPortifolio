@@ -1,0 +1,78 @@
+.build-hud {
+  position: fixed;
+  left: var(--gutter);
+  bottom: 1.5rem;
+  z-index: var(--z-progress);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-60);
+  background: color-mix(in srgb, var(--ink-100) 92%, transparent);
+  border: 1px solid var(--paper-10);
+  border-radius: 2px;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.build-hud-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: hud-blink 1.6s steps(1) infinite;
+}
+
+@keyframes hud-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+.build-hud-count {
+  color: var(--amber);
+  font-weight: 500;
+}
+
+.build-hud-name {
+  color: var(--paper-80);
+}
+
+.build-hud-track {
+  width: 4.5rem;
+  height: 2px;
+  background: var(--paper-10);
+  overflow: hidden;
+}
+
+.build-hud-bar {
+  display: block;
+  height: 100%;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Em telas estreitas o leitor rouba espaço do polegar: fica só a contagem. */
+@media (max-width: 700px) {
+  .build-hud {
+    left: auto;
+    right: var(--gutter);
+    bottom: 1rem;
+    padding: 0.45rem 0.7rem;
+  }
+
+  .build-hud-name,
+  .build-hud-track {
+    display: none;
+  }
+}

@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Frame from '../../components/Frame/Frame';
 import {
   useGsapScope,
-  heroIntro,
-  revealHeading,
+  buildIntro,
+  buildOnScroll,
   revealStack,
   playOnEnter,
 } from '../../lib/motion';
@@ -27,9 +28,11 @@ const About = () => {
     const el = (selector) => self.selector(selector)[0];
     const all = (selector) => self.selector(selector);
 
-    heroIntro(el('.about-hero'));
+    buildIntro(el('.about-hero'));
 
-    all('.section-title').forEach(revealHeading);
+    all('[data-build-step]').forEach((section) => {
+      if (!section.classList.contains('about-hero')) buildOnScroll(section);
+    });
 
     playOnEnter(el('.toolbox'), revealStack(all('.toolbox-entry'), { delayStep: 55 }));
     playOnEnter(el('.credential-list'), revealStack(all('.credential'), { delayStep: 45 }));
@@ -53,23 +56,25 @@ const About = () => {
   return (
     <div className="about-page" ref={root}>
       {/* ---------------------------------------------------------------- */}
-      <section className="about-hero">
+      <section className="about-hero" data-build-step="about.jsx">
         <div className="shell">
-          <h1 className="about-hero-title display" data-hero-headline>
-            Sobre mim, linhas de código e <em>curiosidade</em>.
-          </h1>
+          <div className="part">
+            <Frame tag="h1 · about" />
+            <h1 className="about-hero-title display" data-build-headline>
+              Sobre mim, linhas de código e <em>curiosidade</em>.
+            </h1>
+          </div>
 
-          <span className="hero-rule" data-hero-rule aria-hidden="true" />
-
-          <div className="about-hero-foot">
-            <p className="lede" data-hero-fade>
+          <div className="part about-hero-foot">
+            <Frame tag="section · record" />
+            <p className="lede">
               Desenvolvedor júnior com mais de {anosDeExperiencia} anos de experiência em
               desenvolvimento de APIs, manutenção de projetos e construção de interfaces.
               Trabalho fluentemente com C#, SQL, Node.js, .NET, React e CSS — sempre
               buscando a combinação certa entre engenharia robusta e design intencional.
             </p>
 
-            <dl className="about-record" data-hero-fade>
+            <dl className="about-record">
               <div>
                 <dt>Base</dt>
                 <dd>{profile.location}</dd>
@@ -88,11 +93,14 @@ const About = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="toolbox-section">
+      <section className="toolbox-section" data-build-step="stack.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Toolbox técnica em <em>camadas</em>.
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · stack" />
+            <h2 className="section-title">
+              Toolbox técnica em <em>camadas</em>.
+            </h2>
+          </div>
 
           <p className="lede toolbox-lede">
             Tenho uma forte paixão por aprender e encarar desafios — principalmente quando
@@ -116,11 +124,14 @@ const About = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="education">
+      <section className="education" data-build-step="education.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Formação <em>acadêmica</em>
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · education" />
+            <h2 className="section-title">
+              Formação <em>acadêmica</em>
+            </h2>
+          </div>
 
           <article className="education-entry">
             <p className="education-period">2024 — 2025</p>
@@ -143,11 +154,14 @@ const About = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="credentials">
+      <section className="credentials" data-build-step="certificates.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Certificados e <em>cursos</em>
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · certificates" />
+            <h2 className="section-title">
+              Certificados e <em>cursos</em>
+            </h2>
+          </div>
 
           <ul className="credential-list">
             {certificates.map((cert, index) => (
@@ -176,11 +190,14 @@ const About = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="goals">
+      <section className="goals" data-build-step="goals.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Objetivos <em>profissionais</em>
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · goals" />
+            <h2 className="section-title">
+              Objetivos <em>profissionais</em>
+            </h2>
+          </div>
 
           <p className="lede goals-lede">
             Continuar minha evolução como desenvolvedor, aprender novas tecnologias e

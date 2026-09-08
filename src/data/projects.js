@@ -193,7 +193,7 @@ export const projects = [
     description:
       'O site que você está navegando: React 19, design system em CSS custom properties e motion com GSAP e anime.js.',
     longDescription:
-      'Portfólio construído do zero em React 19 com React Router 7. O sistema visual é definido por custom properties do CSS — paleta, tipografia e curvas de easing num único ponto. A direção é editorial: uma serif de display contra uma grotesk de texto, fundo carvão quente e um único acento âmbar, sem gradiente de marca. O motion é dividido por competência: GSAP cuida da linha do tempo de abertura, das revelações por rolagem e do embaralhamento de texto no índice de projetos; anime.js cuida dos stagger. Todo o conteúdo vive numa camada de dados separada dos componentes.',
+      'Portfólio construído do zero em React 19 com React Router 7. O sistema visual é definido por custom properties do CSS — paleta, tipografia e curvas de easing num único ponto — sobre Archivo, uma grotesk técnica, pesada no display. A ideia que organiza o site é a montagem: cada bloco é uma peça que primeiro aparece como quadro de wireframe rotulado, depois recebe o conteúdo e larga a guia, de modo que a página se constrói na frente de quem chega. GSAP cuida da sequência de abertura, da escrita do título caractere a caractere e do embaralhamento de texto no índice de projetos; anime.js cuida dos stagger de lista. Todo o conteúdo vive numa camada de dados separada dos componentes.',
     challenge:
       'Um portfólio precisa ser visualmente memorável sem virar um amontoado de efeitos, e precisa ser fácil de atualizar — senão o conteúdo envelhece e o site vira uma vitrine desatualizada de si mesmo.',
     solution:
@@ -203,7 +203,7 @@ export const projects = [
     tech: ['React 19', 'GSAP', 'anime.js'],
     techDetailed: {
       Frontend: ['React 19', 'React Router DOM 7', 'Vite 6'],
-      Estilo: ['CSS Custom Properties', 'Instrument Serif', 'Instrument Sans'],
+      Estilo: ['CSS Custom Properties', 'Archivo', 'JetBrains Mono'],
       Motion: ['GSAP', 'ScrollTrigger', 'SplitText', 'ScrambleText', 'anime.js'],
       Qualidade: ['Vitest', 'ESLint'],
     },

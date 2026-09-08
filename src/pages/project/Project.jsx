@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
+import Frame from '../../components/Frame/Frame';
 import {
   useGsapScope,
-  heroIntro,
-  revealHeading,
+  buildIntro,
+  buildOnScroll,
   revealStack,
   playOnEnter,
-  gsap,
-  reducedMotion,
+  parallax,
 } from '../../lib/motion';
 import { getProjectBySlug, getAdjacentProjects } from '../../data/projects';
 import './Project.css';
@@ -24,32 +24,18 @@ const Project = () => {
       const el = (selector) => self.selector(selector)[0];
       const all = (selector) => self.selector(selector);
 
-      heroIntro(el('.case-hero'));
+      buildIntro(el('.case-hero'));
 
-      all('.section-title').forEach(revealHeading);
+      all('[data-build-step]').forEach((section) => {
+        if (!section.classList.contains('case-hero')) buildOnScroll(section);
+      });
 
       playOnEnter(el('.case-beats'), revealStack(all('.case-beat'), { delayStep: 110 }));
       playOnEnter(el('.case-stack'), revealStack(all('.case-stack-entry'), { delayStep: 60 }));
 
       /* A capa desliza mais devagar que a página enquanto rola: dá
          profundidade sem tirar a imagem do lugar. */
-      const cover = el('.case-cover-image');
-      if (cover && !reducedMotion()) {
-        gsap.fromTo(
-          cover,
-          { yPercent: -8 },
-          {
-            yPercent: 8,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el('.case-cover'),
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true,
-            },
-          }
-        );
-      }
+      parallax(el('.case-cover-image'), el('.case-cover'));
     },
     [slug, exists]
   );
@@ -69,25 +55,25 @@ const Project = () => {
   return (
     <article className="case" ref={root}>
       {/* ---------------------------------------------------------------- */}
-      <header className="case-hero">
+      <header className="case-hero" data-build-step={`${project.slug}.jsx`}>
         <div className="shell">
           <Link to="/#projects" className="link case-back">
             <span aria-hidden="true">←</span>
             <span>Todos os projetos</span>
           </Link>
 
-          <h1 className="case-title display" data-hero-headline>
-            {project.title}
-          </h1>
+          <div className="part">
+            <Frame tag="h1 · case" />
+            <h1 className="case-title display" data-build-headline>
+              {project.title}
+            </h1>
+          </div>
 
-          <span className="hero-rule" data-hero-rule aria-hidden="true" />
+          <div className="part case-hero-foot">
+            <Frame tag="section · record" />
+            <p className="lede">{project.tagline}</p>
 
-          <div className="case-hero-foot">
-            <p className="lede" data-hero-fade>
-              {project.tagline}
-            </p>
-
-            <dl className="case-record" data-hero-fade>
+            <dl className="case-record">
               <div>
                 <dt>Cliente</dt>
                 <dd>{project.client}</dd>
@@ -125,11 +111,14 @@ const Project = () => {
       )}
 
       {/* ---------------------------------------------------------------- */}
-      <section className="case-overview">
+      <section className="case-overview" data-build-step="overview.jsx">
         <div className="shell case-overview-grid">
-          <h2 className="section-title">
-            Sobre o <em>projeto</em>
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · overview" />
+            <h2 className="section-title">
+              Sobre o <em>projeto</em>
+            </h2>
+          </div>
           <div className="prose">
             <p>{project.longDescription || project.description}</p>
           </div>
@@ -137,7 +126,7 @@ const Project = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="case-beats-section">
+      <section className="case-beats-section" data-build-step="story.jsx">
         <div className="shell">
           <ol className="case-beats">
             {beats.map((beat) => (
@@ -170,11 +159,14 @@ const Project = () => {
       )}
 
       {/* ---------------------------------------------------------------- */}
-      <section className="case-stack-section">
+      <section className="case-stack-section" data-build-step="stack.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Stack <em>técnica</em>
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · stack" />
+            <h2 className="section-title">
+              Stack <em>técnica</em>
+            </h2>
+          </div>
 
           <div className="case-stack">
             {stackEntries.map(([category, items]) => (
@@ -192,11 +184,14 @@ const Project = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="case-links">
+      <section className="case-links" data-build-step="links.jsx">
         <div className="shell">
-          <h2 className="section-title">
-            Quer ver de <em>perto</em>?
-          </h2>
+          <div className="part">
+            <Frame tag="h2 · links" />
+            <h2 className="section-title">
+              Quer ver de <em>perto</em>?
+            </h2>
+          </div>
           <p className="lede case-links-lede">
             Explore o código fonte para entender as decisões técnicas tomadas durante o
             desenvolvimento.

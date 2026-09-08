@@ -4,8 +4,9 @@ Portfólio pessoal de Vinicius Duran, desenvolvedor full-stack em Florianópolis
 Construído em React 19 com Vite, design system em CSS custom properties e motion
 com GSAP e anime.js.
 
-Direção visual editorial: fundo carvão quente, um único acento âmbar, Instrument
-Serif no display contra Instrument Sans no texto. Sem gradiente de marca.
+Direção visual: fundo carvão quente, um único acento âmbar e Archivo — grotesk
+técnica — pesada no display contra o mesmo desenho em peso de texto. Sem
+gradiente de marca e sem serif.
 
 ## Stack
 
@@ -17,10 +18,17 @@ Serif no display contra Instrument Sans no texto. Sem gradiente de marca.
 
 ## Motion
 
+O site se monta na frente de quem chega. Cada bloco é uma **peça**: um quadro de
+wireframe é desenhado, ganha o rótulo do que ele é (`h1 · hero`, `section ·
+intro`), o conteúdo entra por dentro dele, e a guia se retira. O herói roda essa
+sequência inteira no carregamento, com o título escrito caractere a caractere
+como saída de compilador; as demais seções repetem a mesma gramática, mais
+rápida, quando entram na tela. Um leitor de build fixo no canto acompanha qual
+"arquivo" está montado.
+
 Toda a animação sai de `src/lib/motion.js`, que registra os plugins do GSAP e
-expõe as poucas gramáticas que o site usa — a linha do tempo de abertura, a
-revelação por máscara dos títulos, o stagger das listas e o embaralhamento de
-texto no índice de projetos.
+expõe essa gramática — `assemblePart`, `buildIntro`, `buildOnScroll` — mais o
+stagger das listas (anime.js) e o embaralhamento de texto no índice de projetos.
 
 Duas regras sustentam esse módulo:
 

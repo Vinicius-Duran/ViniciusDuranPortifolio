@@ -3,36 +3,52 @@
    ========================================================================= */
 
 .hero {
+  position: relative;
   min-height: 100dvh;
   display: flex;
-  align-items: flex-end;
-  padding-block: clamp(8rem, 6rem + 10vw, 12rem) clamp(3rem, 2rem + 4vw, 5rem);
+  align-items: center;
+  /* O respiro inferior é maior que o superior porque o leitor de build mora
+     no canto de baixo: sem essa folga ele encosta nos botões. */
+  padding-block: clamp(6.5rem, 5rem + 5vw, 8.5rem) clamp(5.5rem, 4rem + 4vw, 7rem);
+  overflow: hidden;
 }
 
+.hero-shell {
+  display: grid;
+  gap: clamp(1.75rem, 3.5vw, 3rem);
+}
+
+/* O teto do clamp é o tamanho em que a segunda linha ainda cabe inteira na
+   largura do shell. Acima disso ela quebra sozinha e sai "peça a / peça.". */
 .hero-headline {
-  font-size: clamp(3rem, 1rem + 10.5vw, 9rem);
-  max-width: 14ch;
+  font-size: clamp(2.4rem, 0.4rem + 8vw, 6.5rem);
+  max-width: 20ch;
+  text-wrap: nowrap;
 }
 
-/* SplitText com mask cria este wrapper; o overflow precisa cortar a linha
-   que sobe por baixo dele. */
-.hero-split-line {
-  padding-bottom: 0.06em;
+@media (max-width: 900px) {
+  /* Estreito demais para a quebra manual: deixa o navegador decidir. */
+  .hero-headline {
+    text-wrap: balance;
+    max-width: 14ch;
+  }
+
+  .hero-headline br {
+    display: none;
+  }
 }
 
-.hero-rule {
-  display: block;
-  height: 1px;
-  background: var(--amber);
-  transform-origin: left;
-  margin-block: clamp(2.5rem, 5vw, 4rem) clamp(1.75rem, 3vw, 2.75rem);
-}
-
-.hero-foot {
+.hero-intro-part {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 5rem);
   align-items: start;
+}
+
+.hero-cta-part {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
 }
 
 .hero-ledger {
@@ -59,20 +75,14 @@
 
 .hero-ledger dd {
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
   text-align: right;
 }
 
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-}
-
 @media (max-width: 820px) {
-  .hero-foot {
+  .hero-intro-part {
     grid-template-columns: 1fr;
   }
 }
@@ -115,8 +125,8 @@
 
 .skill-line-label {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.5rem;
-  font-weight: 400;
   letter-spacing: -0.02em;
   color: var(--amber);
   margin-bottom: 0.35rem;
@@ -163,6 +173,7 @@
 
 .process-step-n {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   color: var(--paper-20);
   transition: color 300ms ease;
@@ -170,8 +181,8 @@
 
 .process-step-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.6rem, 2.6vw, 2.35rem);
-  font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.05;
   margin-bottom: 0.6rem;
@@ -269,6 +280,7 @@
 
 .index-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.9rem, 3.4vw, 3.1rem);
   line-height: 1;
   letter-spacing: -0.025em;
@@ -371,6 +383,7 @@
 
 .index-cover-blank {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.6rem;
   color: var(--paper-40);
   text-align: center;
@@ -535,6 +548,7 @@
 
 .contact-value {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.3rem, 2.6vw, 2.1rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -586,6 +600,7 @@
 
 .colophon-name {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.4rem;
   letter-spacing: -0.02em;
 }

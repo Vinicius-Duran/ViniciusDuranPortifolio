@@ -55,6 +55,7 @@
 
 .wordmark-name {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.3rem;
   letter-spacing: -0.02em;
   transition: color 200ms ease;
@@ -229,8 +230,8 @@
 
   .masthead-link {
     font-family: var(--font-display);
+  font-weight: 700;
     font-size: clamp(2.4rem, 12vw, 3.6rem);
-    font-weight: 400;
     letter-spacing: -0.03em;
     color: var(--paper);
     padding-block: 0.12em;

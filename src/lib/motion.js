@@ -11,11 +11,6 @@ export const reducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/**
- * useLayoutEffect roda antes da pintura, então o estado inicial que o GSAP
- * escreve nunca chega a piscar visível. Em SSR não existe layout: cai para
- * useEffect para não emitir aviso — e lá nada anima de qualquer forma.
- */
 const useIsomorphicLayoutEffect =
   typeof window === 'undefined' ? () => {} : useLayoutEffect;
 
@@ -35,97 +30,174 @@ export const useGsapScope = (callback, deps = []) => {
   return scope;
 };
 
+/* =========================================================================
+   A MONTAGEM
+   Uma peça se constrói em quatro tempos: o quadro é desenhado, o rótulo diz
+   o que ela é, o conteúdo entra, e a guia se retira. É a mesma gramática na
+   página inteira — o que muda é a duração e o quanto ela se demora.
+   ========================================================================= */
+
 /**
- * O momento autoral do site: a assinatura sobe linha a linha por trás de uma
- * máscara, e a régua de acento se desenha por baixo dela. Acontece uma vez,
- * na primeira dobra, e não se repete em nenhuma outra seção.
+ * Monta uma peça. `timeline` é onde os tempos são inseridos, `at` é a posição
+ * na linha do tempo, e `pace` multiplica a duração: 1 no herói, onde o
+ * espetáculo vale, e ~0.6 nas seções, onde ele só precisa dar ritmo.
  */
-export const heroIntro = (root) => {
-  if (!root || reducedMotion()) return null;
+export const assemblePart = (timeline, part, at, pace = 1) => {
+  const frame = part.querySelector(':scope > .part-frame');
+  const tag = part.querySelector(':scope > .part-tag');
+  const payload = [...part.children].filter(
+    (child) => child !== frame && child !== tag
+  );
 
-  const timeline = gsap.timeline({
-    defaults: { ease: 'power4.out' },
-  });
-
-  const headline = root.querySelector('[data-hero-headline]');
-
-  if (headline) {
-    SplitText.create(headline, {
-      type: 'lines',
-      mask: 'lines',
-      autoSplit: true,
-      linesClass: 'hero-split-line',
-      onSplit(self) {
-        return timeline.from(
-          self.lines,
-          { yPercent: 115, duration: 1.15, stagger: 0.085 },
-          0
-        );
-      },
-    });
+  // 1 — o quadro é desenhado da esquerda para a direita
+  if (frame) {
+    timeline
+      .fromTo(
+        frame,
+        { opacity: 0, scaleX: 0 },
+        { opacity: 1, scaleX: 1, duration: 0.32 * pace, ease: 'power3.inOut' },
+        at
+      )
+      // 4 — e some depois que o conteúdo assumiu o lugar dele
+      .to(
+        frame,
+        { opacity: 0, duration: 0.28 * pace, ease: 'power2.out' },
+        at + 0.5 * pace
+      );
   }
 
-  timeline
-    .from(
-      root.querySelectorAll('[data-hero-rule]'),
-      { scaleX: 0, duration: 1.1, ease: 'expo.out' },
-      0.35
-    )
-    .from(
-      root.querySelectorAll('[data-hero-fade]'),
-      { y: 18, opacity: 0, duration: 0.8, stagger: 0.09 },
-      0.5
+  // 2 — o rótulo aparece com o nome da peça
+  if (tag) {
+    timeline
+      .fromTo(tag, { opacity: 0 }, { opacity: 1, duration: 0.14 * pace }, at + 0.2 * pace)
+      .to(tag, { opacity: 0, duration: 0.24 * pace }, at + 0.5 * pace);
+  }
+
+  // 3 — o conteúdo entra por dentro do quadro
+  if (payload.length) {
+    timeline.fromTo(
+      payload,
+      { opacity: 0, y: 12 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.45 * pace,
+        ease: 'power3.out',
+        stagger: 0.04 * pace,
+      },
+      at + 0.28 * pace
     );
+  }
 
   return timeline;
 };
 
 /**
- * Título de seção: revelação por máscara horizontal, distinta da entrada do
- * corpo de texto logo abaixo. Duas gramáticas, não uma repetida em tudo.
+ * A abertura: a malha de guias se levanta, as peças do herói se montam uma a
+ * uma, e o título é compilado caractere a caractere. Roda uma vez, no carregamento.
  */
-export const revealHeading = (element) => {
-  if (reducedMotion() || !element) return null;
+export const buildIntro = (root) => {
+  if (!root || reducedMotion()) return null;
 
-  return gsap.from(element, {
-    clipPath: 'inset(0 0 108% 0)',
-    y: 22,
-    duration: 1,
-    ease: 'expo.out',
-    scrollTrigger: { trigger: element, start: 'top 88%' },
+  const timeline = gsap.timeline();
+  const guides = root.querySelectorAll('.build-grid span');
+  const parts = root.querySelectorAll('.part');
+  const headline = root.querySelector('[data-build-headline]');
+
+  if (guides.length) {
+    timeline
+      .fromTo(
+        guides,
+        { scaleY: 0 },
+        { scaleY: 1, duration: 0.45, ease: 'power2.inOut', stagger: 0.03 },
+        0
+      )
+      .to(guides, { opacity: 0.4, duration: 0.5 }, 0.9);
+  }
+
+  /* O ritmo é curto de propósito: a primeira peça começa quase junto com a
+     página. Uma abertura que deixa o herói vazio por um segundo não lê como
+     construção, lê como site quebrado. */
+  parts.forEach((part, index) => {
+    assemblePart(timeline, part, 0.12 + index * 0.3, 1);
   });
+
+  // O título não desliza: ele é escrito, como saída de compilador.
+  // Dividir em `words,chars`, e não só em `chars`: sem os invólucros de
+  // palavra o navegador perde os espaços e quebra linha no meio da frase —
+  // "peça a peça" saía "peça apeça", com o ponto final numa linha só dele.
+  if (headline) {
+    const split = SplitText.create(headline, { type: 'words,chars' });
+    timeline.from(
+      split.chars,
+      {
+        opacity: 0,
+        duration: 0.01,
+        stagger: { each: 0.014, from: 'start' },
+        ease: 'none',
+      },
+      0.34
+    );
+  }
+
+  return timeline;
 };
 
 /**
- * Corpo e listas: subida curta escalonada. anime.js cuida daqui porque o
- * stagger dele aceita origem e grade — útil nas grades de competência.
+ * Chegada de seção: a mesma montagem, disparada pela rolagem e mais rápida,
+ * porque aqui ela marca o ritmo em vez de ser o número principal.
+ */
+export const buildOnScroll = (section) => {
+  if (!section || reducedMotion()) return null;
+
+  const parts = section.querySelectorAll('.part');
+  if (!parts.length) return null;
+
+  const timeline = gsap.timeline({
+    paused: true,
+    // Ao terminar, limpa tudo que o GSAP escreveu inline: a partir daí o
+    // elemento volta a obedecer só o CSS, inclusive nos estados de hover.
+    onComplete: () => gsap.set(section.querySelectorAll('.part > *'), { clearProps: 'all' }),
+  });
+
+  parts.forEach((part, index) => {
+    assemblePart(timeline, part, index * 0.16, 0.6);
+  });
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top 82%',
+    once: true,
+    onEnter: () => timeline.play(),
+  });
+
+  return timeline;
+};
+
+/**
+ * Stagger de lista pelo anime.js, cujo `stagger()` aceita origem e grade.
+ * Fica para as listas longas, onde a montagem peça a peça seria arrastada.
  */
 export const revealStack = (elements, options = {}) => {
   if (reducedMotion() || !elements?.length) return null;
 
-  const { from = 'first', grid, delayStep = 60, distance = 24 } = options;
+  const { from = 'first', grid, delayStep = 55, distance = 22 } = options;
 
   gsap.set(elements, { opacity: 0 });
 
   return animate(elements, {
     y: [distance, 0],
     opacity: [0, 1],
-    duration: 720,
+    duration: 680,
     ease: 'out(3)',
     delay: stagger(delayStep, grid ? { grid, from } : { from }),
     autoplay: false,
   });
 };
 
-/**
- * Dispara uma animação do anime.js quando o bloco entra na viewport, uma vez
- * só. ScrollTrigger já está carregado, então não vale um segundo observador.
- */
 export const playOnEnter = (trigger, animation) => {
   if (!animation) return null;
 
-  // Sem gatilho não há como esperar a viewport, e o bloco já foi escondido
-  // pelo revealStack. Toca na hora em vez de deixar conteúdo invisível.
   if (!trigger) {
     animation.play();
     return null;
@@ -139,17 +211,31 @@ export const playOnEnter = (trigger, animation) => {
   });
 };
 
-/**
- * Embaralha o texto ao entrar na linha do projeto. Só no ponteiro fino: em
- * toque o hover dispara no tap e o efeito viraria ruído.
- */
+/** Embaralha o texto ao entrar na linha do projeto. */
 export const scrambleTo = (element, text) => {
   if (!element || reducedMotion()) return null;
 
   return gsap.to(element, {
-    duration: 0.55,
-    scrambleText: { text, chars: '01<>/{}[]#', speed: 0.6, revealDelay: 0.12 },
+    duration: 0.5,
+    scrambleText: { text, chars: '01<>/{}[]#', speed: 0.7, revealDelay: 0.1 },
   });
+};
+
+/**
+ * Parallax vertical amarrado à rolagem.
+ */
+export const parallax = (element, trigger, amount = 8) => {
+  if (!element || reducedMotion()) return null;
+
+  return gsap.fromTo(
+    element,
+    { yPercent: -amount },
+    {
+      yPercent: amount,
+      ease: 'none',
+      scrollTrigger: { trigger, start: 'top bottom', end: 'bottom top', scrub: true },
+    }
+  );
 };
 
 export { gsap, ScrollTrigger, animate, stagger, createScope };

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header/Header';
 import Grain from './components/Grain/Grain';
 import ScrollProgress from './components/ScrollProgress/ScrollProgress';
+import BuildHud from './components/BuildHud/BuildHud';
 import Home from './pages/home/Home';
 import About from './pages/about/About';
 import Project from './pages/project/Project';
@@ -44,6 +45,9 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+      {/* Depois de <main>: os efeitos de irmãos rodam em ordem de árvore, e
+          ele precisa das seções já montadas para lê-las. */}
+      <BuildHud />
     </Router>
   );
 }
