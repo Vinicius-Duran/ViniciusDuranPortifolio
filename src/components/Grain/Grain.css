@@ -1,0 +1,20 @@
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+
+.grain-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Em telas densas o grão vira ruído de cor; reduz para virar só textura. */
+@media (min-resolution: 2dppx) {
+  .grain {
+    opacity: 0.035;
+  }
+}

@@ -1,23 +1,58 @@
 import React from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
-import { useReveal, useRevealMany } from '../../hooks/useReveal';
+import {
+  useGsapScope,
+  heroIntro,
+  revealHeading,
+  revealStack,
+  playOnEnter,
+  gsap,
+  reducedMotion,
+} from '../../lib/motion';
 import { getProjectBySlug, getAdjacentProjects } from '../../data/projects';
 import './Project.css';
 
 const Project = () => {
   const { slug } = useParams();
   const project = getProjectBySlug(slug);
+  const exists = Boolean(project && project.featured);
 
-  const heroRef = useReveal({ threshold: 0.15 });
-  const coverRef = useReveal();
-  const overviewRef = useReveal();
-  const galleryRef = useReveal();
-  const stackRef = useReveal();
-  const storyRef = useReveal();
-  const ctaRef = useReveal();
-  const nextRef = useReveal();
-  const setGalleryRef = useRevealMany(project ? project.gallery.length : 0);
-  const setStackRef = useRevealMany(project ? Object.keys(project.techDetailed).length : 0);
+  const root = useGsapScope(
+    (self) => {
+      if (!exists) return;
+
+      const el = (selector) => self.selector(selector)[0];
+      const all = (selector) => self.selector(selector);
+
+      heroIntro(el('.case-hero'));
+
+      all('.section-title').forEach(revealHeading);
+
+      playOnEnter(el('.case-beats'), revealStack(all('.case-beat'), { delayStep: 110 }));
+      playOnEnter(el('.case-stack'), revealStack(all('.case-stack-entry'), { delayStep: 60 }));
+
+      /* A capa desliza mais devagar que a página enquanto rola: dá
+         profundidade sem tirar a imagem do lugar. */
+      const cover = el('.case-cover-image');
+      if (cover && !reducedMotion()) {
+        gsap.fromTo(
+          cover,
+          { yPercent: -8 },
+          {
+            yPercent: 8,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el('.case-cover'),
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          }
+        );
+      }
+    },
+    [slug, exists]
+  );
 
   if (!project || !project.featured) {
     return <Navigate to="/#projects" replace />;
@@ -25,155 +60,126 @@ const Project = () => {
 
   const { prev, next } = getAdjacentProjects(slug);
   const stackEntries = Object.entries(project.techDetailed);
+  const beats = [
+    { n: '01', label: 'Desafio', body: project.challenge },
+    { n: '02', label: 'Solução', body: project.solution },
+    { n: '03', label: 'Resultado', body: project.outcome },
+  ];
 
   return (
-    <div className="project-page">
-      <section className="project-hero" ref={heroRef}>
+    <article className="case" ref={root}>
+      {/* ---------------------------------------------------------------- */}
+      <header className="case-hero">
         <div className="shell">
-          <Link to="/#projects" className="project-back reveal magnetic">
+          <Link to="/#projects" className="link case-back">
             <span aria-hidden="true">←</span>
-            <span>Voltar para projetos</span>
+            <span>Todos os projetos</span>
           </Link>
 
-          <div className="project-hero-meta reveal delay-1">
-            <span className="eyebrow">Project · {project.id}</span>
-            <span className="mono project-hero-status">
-              <span className="project-hero-status-dot" aria-hidden="true" />
-              {project.status}
-            </span>
-          </div>
-
-          <h1 className="project-hero-title display reveal delay-2">
+          <h1 className="case-title display" data-hero-headline>
             {project.title}
           </h1>
 
-          <p className="project-hero-tagline reveal delay-3">{project.tagline}</p>
+          <span className="hero-rule" data-hero-rule aria-hidden="true" />
 
-          <div className="project-hero-data reveal delay-4">
-            <div>
-              <span className="project-hero-data-key mono">CLIENT</span>
-              <span className="project-hero-data-value">{project.client}</span>
-            </div>
-            <div>
-              <span className="project-hero-data-key mono">YEAR</span>
-              <span className="project-hero-data-value">{project.year}</span>
-            </div>
-            <div>
-              <span className="project-hero-data-key mono">ROLE</span>
-              <span className="project-hero-data-value">{project.role}</span>
-            </div>
-            <div>
-              <span className="project-hero-data-key mono">DURATION</span>
-              <span className="project-hero-data-value">{project.duration}</span>
-            </div>
+          <div className="case-hero-foot">
+            <p className="lede" data-hero-fade>
+              {project.tagline}
+            </p>
+
+            <dl className="case-record" data-hero-fade>
+              <div>
+                <dt>Cliente</dt>
+                <dd>{project.client}</dd>
+              </div>
+              <div>
+                <dt>Ano</dt>
+                <dd>{project.year}</dd>
+              </div>
+              <div>
+                <dt>Papel</dt>
+                <dd>{project.role}</dd>
+              </div>
+              <div>
+                <dt>Escopo</dt>
+                <dd>{project.duration}</dd>
+              </div>
+            </dl>
           </div>
         </div>
-      </section>
+      </header>
 
+      {/* ---------------------------------------------------------------- */}
       {project.cover && (
-        <section className="project-cover reveal-scale" ref={coverRef}>
+        <div className="case-cover">
           <div className="shell">
-            <div className="project-cover-frame">
-              <img src={project.cover} alt={`${project.title} — captura da interface`} />
-            </div>
+            <figure className="case-cover-frame">
+              <img
+                className="case-cover-image"
+                src={project.cover}
+                alt={`${project.title} — captura da interface`}
+              />
+            </figure>
           </div>
-        </section>
+        </div>
       )}
 
-      <section className="project-overview" ref={overviewRef}>
-        <div className="shell">
-          <div className="project-overview-grid">
-            <div className="reveal">
-              <span className="section-index mono">#01 — overview</span>
-              <h2 className="project-section-title display">
-                Sobre o <em>projeto</em>
-              </h2>
-            </div>
-
-            <div className="project-overview-body reveal delay-1">
-              <p className="project-overview-lead">
-                {project.longDescription || project.description}
-              </p>
-            </div>
+      {/* ---------------------------------------------------------------- */}
+      <section className="case-overview">
+        <div className="shell case-overview-grid">
+          <h2 className="section-title">
+            Sobre o <em>projeto</em>
+          </h2>
+          <div className="prose">
+            <p>{project.longDescription || project.description}</p>
           </div>
         </div>
       </section>
 
-      <section className="project-story" ref={storyRef}>
+      {/* ---------------------------------------------------------------- */}
+      <section className="case-beats-section">
         <div className="shell">
-          <div className="project-story-grid">
-            <article className="project-story-card reveal">
-              <header>
-                <span className="project-story-index mono">01 · Desafio</span>
-                <h3 className="display">O que precisava ser resolvido</h3>
-              </header>
-              <p>{project.challenge}</p>
-            </article>
-
-            <article className="project-story-card reveal delay-1">
-              <header>
-                <span className="project-story-index mono">02 · Solução</span>
-                <h3 className="display">A abordagem escolhida</h3>
-              </header>
-              <p>{project.solution}</p>
-            </article>
-
-            <article className="project-story-card reveal delay-2">
-              <header>
-                <span className="project-story-index mono">03 · Resultado</span>
-                <h3 className="display">Impacto e aprendizados</h3>
-              </header>
-              <p>{project.outcome}</p>
-            </article>
-          </div>
+          <ol className="case-beats">
+            {beats.map((beat) => (
+              <li className="case-beat" key={beat.n}>
+                <span className="case-beat-n">{beat.n}</span>
+                <h3 className="case-beat-label">{beat.label}</h3>
+                <p className="case-beat-body">{beat.body}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
+      {/* ---------------------------------------------------------------- */}
       {project.gallery.length > 0 && (
-        <section className="project-gallery" ref={galleryRef}>
+        <section className="case-gallery">
           <div className="shell">
-            <div className="section-header reveal">
-              <span className="section-index mono">#02 — gallery</span>
-              <h2 className="project-section-title display">
-                Imagens e <em>capturas</em>
-              </h2>
-            </div>
-
-            <div className="project-gallery-grid">
+            <h2 className="section-title">
+              Imagens e <em>capturas</em>
+            </h2>
+            <div className="case-gallery-grid">
               {project.gallery.map((image, index) => (
-                <div
-                  key={image}
-                  ref={setGalleryRef(index)}
-                  className={`project-gallery-item reveal delay-${(index % 4) + 1} ${index === 0 ? 'is-wide' : ''}`}
-                >
+                <figure key={image} className={index === 0 ? 'is-wide' : ''}>
                   <img src={image} alt={`${project.title} — captura ${index + 1}`} />
-                </div>
+                </figure>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      <section className="project-stack" ref={stackRef}>
+      {/* ---------------------------------------------------------------- */}
+      <section className="case-stack-section">
         <div className="shell">
-          <div className="section-header reveal">
-            <span className="section-index mono">#03 — stack</span>
-            <h2 className="project-section-title display">
-              Stack <em>técnica</em>
-            </h2>
-          </div>
+          <h2 className="section-title">
+            Stack <em>técnica</em>
+          </h2>
 
-          <div className="project-stack-grid">
-            {stackEntries.map(([category, items], index) => (
-              <div
-                key={category}
-                ref={setStackRef(index)}
-                className={`project-stack-card reveal delay-${index + 1}`}
-              >
-                <div className="project-stack-card-head">
-                  <span className="project-stack-card-index mono">{String(index + 1).padStart(2, '0')}</span>
-                  <h4>{category}</h4>
-                </div>
+          <div className="case-stack">
+            {stackEntries.map(([category, items]) => (
+              <div className="case-stack-entry" key={category}>
+                <h3 className="case-stack-label">{category}</h3>
                 <ul>
                   {items.map((item) => (
                     <li key={item}>{item}</li>
@@ -185,58 +191,51 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="project-cta" ref={ctaRef}>
+      {/* ---------------------------------------------------------------- */}
+      <section className="case-links">
         <div className="shell">
-          <div className="project-cta-card reveal-scale">
-            <div>
-              <span className="section-index mono">#04 — links</span>
-              <h2 className="project-section-title display">
-                Quer ver de <em>perto</em>?
-              </h2>
-              <p>
-                Explore o código fonte para entender as decisões técnicas tomadas
-                durante o desenvolvimento.
-              </p>
-            </div>
-            <div className="project-cta-buttons">
-              {project.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className={`cta ${link.kind === 'primary' ? 'cta-primary' : 'cta-ghost'} magnetic`}
-                >
-                  <span className="cta-label">{link.label}</span>
-                  <span className="cta-arrow" aria-hidden="true">↗</span>
-                </a>
-              ))}
-            </div>
+          <h2 className="section-title">
+            Quer ver de <em>perto</em>?
+          </h2>
+          <p className="lede case-links-lede">
+            Explore o código fonte para entender as decisões técnicas tomadas durante o
+            desenvolvimento.
+          </p>
+          <div className="case-links-row">
+            {project.links.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`btn ${link.kind === 'primary' ? 'btn-solid' : 'btn-line'}`}
+              >
+                <span>{link.label}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="project-next" ref={nextRef}>
-        <div className="shell">
-          <div className="project-next-row">
-            {prev && (
-              <Link to={`/projects/${prev.slug}`} className="project-next-link prev reveal">
-                <span className="mono project-next-direction">← Anterior</span>
-                <span className="project-next-id mono">{prev.id}</span>
-                <span className="project-next-title display">{prev.title}</span>
-              </Link>
-            )}
-            {next && (
-              <Link to={`/projects/${next.slug}`} className="project-next-link next reveal delay-1">
-                <span className="mono project-next-direction">Próximo →</span>
-                <span className="project-next-id mono">{next.id}</span>
-                <span className="project-next-title display">{next.title}</span>
-              </Link>
-            )}
-          </div>
+      {/* ---------------------------------------------------------------- */}
+      <nav className="case-next" aria-label="Outros projetos">
+        <div className="shell case-next-row">
+          {prev && (
+            <Link to={`/projects/${prev.slug}`} className="case-next-link is-prev">
+              <span className="case-next-dir">← Anterior</span>
+              <span className="case-next-title">{prev.title}</span>
+            </Link>
+          )}
+          {next && (
+            <Link to={`/projects/${next.slug}`} className="case-next-link is-next">
+              <span className="case-next-dir">Próximo →</span>
+              <span className="case-next-title">{next.title}</span>
+            </Link>
+          )}
         </div>
-      </section>
-    </div>
+      </nav>
+    </article>
   );
 };
 

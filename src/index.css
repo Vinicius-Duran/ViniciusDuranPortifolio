@@ -1,48 +1,50 @@
+/* =========================================================================
+   Vinícius Duran — sistema visual
+   Editorial escuro e quente. Um acento só. Sem gradiente de marca.
+   ========================================================================= */
+
 :root {
-  --bg-deep: #06030c;
-  --bg-base: #0a0414;
-  --bg-elev: #120822;
-  --bg-soft: #1d0c20;
+  /* Superfícies: carvão quente, nunca preto puro, nunca roxo. */
+  --ink-000: #100e0c;
+  --ink-050: #12100e;
+  --ink-100: #1a1714;
+  --ink-200: #221e1a;
+  --ink-300: #2e2823;
 
-  --purple-900: #2a0e35;
-  --purple-700: #4a1758;
-  --purple-500: #651f71;
-  --purple-400: #7037cd;
-  --violet-400: #8a52ff;
+  /* Tinta: off-white quente e seus tons, todos derivados do mesmo matiz. */
+  --paper: #f4efe6;
+  --paper-80: #cdc5b8;
+  --paper-60: #9d948a;
+  --paper-40: #6f675e;
+  --paper-20: #423c36;
+  --paper-10: #2b2621;
 
-  --blue-700: #1f3a8a;
-  --blue-500: #506ee5;
-  --blue-400: #68b2f8;
-  --cyan-300: #7df9ff;
+  /* Um acento. Só um. */
+  --amber: #d9743f;
+  --amber-bright: #ef8a52;
+  --amber-wash: rgba(217, 116, 63, 0.14);
+  --amber-line: rgba(217, 116, 63, 0.32);
 
-  --magenta: #ff3da8;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  --white: #f5f1ff;
-  --white-80: rgba(245, 241, 255, 0.82);
-  --white-60: rgba(245, 241, 255, 0.6);
-  --white-40: rgba(245, 241, 255, 0.4);
-  --white-20: rgba(245, 241, 255, 0.2);
-  --white-10: rgba(245, 241, 255, 0.1);
-  --white-06: rgba(245, 241, 255, 0.06);
+  /* Curvas fortes: as nativas do CSS são fracas demais para ter intenção. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
-  --grad-primary: linear-gradient(135deg, #68b2f8 0%, #506ee5 45%, #7037cd 100%);
-  --grad-soft: linear-gradient(135deg, rgba(104, 178, 248, 0.18), rgba(112, 55, 205, 0.18));
-  --grad-text: linear-gradient(120deg, #ffffff 0%, #68b2f8 45%, #8a52ff 80%, #ff3da8 100%);
-  --grad-accent: linear-gradient(135deg, #7df9ff 0%, #68b2f8 35%, #8a52ff 100%);
+  --gutter: clamp(1.25rem, 5vw, 4.5rem);
+  --measure: 68ch;
+  --max-w: 1360px;
 
-  --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
-
-  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-cinema: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  --shell-pad: clamp(1.2rem, 4vw, 3rem);
-  --max-w: 1400px;
+  --z-grain: 1;
+  --z-progress: 40;
+  --z-header: 50;
+  --z-menu: 60;
 }
 
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -50,226 +52,297 @@
 
 html {
   scroll-behavior: smooth;
-  background: var(--bg-deep);
+  background: var(--ink-050);
+  /* Tema a barra de rolagem nativa nos navegadores que não usam ::-webkit. */
+  scrollbar-color: var(--paper-20) var(--ink-050);
+  scrollbar-width: thin;
 }
 
 body {
-  margin: 0;
   font-family: var(--font-body);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   font-weight: 400;
   line-height: 1.6;
+  background: var(--ink-050);
+  color: var(--paper);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--bg-deep);
-  color: var(--white);
-  overflow-x: hidden;
-  cursor: none;
+  text-rendering: optimizeLegibility;
+  /* Números alinhados em qualquer tabela de dados, sem fonte mono de fantasia. */
+  font-variant-numeric: tabular-nums;
+  /* Marca a seleção com o acento e um cursor que combina. */
+  caret-color: var(--amber);
 }
 
-@media (hover: none), (pointer: coarse) {
-  body {
-    cursor: auto;
-  }
+/* --- Superfícies do navegador: o que não desenhamos também é o design ---- */
+
+::selection {
+  background: var(--amber);
+  color: var(--ink-000);
 }
 
-code {
-  font-family: var(--font-mono);
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-*:focus {
-  outline: none;
+::-webkit-scrollbar-track {
+  background: var(--ink-050);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--paper-20);
+  border: 3px solid var(--ink-050);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--paper-40);
 }
 
 :focus-visible {
-  outline: 2px solid var(--cyan-300);
+  outline: 2px solid var(--amber-bright);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 1px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
 }
 
 a {
-  text-decoration: none;
   color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
 }
 
 button {
-  font-family: inherit;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
 img {
+  display: block;
   max-width: 100%;
   height: auto;
-  display: block;
 }
 
-::selection {
-  background: rgba(138, 82, 255, 0.4);
-  color: var(--white);
-}
-
-::-moz-selection {
-  background: rgba(138, 82, 255, 0.4);
-  color: var(--white);
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-deep);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--blue-400), var(--purple-400));
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--cyan-300), var(--violet-400));
-}
-
-.reveal,
-.reveal-left,
-.reveal-right,
-.reveal-scale {
-  opacity: 0;
-  will-change: opacity, transform;
-}
-
-.reveal {
-  transform: translateY(40px);
-  transition: opacity 1s var(--ease-cinema), transform 1s var(--ease-cinema);
-}
-
-.reveal-left {
-  transform: translateX(-60px);
-  transition: opacity 1s var(--ease-cinema), transform 1s var(--ease-cinema);
-}
-
-.reveal-right {
-  transform: translateX(60px);
-  transition: opacity 1s var(--ease-cinema), transform 1s var(--ease-cinema);
-}
-
-.reveal-scale {
-  transform: scale(0.92);
-  transition: opacity 1.1s var(--ease-cinema), transform 1.1s var(--ease-cinema);
-}
-
-.reveal.is-visible,
-.is-visible .reveal {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-left.is-visible,
-.is-visible .reveal-left {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-right.is-visible,
-.is-visible .reveal-right {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-scale.is-visible,
-.is-visible .reveal-scale {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.delay-1 { transition-delay: 0.1s; }
-.delay-2 { transition-delay: 0.2s; }
-.delay-3 { transition-delay: 0.3s; }
-.delay-4 { transition-delay: 0.4s; }
-.delay-5 { transition-delay: 0.5s; }
-.delay-6 { transition-delay: 0.6s; }
-
-.shell {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding-left: var(--shell-pad);
-  padding-right: var(--shell-pad);
-  width: 100%;
-}
-
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--blue-400);
-}
+/* --- Escala tipográfica ------------------------------------------------- */
 
 .display {
   font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.display em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+/* O título de seção: uma voz só no site inteiro, sem rótulo acima dele. */
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 1.2rem + 4.6vw, 5.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  max-width: 16ch;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.lede {
+  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.3rem);
+  line-height: 1.62;
+  color: var(--paper-80);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.prose p {
+  max-width: var(--measure);
+  color: var(--paper-80);
+  text-wrap: pretty;
+}
+
+.prose p + p {
+  margin-top: 1.15em;
+}
+
+/* Dado tabular: pequeno, espaçado, alinhado. Não é fonte mono de fantasia. */
+.data {
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-60);
+  font-variant-numeric: tabular-nums;
 }
 
-.mono {
-  font-family: var(--font-mono);
+.shell {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
+/* Régua fina, o único ornamento estrutural do site. */
+.rule {
+  height: 1px;
+  background: var(--paper-10);
+  border: 0;
+}
+
+/* --- Link com sublinhado que cresce ------------------------------------ */
+
+.link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  position: relative;
+  color: var(--paper);
+  padding-block: 0.15em;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(var(--link-scale, 0));
+  transform-origin: left;
+  transition: transform 260ms var(--ease-out);
+}
+
+.link:hover,
+.link:focus-visible {
+  color: var(--amber-bright);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    --link-scale: 1;
   }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
+}
+
+.link:focus-visible {
+  --link-scale: 1;
+}
+
+.link-arrow {
+  transition: transform 260ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover .link-arrow {
+    transform: translate(0.22em, -0.22em);
   }
 }
 
-@keyframes slow-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* --- Botão -------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.95em 1.6em;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 2px;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
 }
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-solid {
+  background: var(--amber);
+  color: var(--ink-000);
+}
+
+.btn-line {
+  border: 1px solid var(--paper-20);
+  color: var(--paper);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-solid:hover {
+    background: var(--amber-bright);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .btn-line:hover {
+    border-color: var(--paper-40);
+    background: var(--ink-100);
   }
 }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@keyframes float-orb {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -40px) scale(1.05); }
-  66% { transform: translate(-20px, 30px) scale(0.95); }
-}
+/* --- Motion -------------------------------------------------------------
+   Nenhum estado inicial mora no CSS: quem esconde para revelar é o GSAP, em
+   useLayoutEffect. Se o JS falhar, a página aparece inteira em vez de ficar
+   invisível esperando um observador que nunca vem.
+   ------------------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
+}
 
-  .reveal,
-  .reveal-left,
-  .reveal-right,
-  .reveal-scale {
-    opacity: 1;
-    transform: none;
-  }
+/* Salto para o conteúdo: obrigatório para teclado. */
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: 0;
+  z-index: 100;
+  transform: translateY(-150%);
+  background: var(--amber);
+  color: var(--ink-000);
+  padding: 0.75em 1.25em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 0 0 3px 3px;
+  transition: transform 200ms var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

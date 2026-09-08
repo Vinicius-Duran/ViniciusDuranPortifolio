@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Artefatos de sessao de agente
+.omc/
+.superpowers/
+.playwright-mcp/

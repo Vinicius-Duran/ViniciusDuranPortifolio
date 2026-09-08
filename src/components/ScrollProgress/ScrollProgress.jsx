@@ -1,6 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import './ScrollProgress.css';
 
+/**
+ * Fio de progresso no topo. Escreve transform direto no nó em vez de passar
+ * por estado do React: o valor muda a cada frame de rolagem e um re-render
+ * por frame seria caro à toa.
+ */
 const ScrollProgress = () => {
   const barRef = useRef(null);
 
@@ -11,28 +16,31 @@ const ScrollProgress = () => {
     let frame = 0;
 
     const update = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      bar.style.transform = `scaleX(${progress / 100})`;
+      frame = 0;
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
+      bar.style.transform = `scaleX(${Math.min(Math.max(ratio, 0), 1)})`;
     };
 
     const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(update);
+      if (!frame) frame = requestAnimationFrame(update);
     };
 
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
     return () => {
+      if (frame) cancelAnimationFrame(frame);
       window.removeEventListener('scroll', onScroll);
-      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', onScroll);
     };
   }, []);
 
   return (
     <div className="scroll-progress" aria-hidden="true">
-      <div ref={barRef} className="scroll-progress-bar" />
+      <span className="scroll-progress-bar" ref={barRef} />
     </div>
   );
 };

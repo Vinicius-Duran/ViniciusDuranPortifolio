@@ -1,9 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Marquee from '../../components/Marquee/Marquee';
-import { useReveal, useRevealMany } from '../../hooks/useReveal';
+import {
+  useGsapScope,
+  heroIntro,
+  revealHeading,
+  revealStack,
+  playOnEnter,
+  scrambleTo,
+} from '../../lib/motion';
 import { featuredProjects, secondaryProjects } from '../../data/projects';
-import { profile } from '../../data/profile';
+import { profile, getYearsOfExperience } from '../../data/profile';
 import { homeSkillGroups } from '../../data/skills';
 import './Home.css';
 
@@ -35,162 +42,76 @@ const processSteps = [
 ];
 
 const Home = () => {
-  const heroRef = useReveal({ threshold: 0.15 });
-  const aboutRef = useReveal();
-  const processRef = useReveal();
-  const projectsHeaderRef = useReveal();
-  const projectsSecondaryRef = useReveal();
-  const projectsFootRef = useReveal();
-  const contactRef = useReveal();
-  const setSkillRef = useRevealMany(homeSkillGroups.length);
-  const setProcessRef = useRevealMany(processSteps.length);
-  const setProjectRef = useRevealMany(featuredProjects.length, { threshold: 0.12 });
+  // O painel nasce mostrando o primeiro projeto e nunca volta a ficar vazio:
+  // uma moldura em branco em repouso lê como imagem que falhou ao carregar.
+  const [activeProject, setActiveProject] = useState(featuredProjects[0]?.id ?? null);
+  const [isBrowsing, setIsBrowsing] = useState(false);
+  const roleRefs = useRef({});
+  const anosDeExperiencia = getYearsOfExperience();
 
-  const [activeProject, setActiveProject] = useState(null);
-  const [now, setNow] = useState('');
-  const heroTitleRef = useRef(null);
+  const root = useGsapScope((self) => {
+    const el = (selector) => self.selector(selector)[0];
+    const all = (selector) => self.selector(selector);
 
-  const [firstName, ...restName] = profile.name.split(' ');
-  const lastName = restName.join(' ');
+    heroIntro(el('.hero'));
 
-  useEffect(() => {
-    const tick = () => {
-      const date = new Date();
-      const time = date.toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: 'America/Sao_Paulo',
-      });
-      setNow(time);
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
+    all('.section-title').forEach(revealHeading);
 
-  const scrollTo = (event, target) => {
-    event.preventDefault();
-    const node = document.querySelector(target);
-    if (node) node.scrollIntoView({ behavior: 'smooth' });
+    playOnEnter(el('.about-grid'), revealStack(all('.skill-line'), { delayStep: 55 }));
+    playOnEnter(el('.process-list'), revealStack(all('.process-step'), { delayStep: 90 }));
+    playOnEnter(el('.index-list'), revealStack(all('.index-row'), { delayStep: 70 }));
+    playOnEnter(el('.contact-list'), revealStack(all('.contact-row'), { delayStep: 80 }));
+  });
+
+  const handleEnter = (project) => {
+    setIsBrowsing(true);
+    if (project.id === activeProject) return;
+    setActiveProject(project.id);
+    scrambleTo(roleRefs.current[project.id], project.role);
   };
 
   return (
-    <div className="home">
-      <section className="hero" ref={heroRef}>
-        <div className="shell hero-shell">
-          <div className="hero-meta reveal">
-            <span className="eyebrow">Portfolio · 2026</span>
-            <span className="hero-coords mono">
-              <span>BR · 27.6° S</span>
-              <span className="dot" aria-hidden="true">·</span>
-              <span>48.5° W</span>
-            </span>
-          </div>
+    <div className="home" ref={root}>
+      {/* ---------------------------------------------------------------- */}
+      <section className="hero">
+        <div className="shell">
+          <h1 className="hero-headline display" data-hero-headline>
+            Interfaces vivas,
+            <br />
+            sistemas <em>robustos</em>.
+          </h1>
 
-          <div className="hero-grid">
-            <div className="hero-left">
-              <h1 className="hero-title display reveal delay-1" ref={heroTitleRef}>
-                <span className="hero-line">{firstName}</span>
-                <span className="hero-line hero-line--accent">
-                  <span className="hero-line-text">{lastName}</span>
-                  <span className="hero-line-bar" aria-hidden="true" />
-                </span>
-                <span className="hero-line hero-line--soft">
-                  <em>Building</em> digital experiences
-                </span>
-              </h1>
-            </div>
+          <span className="hero-rule" data-hero-rule aria-hidden="true" />
 
-            <aside className="hero-panel reveal-right delay-2">
-              <div className="hero-panel-head">
-                <span className="hero-panel-dot" aria-hidden="true" />
-                <span className="hero-panel-label mono">SYS · STATUS</span>
-                <span className="hero-panel-id mono">001</span>
-              </div>
-
-              <div className="hero-panel-rows">
-                <div className="hero-panel-row">
-                  <span className="hero-panel-key mono">LOCAL</span>
-                  <span className="hero-panel-value">{profile.location}</span>
-                </div>
-                <div className="hero-panel-row">
-                  <span className="hero-panel-key mono">ROLE</span>
-                  <span className="hero-panel-value">Full-Stack Developer</span>
-                </div>
-                <div className="hero-panel-row">
-                  <span className="hero-panel-key mono">FOCUS</span>
-                  <span className="hero-panel-value">UI Systems · Motion · .NET</span>
-                </div>
-                <div className="hero-panel-row">
-                  <span className="hero-panel-key mono">CLOCK</span>
-                  <span className="hero-panel-value">{now} BRT</span>
-                </div>
-              </div>
-
-              <div className="hero-panel-bars">
-                <div className="hero-panel-bar">
-                  <span className="hero-panel-bar-label mono">FRONTEND</span>
-                  <span className="hero-panel-bar-track">
-                    <span className="hero-panel-bar-fill" style={{ width: '92%' }} />
-                  </span>
-                  <span className="hero-panel-bar-value mono">92</span>
-                </div>
-                <div className="hero-panel-bar">
-                  <span className="hero-panel-bar-label mono">BACKEND</span>
-                  <span className="hero-panel-bar-track">
-                    <span className="hero-panel-bar-fill alt" style={{ width: '78%' }} />
-                  </span>
-                  <span className="hero-panel-bar-value mono">78</span>
-                </div>
-                <div className="hero-panel-bar">
-                  <span className="hero-panel-bar-label mono">MOTION</span>
-                  <span className="hero-panel-bar-track">
-                    <span className="hero-panel-bar-fill alt2" style={{ width: '70%' }} />
-                  </span>
-                  <span className="hero-panel-bar-value mono">70</span>
-                </div>
-              </div>
-
-              <div className="hero-panel-foot">
-                <span className="hero-panel-foot-dot" aria-hidden="true" />
-                <span className="mono">Disponível para novos projetos</span>
-              </div>
-            </aside>
-          </div>
-
-          <div className="hero-bottom">
-            <p className="hero-description reveal delay-3">
-              Desenvolvedor full-stack focado em interfaces vivas e sistemas robustos.
-              <br />
-              Transformo ideias em produtos digitais com código limpo, motion e atenção
-              obsessiva aos detalhes.
+          <div className="hero-foot">
+            <p className="lede" data-hero-fade>
+              {profile.bio} Transformo ideias em produtos digitais com código limpo,
+              motion e atenção obsessiva aos detalhes.
             </p>
 
-            <div className="hero-actions reveal delay-4">
-              <a
-                href="#projects"
-                className="cta cta-primary magnetic"
-                onClick={(e) => scrollTo(e, '#projects')}
-              >
-                <span className="cta-label">Ver projetos</span>
-                <span className="cta-arrow" aria-hidden="true">↗</span>
-              </a>
-              <a
-                href="#contact"
-                className="cta cta-ghost magnetic"
-                onClick={(e) => scrollTo(e, '#contact')}
-              >
-                <span className="cta-label">Falar comigo</span>
-              </a>
-            </div>
+            <dl className="hero-ledger" data-hero-fade>
+              <div>
+                <dt>Base</dt>
+                <dd>{profile.location}</dd>
+              </div>
+              <div>
+                <dt>Desde</dt>
+                <dd>{profile.careerStartYear}</dd>
+              </div>
+              <div>
+                <dt>Projetos</dt>
+                <dd>{featuredProjects.length + secondaryProjects.length}</dd>
+              </div>
+            </dl>
           </div>
 
-          <div className="hero-scroll reveal delay-5">
-            <span className="hero-scroll-text mono">Scroll</span>
-            <span className="hero-scroll-line" aria-hidden="true">
-              <span className="hero-scroll-dot" />
-            </span>
+          <div className="hero-actions" data-hero-fade>
+            <Link to="/#projects" className="btn btn-solid">
+              Ver o trabalho
+            </Link>
+            <Link to="/#contact" className="btn btn-line">
+              Falar comigo
+            </Link>
           </div>
         </div>
       </section>
@@ -206,21 +127,18 @@ const Home = () => {
           'UI Systems',
           'Disponível para freelas',
         ]}
-        speed={36}
+        speed={46}
       />
 
-      <section id="about" className="about" ref={aboutRef}>
-        <div className="shell about-shell">
-          <div className="section-header reveal">
-            <span className="section-index mono">#01 — sobre</span>
-            <h2 className="section-title display">
-              Construo na <em>interseção</em> entre código,
-              design e <span className="text-accent">narrativa visual</span>.
+      {/* ---------------------------------------------------------------- */}
+      <section id="about" className="about">
+        <div className="shell about-grid">
+          <div className="about-lead">
+            <h2 className="section-title">
+              Código, design e <em>narrativa visual</em> na mesma mesa.
             </h2>
-          </div>
 
-          <div className="about-grid">
-            <div className="about-text reveal delay-1">
+            <div className="prose">
               <p>
                 Sou um desenvolvedor apaixonado por criar soluções digitais que fazem a
                 diferença. Tenho experiência em desenvolvimento full-stack, sempre buscando
@@ -232,253 +150,208 @@ const Home = () => {
                 tenho habilidades em modelagem 3D, análise CFD, impressão 3D, corte a laser
                 e manutenção de hardware.
               </p>
-
-              <Link to="/about" className="link-ghost magnetic">
-                <span>Trajetória completa</span>
-                <span aria-hidden="true">→</span>
-              </Link>
             </div>
 
-            <div className="skills-stack">
-              {homeSkillGroups.map((group, index) => (
-                <div
-                  key={group.label}
-                  ref={setSkillRef(index)}
-                  className={`skill-card reveal-right delay-${index + 1}`}
-                >
-                  <div className="skill-card-head">
-                    <span className="skill-card-index mono">0{index + 1}</span>
-                    <h3>{group.label}</h3>
-                  </div>
-                  <ul>
-                    {group.items.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+            <Link to="/about" className="link">
+              <span>Trajetória completa</span>
+              <span className="link-arrow" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
+
+          <div className="about-skills">
+            {homeSkillGroups.map((group) => (
+              <div className="skill-line" key={group.label}>
+                <h3 className="skill-line-label">{group.label}</h3>
+                <p className="skill-line-items">{group.items.join(', ')}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      <section className="process">
+        <div className="shell">
+          <h2 className="section-title">
+            Como eu trabalho, em <em>quatro movimentos</em>.
+          </h2>
+
+          <ol className="process-list">
+            {processSteps.map((step) => (
+              <li className="process-step" key={step.n}>
+                <span className="process-step-n">{step.n}</span>
+                <div className="process-step-body">
+                  <h3 className="process-step-title">{step.title}</h3>
+                  <p>{step.text}</p>
                 </div>
+                <span className="process-step-label">{step.label}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      <section id="projects" className="index">
+        <div className="shell">
+          <h2 className="section-title">
+            Trabalho <em>selecionado</em>
+          </h2>
+
+          <div className="index-body">
+            <ul
+              className={`index-list ${isBrowsing ? 'is-focused' : ''}`}
+              onMouseLeave={() => setIsBrowsing(false)}
+            >
+              {featuredProjects.map((project) => (
+                <li
+                  key={project.id}
+                  className="index-row"
+                  data-active={
+                    isBrowsing && activeProject === project.id ? 'true' : undefined
+                  }
+                  onMouseEnter={() => handleEnter(project)}
+                >
+                  <Link
+                    to={`/projects/${project.slug}`}
+                    className="index-link"
+                    onFocus={() => handleEnter(project)}
+                    onBlur={() => setIsBrowsing(false)}
+                  >
+                    <span className="index-n">{project.id}</span>
+
+                    <span className="index-main">
+                      <span className="index-title">{project.title}</span>
+                      <span
+                        className="index-role"
+                        ref={(node) => {
+                          roleRefs.current[project.id] = node;
+                        }}
+                      >
+                        {project.role}
+                      </span>
+                    </span>
+
+                    <span className="index-tech">{project.tech.join(' · ')}</span>
+                    <span className="index-year">{project.year}</span>
+                    <span className="index-arrow" aria-hidden="true">
+                      →
+                    </span>
+
+                    {/* Capa inline: no toque não existe hover, então ela mora
+                        na própria linha em telas estreitas. */}
+                    <span className="index-inline-cover" aria-hidden="true">
+                      {project.cover ? (
+                        <img src={project.cover} alt="" loading="lazy" />
+                      ) : (
+                        <span className="index-cover-blank">{project.title}</span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <div className="index-preview" aria-hidden="true">
+              {featuredProjects.map((project) => (
+                <figure
+                  key={project.id}
+                  className="index-preview-frame"
+                  data-active={activeProject === project.id ? 'true' : undefined}
+                >
+                  {project.cover ? (
+                    <img src={project.cover} alt="" loading="lazy" />
+                  ) : (
+                    <span className="index-cover-blank">{project.title}</span>
+                  )}
+                </figure>
               ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="process" ref={processRef}>
-        <div className="shell">
-          <div className="section-header reveal">
-            <span className="section-index mono">#02 — processo</span>
-            <h2 className="section-title display">
-              Como eu <em>trabalho</em>,
-              <br />
-              em <span className="text-accent">quatro movimentos</span>.
-            </h2>
-          </div>
-
-          <div className="process-grid">
-            {processSteps.map((step, index) => (
-              <article
-                key={step.n}
-                ref={setProcessRef(index)}
-                className={`process-step reveal delay-${index + 1}`}
-              >
-                <header className="process-step-head">
-                  <span className="process-step-number mono">{step.n}</span>
-                  <span className="process-step-label mono">{step.label}</span>
-                </header>
-                <h3 className="process-step-title display">{step.title}</h3>
-                <p className="process-step-text">{step.text}</p>
-                <span className="process-step-line" aria-hidden="true" />
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="projects" className="projects">
-        <div className="shell projects-shell">
-          <div className="section-header reveal" ref={projectsHeaderRef}>
-            <span className="section-index mono">#03 — selected works</span>
-            <h2 className="section-title display">
-              Projetos <em>selecionados</em>
-              <br />
-              <span className="text-accent">2024 — 2026</span>
-            </h2>
-          </div>
-
-          <ul
-            className={`project-list ${activeProject ? 'is-hovering' : ''}`}
-            onMouseLeave={() => setActiveProject(null)}
-          >
-            {featuredProjects.map((project, index) => (
-              <li
-                key={project.id}
-                ref={setProjectRef(index)}
-                className="project-row reveal"
-                data-state={
-                  activeProject === project.id
-                    ? 'active'
-                    : activeProject
-                      ? 'dim'
-                      : 'idle'
-                }
-                onMouseEnter={() => setActiveProject(project.id)}
-                onFocus={() => setActiveProject(project.id)}
-                onBlur={() => setActiveProject(null)}
-              >
-                <Link to={`/projects/${project.slug}`} className="project-link">
-                  <span className="project-index mono">{project.id}</span>
-                  <span className="project-main">
-                    <span className="project-title display">{project.title}</span>
-                    <span className="project-role">{project.role}</span>
-                  </span>
-                  <span className="project-tech-list">
-                    {project.tech.map((t) => (
-                      <span key={t} className="project-tech-pill">{t}</span>
-                    ))}
-                  </span>
-                  <span className="project-year mono">{project.year}</span>
-                  <span className="project-thumb" aria-hidden="true">
-                    <span
-                      className="project-thumb-inner"
-                      style={{ background: project.accent }}
-                    >
-                      {project.cover ? (
-                        <img
-                          className="project-thumb-img"
-                          src={project.cover}
-                          alt=""
-                          loading="lazy"
-                        />
-                      ) : (
-                        <>
-                          <span className="project-thumb-grid" />
-                          <span className="project-thumb-noise" />
-                        </>
-                      )}
-                      <span className="project-thumb-label mono">{project.id}</span>
-                    </span>
-                  </span>
-                  <span className="project-arrow" aria-hidden="true">↗</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="projects-secondary reveal delay-1" ref={projectsSecondaryRef}>
-            <span className="projects-secondary-label mono">Outros repositórios</span>
-            <ul className="projects-secondary-list">
+          <div className="index-more">
+            <h3 className="index-more-label">Outros repositórios</h3>
+            <ul>
               {secondaryProjects.map((project) => (
                 <li key={project.id}>
                   <a
                     href={project.repo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="projects-secondary-link"
+                    className="index-more-link"
                   >
-                    <span className="projects-secondary-name">{project.title}</span>
-                    <span className="projects-secondary-tech mono">
-                      {project.tech.join(' · ')}
+                    <span>{project.title}</span>
+                    <span className="index-more-tech">{project.tech.join(' · ')}</span>
+                    <span className="link-arrow" aria-hidden="true">
+                      ↗
                     </span>
-                    <span aria-hidden="true">↗</span>
                   </a>
                 </li>
               ))}
             </ul>
           </div>
-
-          <div className="projects-foot reveal delay-2" ref={projectsFootRef}>
-            <span className="mono">
-              {String(featuredProjects.length).padStart(2, '0')} projetos em destaque ·{' '}
-              {String(secondaryProjects.length).padStart(2, '0')} outros
-            </span>
-            <Link to="/about" className="link-ghost magnetic">
-              <span>Ver trajetória</span>
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
         </div>
       </section>
 
-      <section id="contact" className="contact" ref={contactRef}>
-        <div className="shell contact-shell">
-          <div className="section-header reveal">
-            <span className="section-index mono">#04 — contato</span>
-            <h2 className="section-title display">
-              Vamos criar algo
-              <br />
-              <em className="text-accent">memorável</em> juntos.
-            </h2>
-          </div>
+      {/* ---------------------------------------------------------------- */}
+      <section id="contact" className="contact">
+        <div className="shell">
+          <h2 className="section-title contact-title">
+            Vamos criar algo <em>memorável</em> juntos.
+          </h2>
 
-          <div className="contact-grid">
-            <a
-              href={`mailto:${profile.email}`}
-              className="contact-card reveal delay-1 magnetic"
-            >
-              <span className="contact-card-index mono">01</span>
-              <span className="contact-card-label">Email</span>
-              <span className="contact-card-value">{profile.email}</span>
-              <span className="contact-card-cta">
-                <span>Enviar mensagem</span>
-                <span aria-hidden="true">→</span>
-              </span>
-            </a>
-            <a
-              href={profile.linkedin.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-card reveal delay-2 magnetic"
-            >
-              <span className="contact-card-index mono">02</span>
-              <span className="contact-card-label">LinkedIn</span>
-              <span className="contact-card-value">{profile.linkedin.label}</span>
-              <span className="contact-card-cta">
-                <span>Conectar</span>
-                <span aria-hidden="true">→</span>
-              </span>
-            </a>
-            <a
-              href={profile.github.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-card reveal delay-3 magnetic"
-            >
-              <span className="contact-card-index mono">03</span>
-              <span className="contact-card-label">GitHub</span>
-              <span className="contact-card-value">{profile.github.label}</span>
-              <span className="contact-card-cta">
-                <span>Ver código</span>
-                <span aria-hidden="true">→</span>
-              </span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <footer className="footer">
-        <div className="shell footer-shell">
-          <div className="footer-row">
-            <div className="footer-brand">
-              <span className="footer-mark" aria-hidden="true" />
-              <div>
-                <strong>{profile.name}</strong>
-                <span className="footer-tag mono">© {new Date().getFullYear()} — All rights reserved</span>
-              </div>
-            </div>
-            <div className="footer-links">
-              <a href={profile.github.url} target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href={profile.linkedin.url} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-              <a href={`mailto:${profile.email}`}>Email</a>
-              <a
-                href="#top"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              >
-                Topo ↑
+          <ul className="contact-list">
+            <li className="contact-row">
+              <a href={`mailto:${profile.email}`} className="contact-link">
+                <span className="contact-kind">Email</span>
+                <span className="contact-value">{profile.email}</span>
+                <span className="link-arrow" aria-hidden="true">
+                  →
+                </span>
               </a>
-            </div>
-          </div>
+            </li>
+            <li className="contact-row">
+              <a
+                href={profile.linkedin.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-link"
+              >
+                <span className="contact-kind">LinkedIn</span>
+                <span className="contact-value">{profile.linkedin.label}</span>
+                <span className="link-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </li>
+            <li className="contact-row">
+              <a
+                href={profile.github.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-link"
+              >
+                <span className="contact-kind">GitHub</span>
+                <span className="contact-value">{profile.github.label}</span>
+                <span className="link-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      <footer className="colophon">
+        <div className="shell colophon-inner">
+          <p className="colophon-name">{profile.name}</p>
+          <p className="colophon-meta">
+            {profile.role} · {anosDeExperiencia} anos · {profile.location}
+          </p>
+          <p className="colophon-year">© {new Date().getFullYear()}</p>
         </div>
       </footer>
     </div>

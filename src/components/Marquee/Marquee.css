@@ -1,69 +1,56 @@
 .marquee {
-  width: 100%;
   overflow: hidden;
-  border-top: 1px solid var(--white-10);
-  border-bottom: 1px solid var(--white-10);
-  background: rgba(10, 4, 20, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1.25rem 0;
-  position: relative;
-}
-
-.marquee::before,
-.marquee::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 120px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.marquee::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--bg-deep), transparent);
-}
-
-.marquee::after {
-  right: 0;
-  background: linear-gradient(-90deg, var(--bg-deep), transparent);
+  border-block: 1px solid var(--paper-10);
+  padding-block: clamp(1.1rem, 2vw, 1.9rem);
+  /* Apaga as duas pontas para a faixa não bater seca na borda da tela. */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
 }
 
 .marquee-track {
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-  animation: marquee linear infinite;
-  gap: 3rem;
-  padding-left: 3rem;
+  display: flex;
+  width: max-content;
+  animation: marquee-slide linear infinite;
 }
 
-.marquee-item {
-  display: inline-flex;
+.marquee-run {
+  display: flex;
   align-items: center;
-  gap: 3rem;
+  list-style: none;
+}
+
+.marquee-run li {
+  display: flex;
+  align-items: center;
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
-  font-weight: 500;
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  line-height: 1;
   letter-spacing: -0.02em;
-  color: var(--white);
+  color: var(--paper-60);
+  white-space: nowrap;
 }
 
-.marquee-text {
-  background: linear-gradient(120deg, var(--white) 30%, var(--blue-400) 70%, var(--violet-400));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.marquee-sep {
+  color: var(--amber);
+  padding-inline: clamp(0.9rem, 2.4vw, 2rem);
 }
 
-.marquee-dot {
-  color: var(--cyan-300);
-  font-size: 1.2rem;
-  text-shadow: 0 0 12px rgba(125, 249, 255, 0.7);
+@keyframes marquee-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
 }
