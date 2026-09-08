@@ -314,8 +314,9 @@
   margin: auto;
   padding: 0;
   border: 1px solid var(--paper-20);
-  border-radius: 3px;
-  background: var(--ink-100);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lift);
+  background: linear-gradient(168deg, var(--ink-200), var(--ink-100) 55%);
   color: var(--paper);
   overflow: hidden;
 }
@@ -375,7 +376,7 @@
   color: var(--paper-60);
   padding: 0.55rem 0.9rem;
   border: 1px solid var(--paper-20);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   transition: transform 160ms var(--ease-out), color 200ms ease, border-color 200ms ease;
 }
 
@@ -402,7 +403,7 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   border: 1px solid var(--paper-10);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--ink-200);
 }
 
@@ -432,7 +433,7 @@
   color: var(--paper-80);
   padding: 0.3rem 0.65rem;
   border: 1px solid var(--paper-20);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .cert-dialog-download {

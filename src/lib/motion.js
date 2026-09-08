@@ -274,44 +274,61 @@ export const driftInTrack = (element, containerAnimation, amount) => {
 export const stackCards = (cards, options = {}) => {
   if (!cards?.length || reducedMotion()) return [];
 
-  const { top = 18 } = options;
+  const { top = 18, container } = options;
+  if (!container) return [];
 
-  return [...cards].map((card, index) => {
-    const isLast = index === cards.length - 1;
+  const lista = [...cards];
 
+  /* Os recuos são criados antes de qualquer pin, e de propósito: um
+     ScrollTrigger montado depois mede a carta seguinte já em `position:
+     fixed`, e o deslocamento que ele lê no documento não quer dizer nada. */
+  const recuos = lista.map((card, index) => {
     /* A carta presa vira `fixed` e passa a pintar por cima da seguinte, que
        ainda está no fluxo. Ordenar a pilha explicitamente é o que garante
        que a que chega fique sempre na frente. */
     gsap.set(card, { zIndex: index + 1 });
 
-    ScrollTrigger.create({
-      trigger: card,
-      start: `top ${top}%`,
-      endTrigger: cards[cards.length - 1],
-      end: `bottom ${top + 12}%`,
-      pin: true,
-      pinSpacing: false,
-    });
-
-    if (isLast) return null;
+    if (index === lista.length - 1) return null;
 
     /* O recuo é por escurecimento e desfoque, nunca por opacidade: uma carta
        translúcida deixa a de trás atravessá-la, e as duas leem sobrepostas
        em texto ilegível. Opaca, a carta da frente sempre oculta a anterior, e
        o que sobra é a borda superior espiando — que é o efeito de baralho. */
+    /* A carta declara `filter: blur(0px) brightness(1)` no CSS de propósito:
+       partindo de `none`, o GSAP não tem valor de origem por função e assume
+       zero — e `brightness(0)` é preto, então a carta atravessava o scrub
+       como um buraco. Escurece só o suficiente para recuar, num fundo que é
+       marrom-carvão, não preto. */
     return gsap.to(card, {
       scale: 0.94,
       y: -18,
-      filter: 'blur(4px) brightness(0.45)',
+      filter: 'blur(5px) brightness(0.72)',
       ease: 'none',
       scrollTrigger: {
-        trigger: cards[index + 1],
+        trigger: lista[index + 1],
         start: `top ${top + 55}%`,
         end: `top ${top}%`,
         scrub: true,
       },
     });
   });
+
+  /* Só agora os pins. O fim é ancorado no contêiner, e nunca na última
+     carta: ela também é presa, então o `bottom` dela para de se mover e o
+     fim jamais resolve — a primeira carta ficava presa e recuada da primeira
+     à última tela do site. O contêiner nunca é preso, então mede certo. */
+  lista.forEach((card) => {
+    ScrollTrigger.create({
+      trigger: card,
+      start: `top ${top}%`,
+      endTrigger: container,
+      end: 'bottom bottom',
+      pin: true,
+      pinSpacing: false,
+    });
+  });
+
+  return recuos;
 };
 
 /** Desenha um traço SVG conforme a rolagem. */

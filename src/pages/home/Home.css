@@ -178,12 +178,18 @@
   gap: 1rem;
   min-height: 46vh;
   padding: clamp(1.75rem, 4vw, 3.25rem);
-  /* Fundo sólido: sem ele as cartas empilhadas leem umas através das outras. */
-  background: var(--ink-100);
+  /* Fundo sólido: sem ele as cartas empilhadas leem umas através das outras.
+     A leve inclinação de valor do topo para a base dá direção de luz, em vez
+     de a carta ser um retângulo de tom único. */
+  background: linear-gradient(168deg, var(--ink-200), var(--ink-100) 62%);
   border: 1px solid var(--paper-10);
-  border-radius: 4px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lift);
   transform-origin: center top;
-  will-change: transform;
+  /* Origem explícita do filtro: sem ela o GSAP parte de `none`, assume zero
+     por função, e a carta pisca em brightness(0) — preto puro — no scrub. */
+  filter: blur(0px) brightness(1);
+  will-change: transform, filter;
 }
 
 .process-card-head {
@@ -293,7 +299,9 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border: 1px solid var(--paper-10);
+  border-radius: var(--radius-md);
   background: var(--ink-100);
+  box-shadow: var(--shadow-soft);
 }
 
 .work-card-cover img {
@@ -324,7 +332,7 @@
   color: var(--ink-000);
   background: var(--amber);
   padding: 0.2rem 0.45rem;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .work-card-body {

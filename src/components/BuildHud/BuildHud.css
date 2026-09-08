@@ -14,7 +14,7 @@
   color: var(--paper-60);
   background: color-mix(in srgb, var(--ink-100) 92%, transparent);
   border: 1px solid var(--paper-10);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   pointer-events: none;
   font-variant-numeric: tabular-nums;
 }

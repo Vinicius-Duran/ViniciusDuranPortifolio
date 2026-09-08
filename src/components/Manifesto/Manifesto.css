@@ -51,7 +51,7 @@
   width: clamp(2rem, 3.5vw, 3.5rem);
   aspect-ratio: 1;
   border: 2px solid var(--amber-line);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .manifesto-float.is-dots {
@@ -102,7 +102,7 @@
   background: none;
   color: inherit;
   padding: 0.1em 0.32em 0.16em;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   rotate: var(--tilt, 0deg);
   /* A sombra carrega o matiz do fundo em vez de ser preto genérico. */
   box-shadow: 0 10px 26px -12px rgba(9, 8, 7, 0.9);

@@ -4,26 +4,40 @@
    ========================================================================= */
 
 :root {
-  /* Superfícies: carvão quente, nunca preto puro, nunca roxo. */
-  --ink-000: #100e0c;
-  --ink-050: #12100e;
-  --ink-100: #1a1714;
-  --ink-200: #221e1a;
-  --ink-300: #2e2823;
+  /* Superfícies: marrom-carvão quente. O piso não é preto — a #12100e a
+     página inteira assentava numa chapa dura, sem ar entre os planos. */
+  --ink-000: #14100c;
+  --ink-050: #1a1512;
+  --ink-100: #221c18;
+  --ink-200: #2b2420;
+  --ink-300: #382f29;
 
-  /* Tinta: off-white quente e seus tons, todos derivados do mesmo matiz. */
-  --paper: #f4efe6;
-  --paper-80: #cdc5b8;
-  --paper-60: #9d948a;
-  --paper-40: #6f675e;
-  --paper-20: #423c36;
-  --paper-10: #2b2621;
+  /* Tinta: off-white quente. Os tons são alfa sobre a superfície, e não hex
+     fixo — assim eles acompanham o plano em que caem em vez de brigar com
+     ele, e as bordas ficam macias no lugar de riscadas. */
+  --paper: #efe8dc;
+  --paper-80: rgba(239, 232, 220, 0.82);
+  --paper-60: rgba(239, 232, 220, 0.62);
+  --paper-40: rgba(239, 232, 220, 0.52);
+  --paper-20: rgba(239, 232, 220, 0.16);
+  --paper-10: rgba(239, 232, 220, 0.08);
 
   /* Um acento. Só um. */
   --amber: #d9743f;
-  --amber-bright: #ef8a52;
-  --amber-wash: rgba(217, 116, 63, 0.14);
-  --amber-line: rgba(217, 116, 63, 0.32);
+  --amber-bright: #eb8f5f;
+  --amber-wash: rgba(217, 116, 63, 0.12);
+  --amber-line: rgba(217, 116, 63, 0.28);
+
+  /* Cantos: o desenho anterior era todo de 2 a 4px, que a essa escala lê
+     como corte a faca. */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  /* Sombras carregam o matiz do fundo, com deslocamento e desfoque de
+     verdade — halo de raio zero é adesivo, não profundidade. */
+  --shadow-soft: 0 18px 40px -24px rgba(10, 7, 5, 0.9);
+  --shadow-lift: 0 34px 70px -34px rgba(10, 7, 5, 0.95);
 
   /* Grotesk técnica, desenhada a régua — a mesma família de sensação do DIN
      no animejs.com e do Mori no gsap.com. Uma família só, em pesos e larguras
@@ -68,8 +82,17 @@ body {
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   font-weight: 400;
   line-height: 1.6;
-  background: var(--ink-050);
   color: var(--paper);
+  /* Luz ambiente: três lavagens radiais muito fracas dão uma direção de luz
+     e tiram a chapa do fundo. Presas à viewport, então a atmosfera é a mesma
+     nas doze telas em vez de escorrer com a rolagem. */
+  background-color: var(--ink-050);
+  background-image:
+    radial-gradient(80rem 55rem at 10% -8%, rgba(217, 116, 63, 0.11), transparent 62%),
+    radial-gradient(65rem 45rem at 96% 12%, rgba(217, 116, 63, 0.055), transparent 58%),
+    radial-gradient(70rem 60rem at 50% 108%, rgba(239, 232, 220, 0.04), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -284,7 +307,7 @@ img {
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   transition:
     transform 160ms var(--ease-out),
     background-color 200ms ease,
@@ -334,6 +357,7 @@ img {
   position: absolute;
   inset: -0.65rem -0.9rem;
   border: 1px solid var(--amber-line);
+  border-radius: var(--radius-sm);
   opacity: 0;
   transform: scaleX(0);
   transform-origin: left center;
@@ -432,7 +456,7 @@ img {
   padding: 0.75em 1.25em;
   font-size: 0.85rem;
   font-weight: 600;
-  border-radius: 0 0 3px 3px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   transition: transform 200ms var(--ease-out);
 }
 

@@ -122,7 +122,7 @@ const Home = () => {
         })
       );
 
-      stackCards(all('.process-card'));
+      stackCards(all('.process-card'), { container: el('.process-stack') });
     });
   });
 
