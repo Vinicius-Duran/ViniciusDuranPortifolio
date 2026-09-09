@@ -98,6 +98,10 @@
 .globe-card {
   position: absolute;
   inset: 0;
+  /* Nada dentro da carta recebe ponteiro: todo gesto chega ao palco e vira
+     giro. É o que impede a captura de virar alvo de arrasto do navegador. */
+  pointer-events: none;
+  user-select: none;
   /* A ordem importa: gira em torno do eixo vertical, inclina para a latitude
      e só então afasta pela normal. Assim a face aponta para fora da esfera,
      que é o que inclina as cartas das bordas. */
@@ -159,6 +163,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* O prefixo ainda é necessário: sem ele o Safari e o Chrome continuam
+     oferecendo a imagem para arrastar. */
+  -webkit-user-drag: none;
   /* Pelo topo: é onde mora o herói de cada site. Centralizado, a captura
      mostra um pedaço qualquer do meio da página. */
   object-position: top center;
@@ -207,9 +214,14 @@
 
 /* --- A carta de frente -------------------------------------------------- */
 
+/* A carta da frente precisa se anunciar: as cartas não são mais clicáveis,
+   então este anel é o único sinal de qual delas a leitura abaixo descreve. */
 .globe-card.is-front .globe-card-link {
-  border-color: var(--amber-line);
-  box-shadow: var(--shadow-lift), 0 0 0 1px var(--amber-line);
+  border-color: var(--amber);
+  box-shadow:
+    var(--shadow-lift),
+    0 0 0 2px var(--amber),
+    0 0 22px -2px rgba(217, 116, 63, 0.55);
 }
 
 .globe-card.is-front .globe-card-screen img {
@@ -247,6 +259,16 @@
   grid-column: 2;
 }
 
+.globe-readout-desc {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--paper-80);
+  max-width: 62ch;
+  text-wrap: pretty;
+  grid-column: 2;
+  margin-top: 0.15rem;
+}
+
 .globe-readout-meta {
   font-family: var(--font-mono);
   font-size: 0.68rem;
@@ -256,15 +278,9 @@
   grid-column: 2;
 }
 
-.globe-readout-tech {
-  font-size: 0.85rem;
-  color: var(--paper-60);
-  grid-column: 2;
-}
-
 .globe-readout-link {
   grid-column: 3;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 4;
   align-self: center;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -297,8 +313,8 @@
   }
 
   .globe-readout-title,
-  .globe-readout-meta,
-  .globe-readout-tech {
+  .globe-readout-desc,
+  .globe-readout-meta {
     grid-column: 1;
   }
 
