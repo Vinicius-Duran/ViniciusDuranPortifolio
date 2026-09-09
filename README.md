@@ -1,4 +1,21 @@
-# Portfólio — Vinicius Duran
+<p align="center">
+  <img src="docs/readme/banner.svg" alt="Vinicius Duran — Desenvolvedor Full-Stack, Florianópolis/SC" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-d9743f?style=for-the-badge&labelColor=14100c&logo=react&logoColor=d9743f" alt="React 19">
+  <img src="https://img.shields.io/badge/Vite-6-d9743f?style=for-the-badge&labelColor=14100c&logo=vite&logoColor=d9743f" alt="Vite 6">
+  <img src="https://img.shields.io/badge/GSAP-3.15-d9743f?style=for-the-badge&labelColor=14100c&logo=greensock&logoColor=d9743f" alt="GSAP 3.15">
+  <img src="https://img.shields.io/badge/anime.js-4-d9743f?style=for-the-badge&labelColor=14100c" alt="anime.js 4">
+  <img src="https://img.shields.io/badge/Vitest-verde-d9743f?style=for-the-badge&labelColor=14100c&logo=vitest&logoColor=d9743f" alt="Vitest">
+  <img src="https://img.shields.io/badge/Vercel-deploy-d9743f?style=for-the-badge&labelColor=14100c&logo=vercel&logoColor=d9743f" alt="Deploy na Vercel">
+</p>
+
+<p align="center">
+  <a href="https://github.com/Vinicius-Duran"><img src="https://img.shields.io/badge/GitHub-Vinicius--Duran-efe8dc?style=flat-square&labelColor=221c18&logo=github&logoColor=efe8dc" alt="GitHub"></a>
+  <a href="https://www.linkedin.com/in/vinicius-duran"><img src="https://img.shields.io/badge/LinkedIn-vinicius--duran-efe8dc?style=flat-square&labelColor=221c18&logo=linkedin&logoColor=efe8dc" alt="LinkedIn"></a>
+  <a href="https://wa.me/5548992110831"><img src="https://img.shields.io/badge/WhatsApp-(48)%2099211--0831-efe8dc?style=flat-square&labelColor=221c18&logo=whatsapp&logoColor=efe8dc" alt="WhatsApp"></a>
+</p>
 
 Portfólio pessoal de Vinicius Duran, desenvolvedor full-stack em Florianópolis/SC.
 Construído em React 19 com Vite, design system em CSS custom properties e motion
@@ -6,7 +23,17 @@ com GSAP e anime.js.
 
 Direção visual: fundo carvão quente, um único acento âmbar e Archivo — grotesk
 técnica — pesada no display contra o mesmo desenho em peso de texto. Sem
-gradiente de marca e sem serif.
+gradiente de marca e sem serif. As imagens deste README saem das mesmas
+variáveis do site, e animam pela mesma gramática.
+
+## Paleta
+
+| | token | valor | onde |
+|---|---|---|---|
+| ![](https://img.shields.io/badge/-14100c?style=flat-square&labelColor=14100c&color=14100c) | `--ink-000` | `#14100c` | o piso, carvão quente, nunca preto |
+| ![](https://img.shields.io/badge/-221c18?style=flat-square&labelColor=221c18&color=221c18) | `--ink-100` | `#221c18` | planos elevados, cartas, cabeçalho |
+| ![](https://img.shields.io/badge/-efe8dc?style=flat-square&labelColor=efe8dc&color=efe8dc) | `--paper` | `#efe8dc` | tinta off-white quente, e seus alfas |
+| ![](https://img.shields.io/badge/-d9743f?style=flat-square&labelColor=d9743f&color=d9743f) | `--amber` | `#d9743f` | o acento. Um só, no site inteiro |
 
 ## Stack
 
@@ -17,6 +44,10 @@ gradiente de marca e sem serif.
 - Vitest · ESLint 9
 
 ## Motion
+
+<p align="center">
+  <img src="docs/readme/motion.svg" alt="As três gramáticas de animação: a montagem, os trilhos horizontais e o baralho" width="100%">
+</p>
 
 A rolagem não revela conteúdo, ela conduz. São três movimentos:
 
