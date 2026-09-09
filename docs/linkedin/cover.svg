@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1584 396" width="1584" height="396"
+     role="img" aria-label="Capa de LinkedIn: Vinicius Duran, front, back e o banco que sustenta os dois.">
+  <title>Capa de LinkedIn — Vinicius Duran</title>
+
+  <!--
+    1584x396, a medida da capa do LinkedIn. Estatica de proposito: o LinkedIn
+    so aceita PNG e JPG na capa, entao este arquivo e a fonte e cover.png e o
+    que se envia. A foto de perfil cobre o canto inferior esquerdo no desktop,
+    e o corte do celular come as laterais: por isso o texto comeca em x=520 e
+    nada essencial encosta nas bordas.
+  -->
+
+  <defs>
+    <style><![CDATA[
+      .display { font-family: 'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: 800; }
+      .body    { font-family: 'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: 500; }
+      .mono    { font-family: 'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace; font-weight: 500; }
+    ]]></style>
+
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+
+  <rect width="1584" height="396" fill="#14100c"/>
+  <rect width="1584" height="396" fill="#221c18" opacity=".55"/>
+  <rect width="1584" height="396" filter="url(#grain)" opacity=".05"/>
+
+  <!-- Guia de montagem, recuada: o mesmo desenho do site, sem roubar a cena. -->
+  <rect x="480" y="64" width="1040" height="268" rx="16"
+        fill="none" stroke="#d9743f" stroke-opacity=".26" stroke-width="1"/>
+  <rect x="1372" y="64" width="1" height="268" fill="#efe8dc" fill-opacity=".08"/>
+
+  <text class="mono" x="520" y="126" font-size="15" fill="#d9743f" letter-spacing="2.4">DESENVOLVEDOR FULL-STACK</text>
+  <rect x="520" y="146" width="120" height="3" fill="#d9743f"/>
+
+  <text class="display" x="520" y="216" font-size="52" letter-spacing="-1.4" fill="#efe8dc">Front, back e o banco</text>
+  <text class="display" x="520" y="274" font-size="52" letter-spacing="-1.4" fill="#efe8dc" fill-opacity=".64">que sustenta os dois.</text>
+
+  <text class="mono" x="520" y="318" font-size="16" fill="#efe8dc" fill-opacity=".52">
+    Florianópolis, SC · vinicius-duran-portifolio.vercel.app
+  </text>
+
+  <!-- Chips da stack, na coluna da direita, longe do corte do celular. -->
+  <g>
+    <rect x="1404" y="120" width="132" height="42" rx="10" fill="#efe8dc" fill-opacity=".07" stroke="#efe8dc" stroke-opacity=".18"/>
+    <text class="mono" x="1470" y="147" font-size="14" fill="#efe8dc" fill-opacity=".82" text-anchor="middle">React</text>
+
+    <rect x="1404" y="176" width="132" height="42" rx="10" fill="#d9743f" fill-opacity=".16" stroke="#d9743f" stroke-opacity=".5"/>
+    <text class="mono" x="1470" y="203" font-size="14" fill="#efe8dc" fill-opacity=".92" text-anchor="middle">C# · .NET</text>
+
+    <rect x="1404" y="232" width="132" height="42" rx="10" fill="#efe8dc" fill-opacity=".07" stroke="#efe8dc" stroke-opacity=".18"/>
+    <text class="mono" x="1470" y="259" font-size="14" fill="#efe8dc" fill-opacity=".82" text-anchor="middle">Node</text>
+  </g>
+</svg>
