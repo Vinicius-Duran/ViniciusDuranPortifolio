@@ -67,7 +67,7 @@ Alguns projetos que mostram isso:
   modelo de domínio e o acesso a dados isolados da camada de API.
 
 Meu portfólio, com os casos completos:
-https://vinicius-duran-portifolio.vercel.app
+https://vduran.vercel.app
 
 GitHub: https://github.com/Vinicius-Duran
 WhatsApp: (48) 99211-0831
@@ -79,7 +79,7 @@ WhatsApp: (48) 99211-0831
 
 A seção Destaques aceita links com imagem própria. Vale fixar, nesta ordem:
 
-1. **Portfólio** — https://vinicius-duran-portifolio.vercel.app
+1. **Portfólio** — https://vduran.vercel.app
 2. **Todah Produções** — https://toda-producoes.vercel.app
 3. **Taki Rastreadores** — https://taki-eta.vercel.app
 4. **GitHub** — https://github.com/Vinicius-Duran
