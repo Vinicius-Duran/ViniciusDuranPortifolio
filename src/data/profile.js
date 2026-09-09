@@ -22,3 +22,14 @@ export const profile = {
 // Fica calculado para o número nunca envelhecer sozinho no site.
 export const getYearsOfExperience = (now = new Date()) =>
   Math.max(0, now.getFullYear() - profile.careerStartYear);
+
+/**
+ * O tempo de carreira escrito por extenso, sempre com o "+" na frente e a
+ * palavra "experiência" no fim.
+ *
+ * Existe porque "3 anos" solto no meio de uma linha não diz de que são os
+ * anos, e o leitor tem de adivinhar. A frase inteira mora aqui para não haver
+ * duas redações do mesmo dado em páginas diferentes.
+ */
+export const formatExperience = (now = new Date()) =>
+  `+${getYearsOfExperience(now)} anos de experiência`;

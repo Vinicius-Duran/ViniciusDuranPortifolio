@@ -442,8 +442,17 @@ export const drawOnScroll = (path, trigger) => {
 export const countTo = (element, value, trigger, pad = 2) => {
   if (!element) return null;
 
+  /* Prefixo e sufixo vêm do próprio elemento: um número solto não diz de que
+     ele é, e "+3 anos" precisa contar como "3" e ser lido como frase. */
+  const prefixo = element.dataset.countPrefix || '';
+  const sufixo = element.dataset.countSuffix || '';
+  /* O preenchimento é por elemento: "09" projetos precisa do zero para não
+     ficar um algarismo solto, mas "+03 anos" já tem sinal e unidade, e o zero
+     ali só atrapalha a leitura. */
+  const largura = Number(element.dataset.countPad ?? pad);
+
   const escrever = (n) => {
-    element.textContent = String(Math.round(n)).padStart(pad, '0');
+    element.textContent = `${prefixo}${String(Math.round(n)).padStart(largura, '0')}${sufixo}`;
   };
 
   // Sob movimento reduzido não há contagem, mas o zero à esquerda continua.
