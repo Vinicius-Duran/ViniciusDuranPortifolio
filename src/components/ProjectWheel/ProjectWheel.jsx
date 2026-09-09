@@ -192,14 +192,6 @@ const ProjectWheel = () => {
     });
   };
 
-  // Um arrasto termina em clique no link sob o ponteiro; o limiar separa os dois.
-  const aoClicar = (event) => {
-    if (arrasto.current.andou > 8) {
-      event.preventDefault();
-      arrasto.current.andou = 0;
-    }
-  };
-
   const projetoAtivo = projects[ativo];
 
   return (
@@ -252,16 +244,13 @@ const ProjectWheel = () => {
                 '--lon': `${pontos[i].lon}deg`,
               }}
             >
-              <Link
-                to={project.featured ? `/projects/${project.slug}` : project.repo}
-                target={project.featured ? undefined : '_blank'}
-                rel={project.featured ? undefined : 'noopener noreferrer'}
-                className="globe-card-link"
-                onClick={aoClicar}
-                draggable={false}
-                tabIndex={i === ativo ? 0 : -1}
-                aria-hidden={i === ativo ? undefined : 'true'}
-              >
+              {/* As cartas não são clicáveis de propósito. Como link, a
+                  imagem trazia o arrasto nativo do navegador junto — o
+                  segundo clique-e-segure saía puxando um fantasma da captura
+                  em vez de girar o globo. Quem abre o projeto é a leitura
+                  abaixo, que é um alvo só, sempre no mesmo lugar e alcançável
+                  por teclado. */}
+              <div className="globe-card-link">
                 {/* Moldura de navegador: é o que faz nove capturas soltas
                     lerem como nove sites, e dá casa para as que não têm
                     captura em vez de deixá-las como retângulo vazio. */}
@@ -274,7 +263,7 @@ const ProjectWheel = () => {
 
                 <span className="globe-card-screen">
                   {project.cover ? (
-                    <img src={project.cover} alt="" loading="lazy" />
+                    <img src={project.cover} alt="" loading="lazy" draggable={false} />
                   ) : (
                     <span className="globe-card-fallback" aria-hidden="true">
                       <strong>{project.title}</strong>
@@ -282,7 +271,7 @@ const ProjectWheel = () => {
                     </span>
                   )}
                 </span>
-              </Link>
+              </div>
             </article>
           ))}
         </div>
@@ -293,10 +282,14 @@ const ProjectWheel = () => {
       <div className="shell globe-readout">
         <p className="globe-readout-n">{projetoAtivo.id}</p>
         <h3 className="globe-readout-title">{projetoAtivo.title}</h3>
+        {/* A frase do projeto: sem ela a leitura dizia o nome e a stack, mas
+            não o que a coisa é. */}
+        <p className="globe-readout-desc">{projetoAtivo.tagline}</p>
+        {/* Papel, ano e stack numa linha só, para a descrição caber sem o
+            bloco crescer para quatro linhas. */}
         <p className="globe-readout-meta">
-          {projetoAtivo.role} · {projetoAtivo.year}
+          {projetoAtivo.role} · {projetoAtivo.year} · {projetoAtivo.tech.join(' · ')}
         </p>
-        <p className="globe-readout-tech">{projetoAtivo.tech.join(' · ')}</p>
         <Link
           to={projetoAtivo.featured ? `/projects/${projetoAtivo.slug}` : '/#projects'}
           className="link globe-readout-link"
