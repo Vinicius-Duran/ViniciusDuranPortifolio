@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { profile, getYearsOfExperience, formatExperience } from './profile.js';
+import {
+  profile,
+  getYearsOfExperience,
+  formatExperience,
+  whatsappUrl,
+} from './profile.js';
 
 describe('profile', () => {
   it('expõe os campos de identidade exigidos pela spec', () => {
@@ -53,6 +58,29 @@ describe('profile', () => {
 
   it('registra 2023 como ano de início de carreira', () => {
     expect(profile.careerStartYear).toBe(2023);
+  });
+});
+
+describe('whatsapp', () => {
+  /* Número errado é falha silenciosa: o link abre, o WhatsApp mostra uma
+     conversa em branco, e ninguém descobre que o contato não chega. */
+
+  it('guarda o número em dígitos puros, com país e DDD', () => {
+    expect(profile.whatsapp.number).toMatch(/^55\d{2}9\d{8}$/);
+  });
+
+  it('mostra o mesmo número que o link disca', () => {
+    const semPais = profile.whatsapp.number.slice(2);
+    expect(profile.whatsapp.label.replace(/\D/g, '')).toBe(semPais);
+  });
+
+  it('monta um wa.me com a mensagem codificada', () => {
+    const url = whatsappUrl('oi & tchau');
+    expect(url).toBe('https://wa.me/5548992110831?text=oi%20%26%20tchau');
+  });
+
+  it('leva uma primeira mensagem por padrão', () => {
+    expect(whatsappUrl()).toMatch(/^https:\/\/wa\.me\/\d+\?text=.+/);
   });
 });
 
