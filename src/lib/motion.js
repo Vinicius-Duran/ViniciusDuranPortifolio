@@ -536,4 +536,83 @@ export const parallax = (element, trigger, amount = 8) => {
   );
 };
 
+/**
+ * Girar um objeto com a mão: clique, arrasto e inércia ao soltar.
+ *
+ * `alvo` é um objeto mutável com uma propriedade `arrasto` em graus — o
+ * arrasto escreve nela direto e chama `redesenhar`, em vez de mexer na
+ * rolagem da página. Mexer na rolagem também girava, mas empurrava a página
+ * meio milhar de pixels e o giro chegava atrasado pelo scrub: parecia
+ * arrastar a página, não agarrar o objeto.
+ *
+ * Devolve os quatro manipuladores prontos para o JSX. Vive aqui porque o
+ * globo de projetos e a roda de certificados querem o mesmo tato, e tato
+ * duplicado é tato que diverge na primeira correção.
+ *
+ * `redesenhar` recebe quantos pixels a mão andou naquele movimento, para
+ * quem precisa distinguir girar de clicar.
+ */
+export const spinDrag = (alvo, redesenhar, options = {}) => {
+  const { grausPorPixel = 0.22, inercia = 14, limiar = 4 } = options;
+  const estado = { ativo: false, x: 0, andou: 0, velocidade: 0, preso: false };
+
+  const soltar = (event) => {
+    if (!estado.ativo) return;
+    estado.ativo = false;
+    if (estado.preso) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+      estado.preso = false;
+    }
+
+    /* Continua girando com a velocidade que a mão deixou e desacelera. Sem
+       isso o objeto trava no instante em que o dedo levanta, que é a
+       diferença entre uma massa e um controle deslizante. */
+    const restante = estado.velocidade * inercia;
+    if (Math.abs(restante) < 1) return;
+
+    gsap.to(alvo, {
+      arrasto: alvo.arrasto + restante,
+      duration: 1.4,
+      ease: 'power3.out',
+      overwrite: 'auto',
+      onUpdate: redesenhar,
+    });
+  };
+
+  return {
+    onPointerDown: (event) => {
+      if (event.button !== 0) return;
+      // Um arrasto novo interrompe a inércia do anterior.
+      gsap.killTweensOf(alvo, 'arrasto');
+      estado.ativo = true;
+      estado.x = event.clientX;
+      estado.andou = 0;
+      estado.velocidade = 0;
+    },
+
+    onPointerMove: (event) => {
+      if (!estado.ativo) return;
+      const delta = event.clientX - estado.x;
+      estado.x = event.clientX;
+      estado.andou += Math.abs(delta);
+      estado.velocidade = delta * grausPorPixel;
+
+      /* A captura só entra depois que a mão anda de fato. Presa já no
+         pressionar, ela recebe o `click` no lugar do elemento sob o dedo, e
+         uma carta clicável dentro do palco deixa de abrir. Assim, toque
+         continua clique e arrasto continua seguindo o ponteiro para fora. */
+      if (!estado.preso && estado.andou > limiar) {
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+        estado.preso = true;
+      }
+
+      alvo.arrasto += estado.velocidade;
+      redesenhar(Math.abs(delta));
+    },
+
+    onPointerUp: soltar,
+    onPointerCancel: soltar,
+  };
+};
+
 export { gsap, ScrollTrigger, animate, stagger, createScope };

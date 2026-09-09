@@ -37,33 +37,8 @@
   margin-right: 0.5rem;
 }
 
-.globe-nav-btn {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1rem;
-  color: var(--paper-80);
-  border: 1px solid var(--paper-20);
-  border-radius: 50%;
-  transition:
-    transform 160ms var(--ease-out),
-    border-color 220ms ease,
-    background-color 220ms ease,
-    color 220ms ease;
-}
-
-.globe-nav-btn:active {
-  transform: scale(0.94);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .globe-nav-btn:hover {
-    color: var(--ink-000);
-    background: var(--amber);
-    border-color: var(--amber);
-  }
-}
+/* O botão redondo das setas mora no index.css: as duas rodas do site usam o
+   mesmo, e a que fica no sobre não carrega este arquivo por conta própria. */
 
 /* --- O palco 3D --------------------------------------------------------- */
 

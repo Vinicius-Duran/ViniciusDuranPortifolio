@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Frame from '../../components/Frame/Frame';
+import HeroBackdrop from '../../components/HeroBackdrop/HeroBackdrop';
+import CertificateWheel from '../../components/CertificateWheel/CertificateWheel';
 import {
   useGsapScope,
   buildIntro,
@@ -64,7 +66,6 @@ const About = () => {
     );
 
     playOnEnter(el('.toolbox'), revealStack(all('.toolbox-entry'), { delayStep: 55 }));
-    playOnEnter(el('.credential-list'), revealStack(all('.credential'), { delayStep: 45 }));
     playOnEnter(el('.goal-list'), revealStack(all('.goal'), { delayStep: 80 }));
   });
 
@@ -86,6 +87,10 @@ const About = () => {
     <div className="about-page" ref={root}>
       {/* ---------------------------------------------------------------- */}
       <section className="about-hero" data-build-step="about.jsx">
+        {/* O herói do sobre assentava num plano liso enquanto o da home tinha
+            atmosfera. Mesmo tratamento, arranjo próprio. */}
+        <HeroBackdrop variant="about" />
+
         <div className="shell">
           <div className="part">
             <Frame tag="h1 · about" />
@@ -208,29 +213,7 @@ const About = () => {
             </h2>
           </div>
 
-          <ul className="credential-list">
-            {certificates.map((cert, index) => (
-              <li className="credential" key={cert.id}>
-                <button
-                  type="button"
-                  className="credential-button"
-                  onClick={() => setOpenCert(cert)}
-                >
-                  <span className="credential-n">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <span className="credential-main">
-                    <span className="credential-name">{cert.name}</span>
-                    <span className="credential-place">{cert.institution}</span>
-                  </span>
-                  <span className="credential-period">{cert.period}</span>
-                  <span className="credential-arrow" aria-hidden="true">
-                    →
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <CertificateWheel onOpen={setOpenCert} />
         </div>
       </section>
 
