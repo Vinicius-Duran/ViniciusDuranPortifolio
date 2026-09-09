@@ -3,6 +3,9 @@
    ========================================================================= */
 
 .about-hero {
+  /* Âncora do fundo de placas, e corte para as que sangram pela borda. */
+  position: relative;
+  overflow: hidden;
   padding-top: clamp(8rem, 6rem + 10vw, 13rem);
 }
 
@@ -247,101 +250,8 @@
   }
 }
 
-/* =========================================================================
-   CERTIFICADOS
-   ========================================================================= */
-
-.credential-list {
-  list-style: none;
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-}
-
-.credential {
-  border-top: 1px solid var(--paper-10);
-}
-
-.credential:last-child {
-  border-bottom: 1px solid var(--paper-10);
-}
-
-.credential-button {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) 11rem 1.5rem;
-  gap: 1.25rem;
-  align-items: baseline;
-  text-align: left;
-  padding-block: clamp(1rem, 1.8vw, 1.4rem);
-  transition: transform 360ms var(--ease-out), background-color 260ms ease;
-}
-
-.credential-n {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--paper-40);
-  transition: color 260ms ease;
-}
-
-.credential-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.credential-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-  transition: color 260ms ease;
-}
-
-.credential-place {
-  font-size: 0.82rem;
-  color: var(--paper-40);
-}
-
-.credential-period {
-  font-size: 0.82rem;
-  color: var(--paper-60);
-  text-align: right;
-}
-
-.credential-arrow {
-  color: var(--paper-20);
-  transition: transform 340ms var(--ease-out), color 260ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .credential-button:hover {
-    transform: translateX(1rem);
-  }
-
-  .credential-button:hover .credential-name,
-  .credential-button:hover .credential-n,
-  .credential-button:hover .credential-arrow {
-    color: var(--amber);
-  }
-
-  .credential-button:hover .credential-arrow {
-    transform: translateX(0.35rem);
-  }
-}
-
-@media (max-width: 780px) {
-  .credential-button {
-    grid-template-columns: 2.5rem minmax(0, 1fr) 1.5rem;
-  }
-
-  .credential-period {
-    grid-column: 2;
-    text-align: left;
-    margin-top: 0.35rem;
-  }
-}
+/* A lista de certificados virou a roda, e mora em
+   components/CertificateWheel. */
 
 /* =========================================================================
    OBJETIVOS

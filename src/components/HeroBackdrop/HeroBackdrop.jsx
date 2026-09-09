@@ -10,18 +10,39 @@ import './HeroBackdrop.css';
  * tela" genérico é o clichê número um do portfólio de desenvolvedor, e
  * entregaria o contrário do que a página afirma.
  */
-/* As posições contornam a faixa central da direita, onde mora o balanço:
-   uma placa atrás de "Base / Anos / Projetos" disputa legibilidade com o
-   dado, e dado ilegível é pior que fundo vazio. */
-const posicoes = [
-  // Abaixo dos ~75px da barra fixa, para não competir com a navegação.
-  { top: '12%', right: '2%', width: '27vw', rotate: '2deg', depth: 1 },
-  { top: '71%', right: '3%', width: '24vw', rotate: '-2.5deg', depth: 2 },
-  { top: '74%', right: '31%', width: '16vw', rotate: '1.5deg', depth: 3 },
-];
+/* Um arranjo por herói: o que a página põe em cada canto muda, e placa atrás
+   de dado é dado ilegível — pior que fundo vazio. */
+const arranjos = {
+  /* Na home as posições contornam a faixa central da direita, onde mora o
+     balanço "Base / Experiência / Projetos". */
+  home: [
+    // Abaixo dos ~75px da barra fixa, para não competir com a navegação.
+    { top: '12%', right: '2%', width: '27vw', rotate: '2deg', depth: 1 },
+    { top: '71%', right: '3%', width: '24vw', rotate: '-2.5deg', depth: 2 },
+    { top: '74%', right: '31%', width: '16vw', rotate: '1.5deg', depth: 3 },
+  ],
 
-const HeroBackdrop = () => {
-  const capas = featuredProjects.filter((p) => p.cover).slice(0, posicoes.length);
+  /* No sobre o pé da tela é a dupla texto + registro, ocupando a largura
+     inteira: as placas sobem para a faixa livre à direita do título. A
+     terceira mora no entalhe que a manchete deixa depois de "Sobre mim," —
+     mais abaixo ela aparecia como caixa solta sob a última linha. */
+  about: [
+    { top: '12%', right: '2%', width: '25vw', rotate: '-2deg', depth: 1 },
+    { top: '33%', right: '-5%', width: '20vw', rotate: '3deg', depth: 2 },
+    { top: '20%', right: '30%', width: '14vw', rotate: '1.5deg', depth: 3 },
+  ],
+};
+
+const HeroBackdrop = ({ variant = 'home' }) => {
+  const posicoes = arranjos[variant];
+  const comCapa = featuredProjects.filter((p) => p.cover);
+
+  /* O sobre pega pelo fim para não repetir as mesmas três capturas da home
+     — mesmo a 13% de opacidade, o par idêntico lê como página copiada. */
+  const capas =
+    variant === 'about'
+      ? comCapa.slice(-posicoes.length).reverse()
+      : comCapa.slice(0, posicoes.length);
 
   return (
     <div className="hero-backdrop" aria-hidden="true">

@@ -1,0 +1,291 @@
+/* =========================================================================
+   RODA DE CERTIFICADOS
+   Um anel deitado, não uma esfera: os certificados são texto, e texto numa
+   superfície esférica fica torto em duas direções ao mesmo tempo.
+   ========================================================================= */
+
+.cert-wheel-section {
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.cert-wheel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.cert-wheel-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-40);
+  white-space: nowrap;
+  margin-right: auto;
+}
+
+/* --- O palco 3D --------------------------------------------------------- */
+
+.cert-wheel-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* Folga para a carta da frente, que a perspectiva amplia por P/(P−raio) e
+     estoura a caixa que o anel ocuparia parado. */
+  height: clamp(16rem, 28vw, 23rem);
+  /* A inclinação joga a frente do anel para baixo, e é lá que fica a carta
+     ampliada. O respiro sobe o centro do anel dentro do palco para ela não
+     ser cortada pela borda de baixo. */
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+  perspective: 1700px;
+  perspective-origin: 50% 46%;
+  cursor: grab;
+  /* Deixa a rolagem vertical passar: o gesto horizontal é que gira. */
+  touch-action: pan-y;
+  /* O anel é mais largo que o shell nas pontas — o corte evita que ele
+     empurre a página para o lado. */
+  overflow: hidden;
+}
+
+.cert-wheel-stage:active {
+  cursor: grabbing;
+}
+
+.cert-wheel {
+  position: relative;
+  list-style: none;
+  width: var(--carta);
+  /* Alta o bastante para número, duas linhas de nome e instituição sem
+     nenhum deles ser cortado pela metade. */
+  height: calc(var(--carta) * 0.8);
+  transform-style: preserve-3d;
+  will-change: transform;
+
+  --carta: clamp(8.5rem, 10vw, 9.5rem);
+  --folga: 1.12;
+  /* O raio sai da contagem, e não de um chute: o perímetro precisa comportar
+     todas as cartas lado a lado, senão as da frente se atropelam e o nome
+     some no meio da palavra. `--total` vem do componente. */
+  --raio: calc(var(--carta) * var(--total) / 6.2832 * var(--folga));
+}
+
+.cert-card {
+  position: absolute;
+  inset: 0;
+  user-select: none;
+  /* Anel: gira em torno do eixo vertical e afasta pela normal. Sem latitude,
+     todas as cartas ficam na mesma altura — que é o círculo. */
+  transform: rotateY(var(--lon)) translateZ(var(--raio));
+  will-change: opacity, filter;
+}
+
+.cert-card-face {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  border: 1px solid var(--paper-20);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(158deg, var(--ink-200), var(--ink-100));
+  box-shadow: var(--shadow-soft);
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.cert-card-n {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  color: var(--paper-40);
+}
+
+.cert-card-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--paper-80);
+  /* Duas linhas e reticências: o nome inteiro está na leitura embaixo, e uma
+     placa que estica pelo texto quebraria o alinhamento do anel. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.cert-card-place {
+  font-size: 0.6rem;
+  color: var(--paper-40);
+  margin-top: auto;
+}
+
+/* --- A carta de frente -------------------------------------------------- */
+
+.cert-card.is-front .cert-card-face {
+  border-color: var(--amber);
+  box-shadow:
+    var(--shadow-lift),
+    0 0 0 2px var(--amber),
+    0 0 22px -2px rgba(217, 116, 63, 0.5);
+}
+
+.cert-card.is-front .cert-card-name {
+  color: var(--paper);
+}
+
+/* O foco precisa aparecer sobre uma carta que talvez ainda esteja girando
+   para a frente: um anel próprio, e não só o destaque de "frente". */
+.cert-card-face:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cert-card-face:hover {
+    border-color: var(--amber);
+  }
+}
+
+/* --- Leitura do certificado de frente ----------------------------------- */
+
+.cert-wheel-readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.5rem 1.5rem;
+  padding-top: clamp(1rem, 2vw, 1.75rem);
+  border-top: 1px solid var(--paper-10);
+}
+
+.cert-wheel-readout-n {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+  grid-column: 1;
+}
+
+.cert-wheel-readout-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 2.4vw, 2rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 26ch;
+  text-wrap: balance;
+  grid-column: 1;
+}
+
+.cert-wheel-readout-meta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-40);
+  grid-column: 1;
+}
+
+.cert-wheel-readout-skills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  grid-column: 1;
+  margin-top: 0.35rem;
+}
+
+.cert-wheel-readout-skills li {
+  font-size: 0.75rem;
+  color: var(--paper-60);
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--paper-10);
+  border-radius: var(--radius-sm);
+}
+
+.cert-wheel-readout-link {
+  grid-column: 2;
+  grid-row: 1 / span 4;
+  align-self: center;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* --- Telas estreitas ---------------------------------------------------- */
+
+@media (max-width: 780px) {
+  .cert-wheel {
+    --carta: min(30vw, 7.5rem);
+    /* A folga NÃO diminui em tela estreita. Apertar o anel para ele caber na
+       largura fazia as duas vizinhas cobrirem a carta da frente e o nome
+       virava sopa. Aqui o anel é mais largo que a tela de propósito: as
+       laterais saem pelo corte do palco, que é onde elas já são invisíveis. */
+    --folga: 1;
+  }
+
+  .cert-wheel-stage {
+    perspective: 1100px;
+    height: 17.5rem;
+  }
+
+  .cert-wheel-hint {
+    display: none;
+  }
+
+  .cert-wheel-readout {
+    grid-template-columns: 1fr;
+  }
+
+  .cert-wheel-readout-link {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    margin-top: 0.75rem;
+  }
+}
+
+/* --- Sem movimento: o anel vira grade ----------------------------------- */
+
+.cert-wheel-section[data-estatico='true'] .cert-wheel-stage {
+  perspective: none;
+  display: block;
+  height: auto;
+  cursor: default;
+  overflow: visible;
+}
+
+.cert-wheel-section[data-estatico='true'] .cert-wheel {
+  width: 100%;
+  height: auto;
+  transform: none !important;
+  transform-style: flat;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 0.7rem;
+}
+
+.cert-wheel-section[data-estatico='true'] .cert-card {
+  position: relative;
+  inset: auto;
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  min-height: 6.5rem;
+}
+
+/* Sem giro não há carta de frente; o destaque não deve ficar preso numa
+   carta arbitrária. */
+.cert-wheel-section[data-estatico='true'] .cert-card.is-front .cert-card-face {
+  border-color: var(--paper-20);
+  box-shadow: var(--shadow-soft);
+}
+
+/* A leitura descreve a carta de frente, que sem giro não existe. */
+.cert-wheel-section[data-estatico='true'] .cert-wheel-readout {
+  display: none;
+}

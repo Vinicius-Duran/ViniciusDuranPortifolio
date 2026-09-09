@@ -1,6 +1,12 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useGsapScope, gsap, ScrollTrigger, reducedMotion } from '../../lib/motion';
+import {
+  useGsapScope,
+  spinDrag,
+  gsap,
+  ScrollTrigger,
+  reducedMotion,
+} from '../../lib/motion';
 import { projects } from '../../data/projects';
 import './ProjectWheel.css';
 
@@ -133,11 +139,7 @@ const ProjectWheel = () => {
     ScrollTrigger.refresh();
   }, []);
 
-  /* Setas e arrasto giram o globo direto, e não a rolagem da página. Mexer na
-     rolagem funcionava, mas arrastar empurrava a página meio milhar de pixels
-     e o giro chegava atrasado pelo scrub — parecia arrastar a página, não
-     agarrar o objeto. Escrevendo no ângulo, a resposta é imediata e a página
-     fica parada onde está. */
+  /* Setas e arrasto giram o globo direto, e não a rolagem da página. */
 
   const girar = (direcao) => {
     const valores = estado.current;
@@ -150,47 +152,12 @@ const ProjectWheel = () => {
     });
   };
 
-  const arrasto = useRef({ ativo: false, x: 0, andou: 0, velocidade: 0 });
-
-  const aoPressionar = (event) => {
-    if (event.button !== 0) return;
-    // Um arrasto novo interrompe a inércia do anterior.
-    gsap.killTweensOf(estado.current, 'arrasto');
-    arrasto.current = { ativo: true, x: event.clientX, andou: 0, velocidade: 0 };
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-
-  const aoMover = (event) => {
-    if (!arrasto.current.ativo) return;
-    const delta = event.clientX - arrasto.current.x;
-    arrasto.current.x = event.clientX;
-    arrasto.current.andou += Math.abs(delta);
-    // Graus por pixel: o suficiente para a travessia da tela dar meia volta.
-    arrasto.current.velocidade = delta * 0.22;
-
-    estado.current.arrasto += arrasto.current.velocidade;
-    desenhar.current?.();
-  };
-
-  const aoSoltar = (event) => {
-    if (!arrasto.current.ativo) return;
-    arrasto.current.ativo = false;
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
-
-    /* Continua girando com a velocidade que a mão deixou e desacelera. Sem
-       isso o globo trava no instante em que o dedo levanta, que é a diferença
-       entre um objeto com massa e um controle deslizante. */
-    const restante = arrasto.current.velocidade * 14;
-    if (Math.abs(restante) < 1) return;
-
-    gsap.to(estado.current, {
-      arrasto: estado.current.arrasto + restante,
-      duration: 1.4,
-      ease: 'power3.out',
-      overwrite: 'auto',
-      onUpdate: () => desenhar.current?.(),
-    });
-  };
+  // `estado.current` é estável entre renderizações, então os manipuladores
+  // podem ser montados uma vez só.
+  const arrasto = useMemo(
+    () => spinDrag(estado.current, () => desenhar.current?.()),
+    []
+  );
 
   const projetoAtivo = projects[ativo];
 
@@ -210,7 +177,7 @@ const ProjectWheel = () => {
           <p className="globe-hint">Arraste ou use as setas</p>
           <button
             type="button"
-            className="globe-nav-btn"
+            className="wheel-nav-btn"
             onClick={() => girar(-1)}
             aria-label="Projeto anterior"
           >
@@ -218,7 +185,7 @@ const ProjectWheel = () => {
           </button>
           <button
             type="button"
-            className="globe-nav-btn"
+            className="wheel-nav-btn"
             onClick={() => girar(1)}
             aria-label="Próximo projeto"
           >
@@ -227,13 +194,7 @@ const ProjectWheel = () => {
         </div>
       </div>
 
-      <div
-        className="globe-stage"
-        onPointerDown={aoPressionar}
-        onPointerMove={aoMover}
-        onPointerUp={aoSoltar}
-        onPointerCancel={aoSoltar}
-      >
+      <div className="globe-stage" {...arrasto}>
         <div className="globe">
           {projects.map((project, i) => (
             <article
