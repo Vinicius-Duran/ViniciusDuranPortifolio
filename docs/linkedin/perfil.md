@@ -80,9 +80,11 @@ WhatsApp: (48) 99211-0831
 A seção Destaques aceita links com imagem própria. Vale fixar, nesta ordem:
 
 1. **Portfólio** — https://vduran.vercel.app
-2. **Todah Produções** — https://toda-producoes.vercel.app
-3. **Taki Rastreadores** — https://taki-eta.vercel.app
-4. **GitHub** — https://github.com/Vinicius-Duran
+2. **GitHub** — https://github.com/Vinicius-Duran
+
+Os endereços da Todah e da Taki ficaram de fora porque os deploys antigos
+(`toda-producoes.vercel.app`, `taki-eta.vercel.app`) respondem 404. Assim que
+souber os atuais, valem como terceiro e quarto destaques.
 
 ---
 
