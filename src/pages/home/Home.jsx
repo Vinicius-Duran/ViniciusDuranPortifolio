@@ -22,7 +22,12 @@ import {
   ScrollTrigger,
 } from '../../lib/motion';
 import { featuredProjects, secondaryProjects } from '../../data/projects';
-import { profile, getYearsOfExperience, formatExperience } from '../../data/profile';
+import {
+  profile,
+  getYearsOfExperience,
+  formatExperience,
+  whatsappUrl,
+} from '../../data/profile';
 import { homeSkillGroups } from '../../data/skills';
 import './Home.css';
 
@@ -412,6 +417,22 @@ const Home = () => {
           </div>
 
           <ul className="contact-list">
+            {/* Primeiro da lista: é o canal mais rápido, e o que ele quer
+                que usem. */}
+            <li className="contact-row">
+              <a
+                href={whatsappUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-link"
+              >
+                <span className="contact-kind">WhatsApp</span>
+                <span className="contact-value">{profile.whatsapp.label}</span>
+                <span className="link-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </li>
             <li className="contact-row">
               <a href={`mailto:${profile.email}`} className="contact-link">
                 <span className="contact-kind">Email</span>

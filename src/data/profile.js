@@ -16,7 +16,25 @@ export const profile = {
     url: 'https://www.linkedin.com/in/vinicius-duran',
     label: 'linkedin.com/in/vinicius-duran',
   },
+  whatsapp: {
+    /* Só dígitos, com país e DDD: é o formato que o wa.me exige. Com "+",
+       parênteses ou hífen o link abre a conversa em branco. O número
+       apresentado é outro campo justamente para o visitante ler como
+       telefone sem o link deixar de funcionar. */
+    number: '5548992110831',
+    label: '(48) 99211-0831',
+  },
 };
+
+/**
+ * O link do WhatsApp, com uma primeira mensagem já escrita.
+ *
+ * A mensagem pronta não é enfeite: sem ela chega "oi" sem contexto, e ele
+ * não sabe de onde veio. Curta de propósito — quem for reescrever, reescreve.
+ */
+export const whatsappUrl = (
+  texto = 'Oi, Vinicius! Vi seu portfólio e queria conversar sobre um projeto.'
+) => `https://wa.me/${profile.whatsapp.number}?text=${encodeURIComponent(texto)}`;
 
 // Anos de carreira, contados do ano de início até o ano corrente.
 // Fica calculado para o número nunca envelhecer sozinho no site.
