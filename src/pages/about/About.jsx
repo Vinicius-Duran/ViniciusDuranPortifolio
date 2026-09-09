@@ -7,10 +7,13 @@ import {
   buildOnScroll,
   revealStack,
   playOnEnter,
+  gsap,
+  reducedMotion,
 } from '../../lib/motion';
 import { certificates } from '../../data/certificates';
+import { education } from '../../data/education';
 import { skillGroups } from '../../data/skills';
-import { profile, getYearsOfExperience } from '../../data/profile';
+import { profile, getYearsOfExperience, formatExperience } from '../../data/profile';
 import './About.css';
 
 const goals = [
@@ -33,6 +36,32 @@ const About = () => {
     all('[data-build-step]').forEach((section) => {
       if (!section.classList.contains('about-hero')) buildOnScroll(section);
     });
+
+    /* O trilho da formação cresce com a rolagem, e cada curso entra em
+       seguida: a seção estava sem movimento nenhum e lia como página parada
+       no meio de um site que se move. */
+    const trilho = el('.education-rail-fill');
+    if (trilho && !reducedMotion()) {
+      gsap.fromTo(
+        trilho,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el('.education-list'),
+            start: 'top 78%',
+            end: 'bottom 72%',
+            scrub: 0.6,
+          },
+        }
+      );
+    }
+
+    playOnEnter(
+      el('.education-list'),
+      revealStack(all('.education-entry'), { delayStep: 130, distance: 26 })
+    );
 
     playOnEnter(el('.toolbox'), revealStack(all('.toolbox-entry'), { delayStep: 55 }));
     playOnEnter(el('.credential-list'), revealStack(all('.credential'), { delayStep: 45 }));
@@ -68,16 +97,21 @@ const About = () => {
           <div className="part about-hero-foot">
             <Frame tag="section · record" />
             <p className="lede">
-              Desenvolvedor júnior com mais de {anosDeExperiencia} anos de experiência em
-              desenvolvimento de APIs, manutenção de projetos e construção de interfaces.
-              Trabalho fluentemente com C#, SQL, Node.js, .NET, React e CSS — sempre
-              buscando a combinação certa entre engenharia robusta e design intencional.
+              Desenvolvedor full-stack com {formatExperience()} — APIs, manutenção de
+              projetos em produção e construção de interfaces. Trabalho fluentemente
+              com C#, SQL, Node.js, .NET, React e CSS, e estudo segurança cibernética
+              em duas frentes ao mesmo tempo, porque sistema que ninguém defende não
+              está pronto.
             </p>
 
             <dl className="about-record">
               <div>
                 <dt>Base</dt>
                 <dd>{profile.location}</dd>
+              </div>
+              <div>
+                <dt>Experiência</dt>
+                <dd>+{anosDeExperiencia} anos</dd>
               </div>
               <div>
                 <dt>Disponível</dt>
@@ -133,23 +167,34 @@ const About = () => {
             </h2>
           </div>
 
-          <article className="education-entry">
-            <p className="education-period">2024 — 2025</p>
-            <div>
-              <h3 className="education-title">
-                Curso Técnico Integrado em Desenvolvimento de Sistemas
-              </h3>
-              <p className="education-place">
-                SENAI/SC — Serviço Nacional de Aprendizagem Industrial
-              </p>
-              <p className="education-body">
-                Formação com foco em análise, desenvolvimento e manutenção de sistemas e
-                aplicações, com base em práticas atuais do mercado. A grade abrange desde
-                fundamentos da lógica de programação até o desenvolvimento completo de
-                aplicações web e mobile.
-              </p>
-            </div>
-          </article>
+          <ol className="education-list">
+            {/* O trilho é desenhado pela rolagem e liga as três formações numa
+                linha do tempo, em vez de deixá-las como blocos soltos. */}
+            <span className="education-rail" aria-hidden="true">
+              <span className="education-rail-fill" />
+            </span>
+
+            {education.map((curso) => (
+              <li className="education-entry" key={curso.id}>
+                <div className="education-side">
+                  <p className="education-period">{curso.period}</p>
+                  <p className="education-level">{curso.level}</p>
+                  {curso.ongoing && (
+                    <p className="education-ongoing">
+                      <span className="education-ongoing-dot" aria-hidden="true" />
+                      Cursando
+                    </p>
+                  )}
+                </div>
+
+                <div className="education-body-col">
+                  <h3 className="education-title">{curso.course}</h3>
+                  <p className="education-place">{curso.institution}</p>
+                  <p className="education-body">{curso.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 

@@ -22,7 +22,7 @@ import {
   ScrollTrigger,
 } from '../../lib/motion';
 import { featuredProjects, secondaryProjects } from '../../data/projects';
-import { profile, getYearsOfExperience } from '../../data/profile';
+import { profile, getYearsOfExperience, formatExperience } from '../../data/profile';
 import { homeSkillGroups } from '../../data/skills';
 import './Home.css';
 
@@ -201,17 +201,18 @@ const Home = () => {
               data-build-headline
               data-parallax="-0.2"
             >
-              Construo software{' '}
+              A tela é a ponta.{' '}
               <br />
-              inteiro, <em>peça a peça</em>.
+              Eu faço o <em>sistema inteiro</em>.
             </h1>
           </div>
 
           <div className="part hero-intro-part">
             <Frame tag="section · intro" />
             <p className="lede">
-              {profile.bio} Do modelo de dados à última micro-interação — front,
-              back e o banco que sustenta os dois.
+              Desenvolvedor full-stack em {profile.location}. Desenho o banco,
+              escrevo a API e construo a interface — e cuido do que acontece
+              depois que tudo isso entra no ar. React, C#, .NET e Node.js.
             </p>
 
             <dl className="hero-ledger">
@@ -219,17 +220,23 @@ const Home = () => {
                 <dt>Base</dt>
                 <dd>{profile.location}</dd>
               </div>
-              {/* O valor já sai preenchido com zero à esquerda para que o
-                  número nasça com a largura final, mesmo antes da contagem
-                  e mesmo se o JS não rodar. */}
+              {/* Aqui o "+" e a unidade já dão largura e sentido ao número, e
+                  o zero à esquerda só atrapalharia a leitura de "+3 anos". */}
               <div>
-                <dt>Anos</dt>
+                <dt>Experiência</dt>
                 <dd>
-                  <span data-count={anosDeExperiencia}>
-                    {String(anosDeExperiencia).padStart(2, '0')}
+                  <span
+                    data-count={anosDeExperiencia}
+                    data-count-prefix="+"
+                    data-count-suffix=" anos"
+                    data-count-pad="1"
+                  >
+                    +{anosDeExperiencia} anos
                   </span>
                 </dd>
               </div>
+              {/* Já o número solto nasce preenchido com zero à esquerda, para
+                  ter a largura final antes da contagem e mesmo sem JS. */}
               <div>
                 <dt>Projetos</dt>
                 <dd>
@@ -400,7 +407,7 @@ const Home = () => {
           <div className="part contact-head">
             <Frame tag="h2 · contact" />
             <h2 className="section-title contact-title">
-              Vamos criar algo <em>memorável</em> juntos.
+              Tem um projeto? <em>Me conta</em>.
             </h2>
           </div>
 
@@ -451,7 +458,7 @@ const Home = () => {
         <div className="shell colophon-inner">
           <p className="colophon-name">{profile.name}</p>
           <p className="colophon-meta">
-            {profile.role} · {anosDeExperiencia} anos · {profile.location}
+            {profile.role} · {formatExperience()} · {profile.location}
           </p>
           <p className="colophon-year">© {new Date().getFullYear()}</p>
         </div>

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { profile, getYearsOfExperience } from './profile.js';
+import { profile, getYearsOfExperience, formatExperience } from './profile.js';
 
 describe('profile', () => {
   it('expõe os campos de identidade exigidos pela spec', () => {
@@ -73,6 +73,15 @@ describe('getYearsOfExperience', () => {
     expect(getYearsOfExperience()).toBe(new Date().getFullYear() - 2023);
   });
 
+  it('escreve a frase com o "+" na frente e "experiência" no fim', () => {
+    expect(formatExperience(new Date('2026-06-01T00:00:00'))).toBe(
+      '+3 anos de experiência'
+    );
+    expect(formatExperience(new Date('2030-01-01T00:00:00'))).toBe(
+      '+7 anos de experiência'
+    );
+  });
+
   it('nunca devolve número negativo', () => {
     expect(getYearsOfExperience(new Date('2020-01-01T00:00:00'))).toBe(0);
   });
@@ -80,6 +89,7 @@ describe('getYearsOfExperience', () => {
   it('não deixa o tempo de carreira escrito à mão no JSX', () => {
     const src = readFileSync(resolve('src/pages/about/About.jsx'), 'utf8');
     expect(src).not.toMatch(/\d+\s*\+?\s*anos de experiência/i);
-    expect(src).toContain('anosDeExperiencia');
+    // Vale derivar pelo número ou pela frase pronta; o que não vale é digitar.
+    expect(src).toMatch(/anosDeExperiencia|formatExperience/);
   });
 });
