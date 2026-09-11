@@ -102,7 +102,7 @@ npm test         # suíte de testes
 Vercel, a partir de `main`. O build sai em `dist/`.
 
 `vercel.json` existe por um motivo específico: o roteamento é do cliente, e o
-build gera um `index.html` só. Sem a regra de rewrite, `/about` e
+build gera um `index.html` só. Sem a regra de rewrite, `/about`, `/ia` e
 `/projects/:slug` respondem 404 do servidor em acesso direto, refresh ou link
 compartilhado — o visitante nem chega na página 404 do site. A regra manda
 todo caminho para o `index.html` e deixa o React Router resolver; arquivos que
@@ -117,7 +117,7 @@ src/
   data/          conteúdo do site — perfil, projetos, certificados,
                  competências, engenharia de IA
   lib/           motion.js — registro do GSAP e as gramáticas de animação
-  pages/         home, about, project, notfound
+  pages/         home, about, ai, project, notfound
 ```
 
 O fundo do herói é montado com as capturas reais dos projetos, em duotone
@@ -136,18 +136,23 @@ editar esses arquivos, não os componentes.
 | `projects.js` | nove projetos: seis em destaque, com case study completo (desafio, solução, resultado), e três secundários, listados só como link de repositório |
 | `certificates.js` | 19 certificados e seus PDFs em `public/` |
 | `skills.js` | competências por grupo |
-| `ai.js` | engenharia de IA — descreve capacidade e resultado, nunca mecanismo |
+| `ai.js` | engenharia de IA, na home e em `/ia` — a arquitetura em alto nível (papéis, regras, lições), nunca nome de agente, de ferramenta, de arquivo ou de projeto |
 
 Uma rota de case study (`/projects/:slug`) só existe para os projetos em destaque;
 acessar o slug de um projeto secundário redireciona de volta para a seção de
 projetos da home.
 
+`/ia` é a página de engenharia de IA: o pipeline de agentes percorrido pela
+rolagem — preso na tela acima de 900px, empilhado abaixo disso e sob movimento
+reduzido —, as regras do sistema, a pessoa no circuito e as lições.
+
 ## Testes
 
 A suíte não testa aparência: ela protege a integridade do conteúdo. Verifica que
 nenhum projeto fictício volte ao site, que nenhum texto de rascunho vaze para a
-interface, que os dados de contato venham de `profile.js` e que todo PDF de
-certificado referenciado exista no repositório.
+interface, que os dados de contato venham de `profile.js`, que todo PDF de
+certificado referenciado exista no repositório, e que a engenharia de IA não
+cite nome de agente, de modelo, de ferramenta, de arquivo ou de projeto.
 
 ```bash
 npm test

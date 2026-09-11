@@ -7,6 +7,7 @@ const NAV = [
   { label: 'Trabalho', to: '/', hash: '#projects' },
   { label: 'Sobre', to: '/', hash: '#about' },
   { label: 'Trajetória', to: '/about' },
+  { label: 'IA', to: '/ia' },
   { label: 'Contato', to: '/', hash: '#contact' },
 ];
 

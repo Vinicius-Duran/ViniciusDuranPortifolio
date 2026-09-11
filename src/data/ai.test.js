@@ -29,7 +29,11 @@ const TERMOS_PROIBIDOS = [
   'em-desenvolvimento',
 ];
 
-const ARQUIVOS_PUBLICOS = ['src/data/ai.js', 'src/components/AiSection/AiSection.jsx'];
+const ARQUIVOS_PUBLICOS = [
+  'src/data/ai.js',
+  'src/pages/ai/AiPage.jsx',
+  'src/components/AiSection/AiSection.jsx',
+];
 
 // As linhas de import citam arquivos do próprio projeto; não são conteúdo.
 const semImports = (src) =>
@@ -66,6 +70,23 @@ describe('a linha do que é público na engenharia de IA', () => {
   it('não cita nome de arquivo no conteúdo', () => {
     const achados = strings(ai).filter((texto) => NOME_DE_ARQUIVO.test(texto));
     expect(achados).toEqual([]);
+  });
+});
+
+describe('a página de engenharia de IA', () => {
+  it('tem rota própria em /ia', () => {
+    const src = readFileSync(resolve('src/App.jsx'), 'utf8');
+    expect(src).toMatch(/path="\/ia"/);
+  });
+
+  it('aparece no menu principal', () => {
+    const src = readFileSync(resolve('src/components/Header/Header.jsx'), 'utf8');
+    expect(src).toMatch(/to:\s*'\/ia'/);
+  });
+
+  it('é apontada pela seção de IA da home', () => {
+    const src = readFileSync(resolve('src/components/AiSection/AiSection.jsx'), 'utf8');
+    expect(src).toMatch(/to="\/ia"/);
   });
 });
 

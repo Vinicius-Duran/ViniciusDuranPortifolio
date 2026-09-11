@@ -1,12 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Frame from '../Frame/Frame';
 import { aiIntro, aiCapabilities, aiPipeline } from '../../data/ai';
 import './AiSection.css';
 
 /**
- * Engenharia de IA. O diagrama desenha o fluxo — descrição, plano,
- * implementação, revisão, entrega — sem dizer como cada etapa funciona por
- * dentro. É o que dá densidade visual à seção sem entregar a receita.
+ * Engenharia de IA, em resumo. O diagrama desenha o fluxo — descrição,
+ * plano, implementação, revisão, entrega — e o link leva à página /ia, onde
+ * cada etapa, as regras e as lições aparecem por inteiro.
  */
 const AiSection = () => (
   <section className="ai" id="ai" data-build-step="ai.jsx">
@@ -59,10 +60,12 @@ const AiSection = () => (
         ))}
       </ul>
 
-      <p className="ai-note">
-        O funcionamento interno desses sistemas não é publicado aqui. Se for
-        relevante para uma conversa de trabalho, mostro ao vivo.
-      </p>
+      <Link to="/ia" className="link ai-more">
+        <span>Como funciona por dentro</span>
+        <span className="link-arrow" aria-hidden="true">
+          →
+        </span>
+      </Link>
     </div>
   </section>
 );

@@ -1,0 +1,364 @@
+/* =========================================================================
+   ABERTURA
+   ========================================================================= */
+
+.aip-hero {
+  position: relative;
+  overflow: hidden;
+  padding-top: clamp(8rem, 6rem + 10vw, 13rem);
+}
+
+.aip-hero-title {
+  font-size: clamp(2.7rem, 1rem + 8.5vw, 7rem);
+  max-width: 13ch;
+}
+
+.aip-hero-foot {
+  max-width: 60ch;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.aip-head {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* =========================================================================
+   PIPELINE
+   Sem JS, ou antes de a animação assumir, as cinco etapas ficam em colunas
+   com o princípio de cada uma à vista. A classe `is-live` só entra quando o
+   pin é montado, e é ela que junta os princípios num painel único.
+   ========================================================================= */
+
+.aip-track {
+  position: relative;
+}
+
+.aip-rail {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 14px;
+  pointer-events: none;
+}
+
+.aip-rail-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.aip-rail-track,
+.aip-rail-live {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.aip-rail-track {
+  stroke: var(--paper-10);
+}
+
+.aip-rail-live {
+  stroke: var(--amber);
+}
+
+.aip-token {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+}
+
+.aip-token-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 6px var(--amber-wash);
+}
+
+.aip-token-pr {
+  position: absolute;
+  bottom: calc(100% + 0.7rem);
+  left: 50%;
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-000);
+  background: var(--amber);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.aip-stages {
+  position: relative;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.aip-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.aip-stage-dot {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink-050);
+  border: 2px solid var(--amber-line);
+}
+
+.aip-stage-fill {
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.aip-stage-n {
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  color: var(--paper-40);
+}
+
+.aip-stage-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.aip-stage-principle {
+  font-size: 0.92rem;
+  line-height: 1.58;
+  color: var(--paper-60);
+  text-wrap: pretty;
+}
+
+.aip-rejected {
+  display: none;
+}
+
+/* --- Ao vivo: a seção presa ocupa a tela, e os princípios dividem o painel */
+
+.aip-pipeline.is-live {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.aip-pipeline.is-live > .shell {
+  width: 100%;
+}
+
+.is-live .aip-token {
+  display: block;
+}
+
+.is-live .aip-stages {
+  /* Reserva a altura do painel: os princípios saem do fluxo e se sobrepõem
+     aqui embaixo, e sem a reserva a seção encolheria por baixo deles. */
+  padding-bottom: clamp(10rem, 16vw, 13rem);
+}
+
+.is-live .aip-stage-principle {
+  /* A etapa não é posicionada de propósito: o princípio se ancora na lista
+     inteira, e os cinco ocupam o mesmo lugar. */
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  max-width: 58ch;
+  font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+  line-height: 1.45;
+  color: var(--paper-80);
+}
+
+.is-live .aip-rejected {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.25rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  border: 1px solid var(--paper-20);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 900px) {
+  .aip-rail {
+    display: none;
+  }
+
+  .aip-stages {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .aip-stage {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
+    row-gap: 0.35rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--paper-10);
+  }
+
+  .aip-stage:last-child {
+    border-bottom: 1px solid var(--paper-10);
+  }
+
+  .aip-stage-dot {
+    grid-row: 1 / span 2;
+    margin-top: 0.15rem;
+  }
+
+  .aip-stage-n {
+    margin-top: 0;
+  }
+
+  .aip-stage-n,
+  .aip-stage-label,
+  .aip-stage-principle {
+    grid-column: 2;
+  }
+}
+
+/* =========================================================================
+   GRADES — regras, circuito, memória
+   ========================================================================= */
+
+.aip-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  /* As divisões são o fundo aparecendo entre os itens, e não bordas
+     desenhadas em cada um — a mesma lâmina da seção de IA da home. */
+  background: var(--paper-10);
+  border: 1px solid var(--paper-10);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.aip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: clamp(1.35rem, 2.6vw, 2rem);
+  background: var(--ink-100);
+  transition: background-color 320ms ease;
+}
+
+.aip-item-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.aip-item-text {
+  font-size: 0.92rem;
+  line-height: 1.58;
+  color: var(--paper-60);
+  text-wrap: pretty;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aip-item:hover {
+    background: var(--ink-200);
+  }
+}
+
+@media (max-width: 900px) {
+  .aip-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================================
+   LIÇÕES — cartas que se empilham
+   ========================================================================= */
+
+.aip-lessons {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.aip-lesson {
+  /* Posicionada para o z-index da pilha valer. */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 40vh;
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  background: linear-gradient(168deg, var(--ink-200), var(--ink-100) 62%);
+  border: 1px solid var(--paper-10);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lift);
+  transform-origin: center top;
+  /* Origem explícita do filtro, pelo mesmo motivo das cartas da home: sem
+     ela o recuo parte de brightness(0) e a carta pisca preta. */
+  filter: blur(0px) brightness(1);
+  will-change: transform, filter;
+}
+
+.aip-lesson-n {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--amber);
+}
+
+.aip-lesson-title {
+  margin-top: auto;
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+.aip-lesson-text {
+  max-width: 56ch;
+  color: var(--paper-60);
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .aip-lesson {
+    min-height: 0;
+  }
+}
+
+/* =========================================================================
+   CONTATO
+   ========================================================================= */
+
+.aip-closing-text {
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.aip-closing-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
