@@ -9,6 +9,7 @@ import PointerParallax from './components/PointerParallax/PointerParallax';
 import Home from './pages/home/Home';
 import About from './pages/about/About';
 import Project from './pages/project/Project';
+import AiPage from './pages/ai/AiPage';
 import NotFound from './pages/notfound/NotFound';
 import './App.css';
 
@@ -46,6 +47,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/ia" element={<AiPage />} />
           <Route path="/projects/:slug" element={<Project />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
