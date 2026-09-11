@@ -143,9 +143,14 @@ marcador) por um trilho horizontal com as cinco etapas:
 1. o trilho se desenha até a etapa atual (`DrawSVGPlugin`, já registrado);
 2. ao chegar numa etapa, o ponto dela acende e o painel troca o princípio (saída e entrada por
    `opacity` e `transform`);
-3. na **Revisão**, o marcador **volta** até a Implementação por um traço de retorno em outra cor —
-   a reprovação — e depois refaz o caminho até a Entrega;
-4. na Entrega, o marcador vira o selo "PR".
+3. na **Revisão**, acende o aviso "Reprovada, volta" sob o rótulo da etapa, e o marcador **volta**
+   até a Implementação enquanto o traço recolhe junto — a reprovação; depois o aviso apaga e a
+   tarefa refaz o caminho até a Entrega;
+4. na Entrega, o selo "PR" aparece sobre o marcador.
+
+*Revisado no plano, em 2026-09-10:* a primeira versão desta seção pedia um traço de retorno em
+outra cor. A troca de cor animaria `stroke`, fora da lista do que pode animar; o aviso e o recolher
+do traço dizem a mesma coisa só com `opacity`, `transform` e DrawSVG.
 
 **Regras:**
 
