@@ -16,6 +16,9 @@ qualquer outra coisa.
 | Responsável das tarefas | `Vinicius-Duran` |
 | Raiz dos repositórios na máquina | `C:\Users\metae\OneDrive\Documents\dev` |
 | Idioma de artefatos e comentários | Português do Brasil |
+| Plataforma | `github` (`github` / `azure` / `outra`) — decide a skill de PR e por onde os agentes leem a issue |
+| Telegram | `ligado` (`ligado` / `desligado`) — canal do celular para este repositório |
+| App DigitalOcean autorizado | `<<PREENCHER>>` — nome do app que o pipeline pode tocar na DigitalOcean, ou "nenhum" |
 
 O pipeline conversa com o GitHub pela CLI `gh`. Antes de qualquer leitura, confirme a autenticação
 com `gh auth status`. Se `gh` não estiver instalado ou autenticado, isso é **falha de ambiente**:
@@ -94,7 +97,7 @@ toda tarefa dele.**
 | Item | Valor |
 |---|---|
 | Branch padrão do repositório | `main` |
-| Branch base do pipeline | `pagina-ia` — é dela que a branch de trabalho nasce, porque é nela que estão a spec e o plano |
+| Branch base do pipeline | `main` — a `pagina-ia` foi mesclada pela PR #13 e já não existe no remoto |
 | Origem da branch de trabalho | criada a partir de `pagina-ia` |
 | Padrão de nome de branch | `{issue}-{até-duas-palavras-kebab-case}` |
 | Regra sobre a `main` | nunca commite direto nela; só entra por PR revisado pelo autor |
@@ -127,6 +130,7 @@ Não use palavra-chave de fechamento automático (`Closes #123`): quem fecha a i
 | `{label-code-review}` | `em-code-review` | Em revisão de código | **sim** |
 | `{label-bloqueio}` | `bloqueado` | Bloqueada — precisa de decisão humana | **sim** |
 | `{label-fora-do-pipeline}` | `rascunho` | Ainda em descrição — não entra no pipeline | **não** |
+| `{label-aprovada}` | `aprovada` | Aprovada pela pessoa — a fila automática pode pegar | **não** — só a pessoa aplica e remove |
 
 Os demais labels do repositório não são do pipeline e nunca devem ser alterados por ele.
 
@@ -182,3 +186,42 @@ Na falta de seção de critérios, cada afirmação verificável do corpo é um 
 8. **A linha do público da engenharia de IA** (spec `2026-09-10-pagina-ia-design.md`, seção 3):
    nenhum nome de agente, modelo, ferramenta, arquivo, label ou projeto no conteúdo do site. O teste
    `src/data/ai.test.js` a verifica, e ele nunca é afrouxado para uma tarefa passar.
+
+## 9. Convenções de issue
+
+Aplica-se quando `Plataforma` (seção 1) é `github`: a taxonomia de Issue Types e labels deste
+repositório, usada para **classificar** issue — diferente dos labels de **estágio do pipeline**
+(seção 5, que só o `coordenador` escreve). Um agente só usa o que estiver preenchido aqui; campo em
+`<<PREENCHER>>` é tratado como ausente, nunca adivinhado.
+
+### Issue Types
+
+| Item | Valor |
+|---|---|
+| Esta organização usa Issue Type? | `não` — conta de usuário, não organização; Issue Type é recurso de organização |
+| Tipos existentes | — |
+| Criar ou editar type exige escopo `admin:org`? | — |
+| Comando para aplicar um type numa issue | — |
+
+### Labels de issue
+
+| Categoria | Labels deste repositório |
+|---|---|
+| Tipo (o que a issue *é*) | `bug` (não há `fatia` nem `tarefa` neste repositório ainda) |
+| Área | `<<PREENCHER>>` |
+| Natureza | `<<PREENCHER>>` |
+
+Antes de propor um label novo, confira se um já existente nesta tabela cobre o mesmo papel —
+taxonomia que ninguém aplica é pior que taxonomia pequena.
+
+### Guarda-chuva e sub-issue
+
+| Item | Valor |
+|---|---|
+| Label do issue guarda-chuva (uma fatia do plano) | `<<PREENCHER>>` — crie o label `fatia` se o repositório passar a ter plano com fatias; sem ele, a fila só reconhece guarda-chuva enquanto alguma filha aprovada estiver aberta |
+| Label do issue de tarefa | `<<PREENCHER>>` |
+| Como a tarefa vira sub-issue do guarda-chuva | `<<PREENCHER>>` |
+
+A fila automática usa o label do guarda-chuva para **nunca** despachar uma fatia como se fosse
+tarefa, mesmo que ela receba `aprovada` por engano.
+
